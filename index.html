@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Somnus">
+<title>Somnus — Sleep Debt Tracker</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface2: #f2f2ef;
+  --border: #e8e8e4;
+  --border2: #d4d4ce;
+  --text: #1a1a18;
+  --text2: #6b6b63;
+  --text3: #ababA0;
+  --accent: #5b47e0;
+  --accent-light: #eeecfb;
+  --accent-dark: #4535c8;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --amber: #b45309;
+  --amber-light: #fef3c7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --blue: #1d4ed8;
+  --blue-light: #dbeafe;
+  --r: 12px;
+  --r-lg: 16px;
+  --nav-h: 72px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  background: var(--bg);
+}
+
+/* ── Auth screen ── */
+#auth-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 40px 24px;
+  text-align: center;
+}
+.auth-logo { font-size: 36px; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
+.auth-logo span { color: var(--accent); }
+.auth-tagline { font-size: 15px; color: var(--text2); margin-bottom: 48px; line-height: 1.5; }
+.auth-illustration { font-size: 72px; margin-bottom: 32px; }
+.btn-google {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  width: 100%; max-width: 320px;
+  background: var(--surface); border: 1.5px solid var(--border2);
+  border-radius: 14px; padding: 14px 20px;
+  font-size: 15px; font-weight: 600; font-family: inherit;
+  color: var(--text); cursor: pointer; transition: all 0.15s;
+}
+.btn-google:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent-dark); }
+.btn-google img { width: 20px; height: 20px; }
+.auth-note { font-size: 12px; color: var(--text3); margin-top: 20px; line-height: 1.5; }
+
+/* ── Loading ── */
+#loading-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100vh; min-height: 100dvh; gap: 16px;
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 2.5px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Main app ── */
+#main-app { display: none; }
+
+.header {
+  padding: 16px 18px 0;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 14px;
+}
+.logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+.logo-dot { color: var(--accent); }
+.header-date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.streak-pill { font-size: 11px; font-weight: 600; color: var(--accent); background: var(--accent-light); border-radius: 20px; padding: 4px 10px; }
+.user-pill { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.user-avatar { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border2); object-fit: cover; }
+.user-name { font-size: 12px; color: var(--text2); font-weight: 500; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Nav ── */
+.nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px;
+  background: rgba(247,247,245,0.96); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex; padding: 8px 8px env(safe-area-inset-bottom, 8px); z-index: 100;
+}
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 6px 0; border-radius: 10px; transition: background 0.15s; }
+.nav-item:hover { background: var(--surface2); }
+.nav-icon { font-size: 20px; color: var(--text3); line-height: 1; }
+.nav-label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.02em; }
+.nav-item.active .nav-icon { color: var(--accent); }
+.nav-item.active .nav-label { color: var(--accent); }
+
+/* ── Pages ── */
+.page { display: none; padding-bottom: 24px; }
+.page.active { display: block; }
+.page-scroll { overflow-y: auto; height: calc(100vh - var(--nav-h) - 80px); padding-bottom: 16px; }
+
+/* ── Cards ── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; margin: 0 14px 10px; }
+.card-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; }
+
+/* ── Big number ── */
+.big-num { font-size: 52px; font-weight: 300; line-height: 1; letter-spacing: -3px; }
+.big-unit { font-size: 17px; color: var(--text2); font-weight: 400; }
+
+/* ── Metric grid ── */
+.mgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 0 14px 10px; }
+.mgrid-2 { grid-template-columns: repeat(2,1fr); }
+.mbox { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; text-align: center; }
+.mbox .mv { font-size: 19px; font-weight: 600; line-height: 1; color: var(--text); }
+.mbox .ml { font-size: 10px; color: var(--text3); font-weight: 500; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.mbox .ms { font-size: 10px; color: var(--text3); margin-top: 3px; }
+
+/* ── Bar ── */
+.track { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin: 12px 0 5px; }
+.fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+.track-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); }
+
+/* ── Alert ── */
+.alert { margin: 0 14px 10px; border-radius: var(--r); padding: 12px 14px; font-size: 13px; line-height: 1.5; font-weight: 500; border: 1px solid; }
+
+/* ── Tips ── */
+.tip { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text2); line-height: 1.5; }
+.tip:last-child { border-bottom: none; padding-bottom: 0; }
+.tdot { width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+
+/* ── Energy chart ── */
+.ewrap { height: 120px; position: relative; margin: 8px 0 4px; }
+
+/* ── Form ── */
+.field { margin-bottom: 12px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--text2); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+.field input[type=time],
+.field input[type=date],
+.field select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text); font-size: 15px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500;
+  padding: 11px 14px; outline: none; transition: border 0.15s, background 0.15s;
+  appearance: none; -webkit-appearance: none;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); background: #fff; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ── Buttons ── */
+.btn {
+  width: 100%; background: var(--accent); color: #fff;
+  border: none; border-radius: var(--r); padding: 14px;
+  font-size: 15px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.01em;
+}
+.btn:hover { background: var(--accent-dark); }
+.btn:active { transform: scale(0.98); }
+.btn-outline {
+  width: 100%; background: var(--surface); color: var(--text);
+  border: 1px solid var(--border2); border-radius: var(--r); padding: 12px;
+  font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s;
+}
+.btn-outline:hover { background: var(--surface2); }
+.btn-red { color: var(--red); border-color: #fca5a5; }
+.btn-red:hover { background: var(--red-light) !important; border-color: var(--red) !important; }
+
+/* ── Quality & wakeup selectors ── */
+.qual-row { display: flex; gap: 5px; }
+.qbtn {
+  flex: 1; background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 8px 2px; font-size: 10px; font-weight: 600;
+  cursor: pointer; text-align: center; transition: all 0.15s; color: var(--text2); line-height: 1.4;
+}
+.qbtn .qi { font-size: 18px; display: block; margin-bottom: 2px; }
+.qbtn.sel { border-color: var(--accent); background: var(--accent-light); color: var(--accent-dark); }
+.wakeup-row { display: flex; gap: 6px; }
+.wbtn { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 4px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.15s; color: var(--text2); }
+.wbtn.sel { border-color: var(--accent); background: var(--accent-light); color: var(--accent-dark); }
+
+/* ── Plan blocks ── */
+.pblock { border-radius: var(--r); padding: 13px 14px; margin-bottom: 8px; border: 1px solid; }
+.ptime { font-size: 10px; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+.pdesc { font-size: 13px; line-height: 1.5; }
+
+/* ── History ── */
+.lentry { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.lentry:last-child { border-bottom: none; }
+.ldot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.linfo { flex: 1; min-width: 0; }
+.ldate { font-size: 13px; font-weight: 600; }
+.ltimes { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.lhrs { font-size: 15px; font-weight: 700; flex-shrink: 0; }
+.icon-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: var(--text3); padding: 5px; border-radius: 6px; transition: 0.12s; }
+.icon-btn:hover { color: var(--text); background: var(--surface2); }
+
+/* ── Week bars ── */
+.wbar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.wlbl { font-size: 11px; font-weight: 600; color: var(--text3); width: 24px; text-align: right; }
+.wtrack { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.wfill { height: 100%; border-radius: 3px; }
+.wval { font-size: 12px; font-weight: 600; width: 32px; }
+
+/* ── Settings slider ── */
+.srow { display: flex; align-items: center; gap: 12px; }
+.srow input[type=range] { flex: 1; accent-color: var(--accent); }
+.sval { font-size: 14px; font-weight: 700; color: var(--accent); min-width: 38px; }
+
+/* ── Badge ── */
+.badge { display: inline-block; border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+
+/* ── Mood ── */
+.mood-row { display: flex; gap: 6px; margin-top: 10px; }
+.mbtn { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 0; font-size: 22px; cursor: pointer; text-align: center; transition: all 0.15s; }
+.mbtn:hover, .mbtn.sel { border-color: var(--accent); background: var(--accent-light); }
+
+/* ── Check-in banner ── */
+.checkin { margin: 0 14px 10px; background: linear-gradient(135deg, var(--accent-light), #e8f0fe); border: 1px solid rgba(91,71,224,0.15); border-radius: var(--r-lg); padding: 16px; }
+
+/* ── Stat rows ── */
+.srow2 { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.srow2:last-child { border-bottom: none; }
+.proj-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.proj-row:last-child { border-bottom: none; }
+
+/* ── Preview box ── */
+.preview-box { background: var(--accent-light); border: 1px solid rgba(91,71,224,0.15); border-radius: var(--r); padding: 11px 13px; font-size: 13px; color: var(--accent-dark); font-weight: 500; margin-bottom: 13px; line-height: 1.6; min-height: 44px; }
+
+/* ── Section note ── */
+.snote { font-size: 12px; color: var(--text3); line-height: 1.5; margin-top: 6px; }
+
+/* ── Modal ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: 20px 20px 0 0; padding: 22px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+
+/* ── Saving indicator ── */
+.save-toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 20px; z-index: 300; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.save-toast.show { opacity: 1; }
+
+/* ── Sync indicator ── */
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; margin-left: 6px; }
+.sync-dot.syncing { background: var(--amber); animation: pulse 1s infinite; }
+.sync-dot.error { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Loading -->
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <div style="font-size:13px;color:var(--text3);">Loading Somnus…</div>
+  </div>
+
+  <!-- Auth -->
+  <div id="auth-screen" style="display:none;">
+    <div class="auth-illustration">🌙</div>
+    <div class="auth-logo">Somnus<span>.</span></div>
+    <div class="auth-tagline">Your personal sleep debt tracker.<br>Science-backed. Beautifully simple.</div>
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Continue with Google
+    </button>
+    <div class="auth-note">Your data syncs securely across all your devices.<br>We only store your sleep logs — nothing else.</div>
+  </div>
+
+  <!-- Main app -->
+  <div id="main-app">
+    <div class="header">
+      <div>
+        <div class="logo">Somnus<span class="logo-dot">.</span></div>
+        <div class="header-date" id="hdr-date"></div>
+      </div>
+      <div class="header-right">
+        <div class="user-pill" onclick="showUserMenu()" title="Sign out">
+          <img class="user-avatar" id="user-avatar" src="" alt="">
+          <span class="user-name" id="user-name"></span>
+        </div>
+        <div class="streak-pill" id="streak-pill"></div>
+      </div>
+    </div>
+
+    <div id="page-debt" class="page active"></div>
+    <div id="page-plan" class="page"></div>
+    <div id="page-log" class="page"></div>
+    <div id="page-week" class="page"></div>
+    <div id="page-settings" class="page"></div>
+
+    <div class="nav">
+      <div class="nav-item active" onclick="go('debt',this)">
+        <div class="nav-icon">◑</div><div class="nav-label">Debt</div>
+      </div>
+      <div class="nav-item" onclick="go('plan',this)">
+        <div class="nav-icon">◈</div><div class="nav-label">Today</div>
+      </div>
+      <div class="nav-item" onclick="go('log',this)">
+        <div class="nav-icon">⊕</div><div class="nav-label">Log</div>
+      </div>
+      <div class="nav-item" onclick="go('week',this)">
+        <div class="nav-icon">▤</div><div class="nav-label">Week</div>
+      </div>
+      <div class="nav-item" onclick="go('settings',this)">
+        <div class="nav-icon">◎</div><div class="nav-label">Settings</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Edit modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">Edit entry</div>
+    <input type="hidden" id="edit-date">
+    <div class="frow" style="margin-bottom:12px;">
+      <div class="field"><label>Bedtime</label><input type="time" id="edit-bed"></div>
+      <div class="field"><label>Wake time</label><input type="time" id="edit-wake"></div>
+    </div>
+    <div class="field">
+      <label>Sleep onset</label>
+      <select id="edit-onset">
+        <option value="5">5 min</option><option value="15" selected>15 min</option>
+        <option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label>Sleep quality</label>
+      <select id="edit-quality">
+        <option value="1">😵 Terrible</option><option value="2">😩 Poor</option>
+        <option value="3" selected>😐 Okay</option><option value="4">🙂 Good</option><option value="5">⚡ Great</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button class="btn-outline" onclick="closeEdit()">Cancel</button>
+      <button class="btn" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- User menu modal -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <img id="um-avatar" src="" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border2);" alt="">
+      <div>
+        <div style="font-size:15px;font-weight:600;" id="um-name"></div>
+        <div style="font-size:12px;color:var(--text3);" id="um-email"></div>
+      </div>
+    </div>
+    <div style="display:grid;gap:8px;">
+      <button class="btn-outline" onclick="closeUserMenu()">Cancel</button>
+      <button class="btn-outline btn-red" onclick="doSignOut()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-toast" id="save-toast">Saved</div>
+
+<!-- Firebase + Chart.js -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<script>
+// ── Firebase init ──────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyBN-35_PsP1gUIk3cthPzWtP3-xk-TfJt4",
+  authDomain: "somnus-4373f.firebaseapp.com",
+  projectId: "somnus-4373f",
+  storageBucket: "somnus-4373f.firebasestorage.app",
+  messagingSenderId: "853350236027",
+  appId: "1:853350236027:web:74812e033d376b93f847de"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+// ── State ──────────────────────────────────────────────────────
+let S = { need: 9.5, wakeTime: '07:00', log: [], naps: [], startingDebt: 12.5, checkins: [] };
+let currentUser = null;
+let eChart = null;
+let logQuality = 3;
+let logWakeups = 0;
+let isSaving = false;
+
+// ── Auth ───────────────────────────────────────────────────────
+auth.onAuthStateChanged(async user => {
+  document.getElementById('loading-screen').style.display = 'none';
+  if (user) {
+    currentUser = user;
+    document.getElementById('user-avatar').src = user.photoURL || '';
+    document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || 'You';
+    document.getElementById('um-avatar').src = user.photoURL || '';
+    document.getElementById('um-name').textContent = user.displayName || '';
+    document.getElementById('um-email').textContent = user.email || '';
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    await loadFromFirestore();
+    go('debt', document.querySelector('.nav-item'));
+  } else {
+    currentUser = null;
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('main-app').style.display = 'none';
+  }
+});
+
+async function signInWithGoogle() {
+  try {
+    await auth.signInWithPopup(googleProvider);
+  } catch(e) {
+    console.error('Sign in error:', e);
+    alert('Sign in failed. Please try again.');
+  }
+}
+
+async function doSignOut() {
+  closeUserMenu();
+  await auth.signOut();
+}
+
+function showUserMenu() {
+  document.getElementById('user-modal').classList.add('open');
+}
+function closeUserMenu() {
+  document.getElementById('user-modal').classList.remove('open');
+}
+
+// ── Firestore ──────────────────────────────────────────────────
+function userDoc() {
+  return db.collection('users').doc(currentUser.uid);
+}
+
+async function loadFromFirestore() {
+  try {
+    const doc = await userDoc().get();
+    if (doc.exists) {
+      const data = doc.data();
+      S = { ...S, ...data };
+      // ensure arrays
+      if (!Array.isArray(S.log)) S.log = [];
+      if (!Array.isArray(S.naps)) S.naps = [];
+      if (!Array.isArray(S.checkins)) S.checkins = [];
+    }
+  } catch(e) {
+    console.error('Load error:', e);
+  }
+}
+
+async function saveToFirestore() {
+  if (!currentUser || isSaving) return;
+  isSaving = true;
+  showToast('Saving…');
+  try {
+    await userDoc().set(S, { merge: true });
+    showToast('Saved ✓');
+  } catch(e) {
+    console.error('Save error:', e);
+    showToast('Save failed');
+  }
+  isSaving = false;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('save-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Navigation ─────────────────────────────────────────────────
+function go(p, el) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+  if (el) el.classList.add('active');
+  render(p);
+  window.scrollTo(0, 0);
+}
+
+function render(p) {
+  if (p === 'debt') rDebt();
+  if (p === 'plan') rPlan();
+  if (p === 'log') rLog();
+  if (p === 'week') rWeek();
+  if (p === 'settings') rSettings();
+}
+
+// ── Math ───────────────────────────────────────────────────────
+function calcHrs(bed, wake, onset = 15) {
+  let [bh, bm] = bed.split(':').map(Number);
+  let [wh, wm] = wake.split(':').map(Number);
+  let b = bh * 60 + bm + onset, w = wh * 60 + wm;
+  if (w <= bh * 60 + bm) w += 1440;
+  return Math.max(0, Math.round((w - b) / 60 * 10) / 10);
+}
+
+function effectiveHrs(hrs, quality = 3, wakeups = 0) {
+  const qMult = [0, 0.75, 0.85, 1.0, 1.05, 1.1][quality] || 1.0;
+  const wPenalty = Math.max(0, wakeups * 0.15);
+  return Math.round(Math.max(0, hrs * qMult - wPenalty) * 10) / 10;
+}
+
+function targetBed() {
+  const [wh, wm] = S.wakeTime.split(':').map(Number);
+  const m = ((wh * 60 + wm - S.need * 60) % 1440 + 1440) % 1440;
+  return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(Math.round(m % 60)).padStart(2, '0')}`;
+}
+
+function fmt(t) {
+  let [h, m] = t.split(':').map(Number);
+  const ap = h < 12 ? 'am' : 'pm';
+  if (h === 0) h = 12; else if (h > 12) h -= 12;
+  return `${h}:${String(m).padStart(2, '0')}${ap}`;
+}
+
+function fmtH(h) {
+  const hh = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hh}${h < 12 ? 'am' : 'pm'}`;
+}
+
+function fmtDate(d) {
+  return new Date(d + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function bedDef(bed) {
+  const tb = targetBed();
+  const [th, tm] = tb.split(':').map(Number);
+  let [ah, am] = bed.split(':').map(Number);
+  let tM = th * 60 + tm, aM = ah * 60 + am;
+  if (aM < 180) aM += 1440;
+  if (tM < 180) tM += 1440;
+  return Math.max(0, Math.round((aM - tM) / 60 * 10) / 10);
+}
+
+function recov(extra) {
+  if (extra <= 0) return 0;
+  return Math.round(Math.log(1 + extra * 2) * 0.8 * 10) / 10;
+}
+
+function napCredit(date) {
+  return (S.naps || []).filter(n => n.date === date).reduce((s, n) => s + n.mins / 60 * 0.55, 0);
+}
+
+function getDebt() {
+  const r = S.log.slice(0, 14);
+  if (!r.length) return Math.round(S.startingDebt * 10) / 10;
+  let net = S.startingDebt;
+  r.forEach(e => {
+    const nap = napCredit(e.date);
+    const eff = effectiveHrs(e.hrs, e.quality || 3, e.wakeups || 0);
+    const def = S.need - eff - nap;
+    if (def > 0) net += def;
+    else net -= recov(Math.abs(def));
+  });
+  return Math.round(Math.max(0, net) * 10) / 10;
+}
+
+function getStreak() {
+  let s = 0;
+  const t = new Date();
+  for (let i = 0; i < S.log.length; i++) {
+    const d = new Date(S.log[i].date + 'T12:00:00');
+    if (Math.round((t - d) / 86400000) === i) s++;
+    else break;
+  }
+  return s;
+}
+
+function energyLevel(nowH, wakeH) {
+  const e = (nowH - wakeH + 24) % 24, pi = Math.PI;
+  let v;
+  if (e < 1.5) v = 0.3 + (e / 1.5) * 0.4;
+  else if (e < 5) v = 0.7 + Math.sin((e - 1.5) / 3.5 * pi) * 0.3;
+  else if (e < 7) v = 1.0 - ((e - 5) / 2) * 0.35;
+  else if (e < 9) v = 0.65 + Math.sin((e - 7) / 2 * pi) * 0.2;
+  else if (e < 11) v = 0.85 - ((e - 9) / 2) * 0.3;
+  else if (e < 14) v = 0.55 - ((e - 11) / 3) * 0.25;
+  else v = Math.max(0.1, 0.3 - (e - 14) * 0.03);
+  const damp = Math.max(0.6, 1 - (getDebt() / 30) * 0.35);
+  return Math.max(0.05, Math.min(1, v * damp));
+}
+
+function bedAlert() {
+  const tb = targetBed();
+  const [th, tm] = tb.split(':').map(Number);
+  const n = new Date();
+  let tM = th * 60 + tm, nM = n.getHours() * 60 + n.getMinutes();
+  if (tM < 180) tM += 1440;
+  if (nM < 180) nM += 1440;
+  const diff = tM - nM;
+  return (diff > 0 && diff <= 120) ? diff : null;
+}
+
+// ── Debt page ──────────────────────────────────────────────────
+function rDebt() {
+  const debt = getDebt(), last = S.log[0] || null, streak = getStreak(), tb = targetBed();
+  const mins = bedAlert();
+
+  document.getElementById('hdr-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' });
+  document.getElementById('streak-pill').textContent = streak > 0 ? `${streak} day streak` : 'start logging';
+
+  const debtC = debt < 5 ? 'var(--green)' : debt < 10 ? 'var(--amber)' : 'var(--red)';
+  const debtBg = debt < 5 ? 'var(--green-light)' : debt < 10 ? 'var(--amber-light)' : 'var(--red-light)';
+  const debtPct = Math.min(100, Math.round(debt / 15 * 100));
+  const zones = ['Low', 'Mild', 'Significant', 'High', 'Critical'];
+  const zi = debt < 3 ? 0 : debt < 6 ? 1 : debt < 9 ? 2 : debt < 13 ? 3 : 4;
+  const msgs = ['Feeling sharp. Keep the rhythm.', 'Some afternoon fatigue likely.', 'Focus and mood are affected.', 'Performance taking a real hit.', 'Sleep is your top priority.'];
+
+  let alertH = '';
+  if (mins !== null) {
+    alertH = `<div class="alert" style="background:var(--accent-light);border-color:rgba(91,71,224,0.2);color:var(--accent-dark);">
+      🌙 Bedtime in ${mins} min — target ${fmt(tb)} for ${S.need}h sleep
+    </div>`;
+  } else if (debt >= 12) {
+    alertH = `<div class="alert" style="background:var(--red-light);border-color:#fca5a5;color:var(--red);">
+      ⚠️ High debt (${debt}h). Target bed tonight: ${fmt(tb)}.
+    </div>`;
+  }
+
+  const bdef = last ? bedDef(last.bed) : 0;
+  const trend = last ? (last.hrs >= S.need ? '↓ recovering' : '↑ building') : '';
+  const trendC = last ? (last.hrs >= S.need ? 'var(--green)' : 'var(--red)') : '';
+  const lastEff = last ? effectiveHrs(last.hrs, last.quality || 3, last.wakeups || 0) : null;
+
+  document.getElementById('page-debt').innerHTML = alertH + `
+    <div class="card">
+      <div class="card-label">Total sleep debt</div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px;">
+        <div class="big-num" style="color:${debtC};">${debt}</div>
+        <div class="big-unit">hrs owed</div>
+        ${trend ? `<span style="font-size:12px;color:${trendC};font-weight:600;margin-left:6px;">${trend}</span>` : ''}
+      </div>
+      <div class="track"><div class="fill" style="width:${debtPct}%;background:${debtC};"></div></div>
+      <div class="track-labels"><span>0</span><span>5h</span><span>10h</span><span>15h+</span></div>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:8px;">
+        <span class="badge" style="background:${debtBg};color:${debtC};">${zones[zi]}</span>
+        <span style="font-size:13px;color:var(--text2);">${msgs[zi]}</span>
+      </div>
+    </div>
+
+    <div class="mgrid">
+      <div class="mbox">
+        <div class="mv">${last ? last.hrs + 'h' : '—'}</div>
+        <div class="ml">Last night</div>
+        ${lastEff && lastEff !== last.hrs ? `<div class="ms">${lastEff}h effective</div>` : ''}
+      </div>
+      <div class="mbox"><div class="mv">${S.need}h</div><div class="ml">Your need</div></div>
+      <div class="mbox"><div class="mv" style="font-size:15px;">${fmt(tb)}</div><div class="ml">Target bed</div></div>
+    </div>
+
+    ${last ? `<div class="mgrid mgrid-2">
+      <div class="mbox">
+        <div class="mv" style="color:${bdef > 0 ? 'var(--amber)' : 'var(--green)'};">${bdef > 0 ? '+' + bdef + 'h' : 'On time'}</div>
+        <div class="ml">Bedtime deficit</div>
+        <div class="ms">${fmt(last.bed)}</div>
+      </div>
+      <div class="mbox">
+        <div class="mv" style="color:${lastEff >= S.need ? 'var(--green)' : 'var(--red)'};">${lastEff >= S.need ? '+' : ''}${Math.round((lastEff - S.need) * 10) / 10}h</div>
+        <div class="ml">vs need</div>
+        <div class="ms">${lastEff >= S.need ? 'surplus' : 'deficit'}</div>
+      </div>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-label">Energy — today</div>
+      <div class="ewrap"><canvas id="ec"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Guidance</div>
+      <div id="tips"></div>
+    </div>`;
+
+  drawEnergy();
+  renderTips();
+}
+
+function drawEnergy() {
+  const c = document.getElementById('ec');
+  if (!c) return;
+  const [wh] = S.wakeTime.split(':').map(Number);
+  const n = new Date(), nowH = n.getHours() + n.getMinutes() / 60;
+  const labels = [], data = [];
+  for (let i = 0; i <= 16; i++) {
+    const h = (wh + i) % 24;
+    labels.push(h === 0 ? '12a' : h < 12 ? h + 'a' : h === 12 ? '12p' : (h - 12) + 'p');
+    data.push(Math.round(energyLevel(h, wh) * 100));
+  }
+  const ni = Math.max(0, Math.min(16, Math.round(nowH - wh)));
+  if (eChart) eChart.destroy();
+  eChart = new Chart(c, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { data, borderColor: '#5b47e0', backgroundColor: 'rgba(91,71,224,0.06)', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2 },
+        { data: data.map((v, i) => i === ni ? v : null), borderColor: '#5b47e0', backgroundColor: '#5b47e0', pointRadius: data.map((_, i) => i === ni ? 5 : 0), showLine: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: {
+        x: { ticks: { color: '#ababA0', font: { size: 10, family: "'Plus Jakarta Sans'" }, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 }, grid: { display: false }, border: { display: false } },
+        y: { min: 0, max: 100, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } }
+      }
+    }
+  });
+}
+
+function renderTips() {
+  const [wh] = S.wakeTime.split(':').map(Number);
+  const debt = getDebt(), last = S.log[0] || null;
+  const tips = [];
+  if (debt >= 10) tips.push({ c: 'var(--red)', t: `Critical debt (${debt}h). Sleep is your highest-leverage habit right now.` });
+  else if (debt >= 5) tips.push({ c: 'var(--amber)', t: `Significant debt (${debt}h). Add 30–60 min nightly for 2 weeks.` });
+  else tips.push({ c: 'var(--green)', t: `Debt is manageable. Consistency is the job.` });
+  tips.push({ c: 'var(--blue)', t: `No caffeine after ${fmtH((wh + 10) % 24)} — half-life will disrupt sleep.` });
+  tips.push({ c: 'var(--accent)', t: `Target bedtime: ${fmt(targetBed())} for your full ${S.need}h need.` });
+  if (last) {
+    const eff = effectiveHrs(last.hrs, last.quality || 3, last.wakeups || 0);
+    if (eff < S.need - 1.5) tips.push({ c: 'var(--amber)', t: `Effective sleep last night was only ${eff}h. 20-min nap before 2pm helps today.` });
+  }
+  const el = document.getElementById('tips');
+  if (el) el.innerHTML = tips.map(t => `<div class="tip"><div class="tdot" style="background:${t.c};"></div><div>${t.t}</div></div>`).join('');
+}
+
+// ── Plan page ──────────────────────────────────────────────────
+function rPlan() {
+  const last = S.log[0] || null;
+  const [wh] = S.wakeTime.split(':').map(Number);
+  const today = todayStr();
+  const ci = S.checkins && S.checkins.find(c => c.date === today);
+  const now = new Date(), isMorn = now.getHours() >= 6 && now.getHours() <= 11;
+
+  let ciH = '';
+  if (isMorn && !ci) {
+    ciH = `<div class="checkin">
+      <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Morning check-in</div>
+      <div style="font-size:13px;color:var(--text2);">How are you feeling today?</div>
+      <div class="mood-row">${['😵', '😩', '😐', '🙂', '⚡'].map((e, i) => `<button class="mbtn" onclick="logMood(${i + 1},'${e}')">${e}</button>`).join('')}</div>
+    </div>`;
+  } else if (ci) {
+    ciH = `<div class="checkin">
+      <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Today's mood</div>
+      <div style="font-size:26px;">${ci.emoji}</div>
+    </div>`;
+  }
+
+  if (!last) {
+    document.getElementById('page-plan').innerHTML = ciH + `
+      <div class="card" style="text-align:center;padding:40px 20px;">
+        <div style="font-size:48px;margin-bottom:16px;">🌙</div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:8px;">Log last night first</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;">Your personalised day plan appears here after logging sleep.</div>
+        <button class="btn" onclick="go('log',document.querySelectorAll('.nav-item')[2])">Log sleep →</button>
+      </div>`;
+    return;
+  }
+
+  const eff = effectiveHrs(last.hrs, last.quality || 3, last.wakeups || 0);
+  const need = S.need, def = need - eff;
+  let dtype, dc, dbg, dsummary;
+  if (def <= 0) { dtype = 'Well rested'; dc = 'var(--green)'; dbg = 'var(--green-light)'; dsummary = `${eff}h effective sleep — at your need. Expect a sharp, focused day.`; }
+  else if (def < 1.5) { dtype = 'Mildly short'; dc = '#16a34a'; dbg = '#dcfce7'; dsummary = `${eff}h effective (${def.toFixed(1)}h short). Mostly good — dip expected mid-afternoon.`; }
+  else if (def < 3) { dtype = 'Underslept'; dc = 'var(--amber)'; dbg = 'var(--amber-light)'; dsummary = `${eff}h effective (${def.toFixed(1)}h short). Some fog, slower reactions today.`; }
+  else { dtype = 'Significantly short'; dc = 'var(--red)'; dbg = 'var(--red-light)'; dsummary = `${eff}h effective (${def.toFixed(1)}h short). Protect your schedule today.`; }
+
+  const p1s = wh + 2, p1e = wh + 5, d1s = wh + 6, d1e = wh + 8, p2s = wh + 8, p2e = wh + 10, d2s = wh + 11, d2e = wh + 14;
+  const blocks = [
+    { bg: '#f0fdf4', bc: '#bbf7d0', tc: 'var(--green)', time: `${fmtH(p1s % 24)}–${fmtH(p1e % 24)}`, text: 'Best focus window. Deep work, hard decisions, creative tasks.' },
+    def >= 1.5
+      ? { bg: 'var(--red-light)', bc: '#fca5a5', tc: 'var(--red)', time: `${fmtH(d1s % 24)}–${fmtH(d1e % 24)}`, text: 'Post-lunch crash hits harder today. Avoid critical decisions.' }
+      : { bg: '#f5f3ff', bc: '#ddd6fe', tc: 'var(--accent)', time: `${fmtH(d1s % 24)}–${fmtH(d1e % 24)}`, text: 'Natural afternoon dip. Emails, admin, routine tasks.' },
+    def < 3
+      ? { bg: 'var(--blue-light)', bc: '#93c5fd', tc: 'var(--blue)', time: `${fmtH(p2s % 24)}–${fmtH(p2e % 24)}`, text: 'Second wind. Good for meetings, calls, collaborative work.' }
+      : { bg: 'var(--amber-light)', bc: '#fcd34d', tc: 'var(--amber)', time: `${fmtH(p2s % 24)}–${fmtH(p2e % 24)}`, text: 'Second wind blunted. Light tasks only.' },
+    { bg: '#f5f3ff', bc: '#ddd6fe', tc: 'var(--accent)', time: `${fmtH(d2s % 24)}–${fmtH(d2e % 24)}`, text: 'Energy dropping. Begin wind-down. Dim screens.' }
+  ];
+
+  const napRec = def >= 3
+    ? `Strongly recommended. 20–30 min nap between ${fmtH((wh + 6) % 24)}–${fmtH((wh + 8) % 24)}.`
+    : def >= 1.5 ? `Optional. A 20 min nap before ${fmtH((wh + 8) % 24)} helps if you feel the dip.`
+    : 'Not needed today — skip it to protect tonight\'s sleep pressure.';
+
+  document.getElementById('page-plan').innerHTML = ciH + `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <div>
+          <div class="card-label">Last night</div>
+          <div style="font-size:38px;font-weight:300;line-height:1;letter-spacing:-2px;">${eff}h<span style="font-size:16px;color:var(--text2);font-weight:400;"> / ${need}h</span></div>
+          ${last.hrs !== eff ? `<div style="font-size:12px;color:var(--text3);margin-top:3px;">${last.hrs}h raw · adjusted for quality & wakeups</div>` : ''}
+        </div>
+        <span class="badge" style="background:${dbg};color:${dc};margin-top:4px;">${dtype}</span>
+      </div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;">${dsummary}</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Hour by hour</div>
+      ${blocks.map(b => `<div class="pblock" style="background:${b.bg};border-color:${b.bc};">
+        <div class="ptime" style="color:${b.tc};">${b.time}</div>
+        <div class="pdesc" style="color:var(--text2);">${b.text}</div>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-label">Nap window</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;">${napRec}</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Tonight</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;">Target bedtime: <strong style="color:var(--text);">${fmt(targetBed())}</strong> for your full ${need}h.${def >= 2 ? ' Given today\'s short night, prioritise hitting this.' : ' Keep the rhythm.'}</div>
+    </div>`;
+}
+
+function logMood(score, emoji) {
+  const today = todayStr();
+  if (!S.checkins) S.checkins = [];
+  S.checkins = S.checkins.filter(c => c.date !== today);
+  S.checkins.push({ date: today, score, emoji });
+  saveToFirestore();
+  rPlan();
+}
+
+// ── Log page ───────────────────────────────────────────────────
+function rLog() {
+  logQuality = 3;
+  logWakeups = 0;
+  const maxDate = todayStr();
+  document.getElementById('page-log').innerHTML = `
+    <div class="card">
+      <div class="card-label">Log a night</div>
+
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="log-date" value="${maxDate}" max="${maxDate}" oninput="updPrev()">
+        <div class="snote">Log any past night — just pick the date.</div>
+      </div>
+
+      <div class="frow">
+        <div class="field"><label>Bedtime</label><input type="time" id="lb" value="01:00" oninput="updPrev()"></div>
+        <div class="field"><label>Wake time</label><input type="time" id="lw" value="07:00" oninput="updPrev()"></div>
+      </div>
+
+      <div class="field">
+        <label>Time to fall asleep</label>
+        <select id="lo" oninput="updPrev()">
+          <option value="5">5 min</option><option value="15" selected>15 min</option>
+          <option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Sleep quality</label>
+        <div class="qual-row">
+          ${[['😵','Terrible',1],['😩','Poor',2],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic, lb, v]) =>
+            `<button class="qbtn${v === 3 ? ' sel' : ''}" onclick="setQuality(${v},this)"><span class="qi">${ic}</span>${lb}</button>`
+          ).join('')}
+        </div>
+        <div class="snote">Poor quality = less restorative, reduces effective hours.</div>
+      </div>
+
+      <div class="field">
+        <label>Times woken up</label>
+        <div class="wakeup-row">
+          ${[0,1,2,3,'4+'].map((v, i) =>
+            `<button class="wbtn${i === 0 ? ' sel' : ''}" onclick="setWakeups(${i === 4 ? 4 : v},this)">${v}</button>`
+          ).join('')}
+        </div>
+        <div class="snote">Each wakeup reduces effective sleep slightly.</div>
+      </div>
+
+      <div id="prev" class="preview-box">Enter your times above</div>
+      <button class="btn" onclick="doLog()">Save sleep</button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Log a nap</div>
+      <div class="frow">
+        <div class="field"><label>Date</label><input type="date" id="nap-date" value="${maxDate}" max="${maxDate}"></div>
+        <div class="field"><label>Nap start</label><input type="time" id="ns" value="13:00"></div>
+      </div>
+      <div class="field">
+        <label>Duration</label>
+        <select id="nd">
+          <option value="20">20 min</option><option value="30">30 min</option>
+          <option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option>
+        </select>
+      </div>
+      <button class="btn-outline" onclick="doNap()">Save nap</button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">History</div>
+      <div id="hist"></div>
+    </div>`;
+
+  updPrev();
+  rHist();
+}
+
+function setQuality(v, el) {
+  logQuality = v;
+  document.querySelectorAll('.qbtn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  updPrev();
+}
+
+function setWakeups(v, el) {
+  logWakeups = v;
+  document.querySelectorAll('.wbtn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  updPrev();
+}
+
+function updPrev() {
+  const bed = document.getElementById('lb')?.value;
+  const wake = document.getElementById('lw')?.value;
+  const onset = parseInt(document.getElementById('lo')?.value || 15);
+  const date = document.getElementById('log-date')?.value;
+  if (!bed || !wake) return;
+  const rawHrs = calcHrs(bed, wake, onset);
+  const effHrs = effectiveHrs(rawHrs, logQuality, logWakeups);
+  const bd = bedDef(bed);
+  const tb = targetBed();
+  const existing = S.log.find(e => e.date === date);
+  const el = document.getElementById('prev');
+  if (el) el.innerHTML =
+    `${rawHrs.toFixed(1)}h raw · <strong>${effHrs.toFixed(1)}h effective</strong> (onset + quality + wakeups)<br>` +
+    `<span style="color:${bd > 0 ? '#b45309' : '#16a34a'};font-size:12px;">${bd > 0 ? `Bedtime ${bd}h past target ${fmt(tb)}` : 'Bedtime on target ✓'}</span>` +
+    (existing ? `<br><span style="color:var(--accent);font-size:12px;">Will update existing entry for ${fmtDate(date)}</span>` : '');
+}
+
+function doLog() {
+  const bed = document.getElementById('lb').value;
+  const wake = document.getElementById('lw').value;
+  const onset = parseInt(document.getElementById('lo').value);
+  const date = document.getElementById('log-date').value;
+  const hrs = calcHrs(bed, wake, onset);
+  if (hrs < 1 || hrs > 16) { alert('Check your times'); return; }
+  S.log = S.log.filter(e => e.date !== date);
+  S.log.push({ date, bed, wake, hrs, onset, quality: logQuality, wakeups: logWakeups });
+  S.log.sort((a, b) => b.date.localeCompare(a.date));
+  if (S.log.length > 90) S.log = S.log.slice(0, 90);
+  saveToFirestore();
+  go('plan', document.querySelectorAll('.nav-item')[1]);
+}
+
+function doNap() {
+  const start = document.getElementById('ns').value;
+  const mins = parseInt(document.getElementById('nd').value);
+  const date = document.getElementById('nap-date').value;
+  if (!S.naps) S.naps = [];
+  S.naps.push({ date, start, mins });
+  saveToFirestore();
+  showToast('Nap saved ✓');
+  rLog();
+}
+
+function rHist() {
+  const el = document.getElementById('hist');
+  if (!el) return;
+  if (!S.log.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center;">No entries yet</div>';
+    return;
+  }
+  const qIcons = ['', '😵', '😩', '😐', '🙂', '⚡'];
+  el.innerHTML = S.log.slice(0, 21).map(e => {
+    const eff = effectiveHrs(e.hrs, e.quality || 3, e.wakeups || 0);
+    const good = eff >= S.need - 0.5;
+    const c = good ? 'var(--green)' : 'var(--red)';
+    return `<div class="lentry">
+      <div class="ldot" style="background:${c};"></div>
+      <div class="linfo">
+        <div class="ldate">${fmtDate(e.date)}</div>
+        <div class="ltimes">${e.bed}→${e.wake} · ${qIcons[e.quality || 3]}${e.wakeups ? ` · ${e.wakeups}x awake` : ''}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="lhrs" style="color:${c};">${eff}h</div>
+        ${eff !== e.hrs ? `<div style="font-size:10px;color:var(--text3);">${e.hrs}h raw</div>` : ''}
+      </div>
+      <button class="icon-btn" onclick="openEdit('${e.date}')">✎</button>
+      <button class="icon-btn" onclick="delEntry('${e.date}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function delEntry(date) {
+  if (!confirm(`Delete entry for ${fmtDate(date)}?`)) return;
+  S.log = S.log.filter(e => e.date !== date);
+  saveToFirestore();
+  rLog();
+}
+
+function openEdit(date) {
+  const e = S.log.find(e => e.date === date);
+  if (!e) return;
+  document.getElementById('edit-date').value = date;
+  document.getElementById('edit-bed').value = e.bed;
+  document.getElementById('edit-wake').value = e.wake;
+  document.getElementById('edit-onset').value = e.onset || 15;
+  document.getElementById('edit-quality').value = e.quality || 3;
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEdit() { document.getElementById('edit-modal').classList.remove('open'); }
+
+function saveEdit() {
+  const date = document.getElementById('edit-date').value;
+  const bed = document.getElementById('edit-bed').value;
+  const wake = document.getElementById('edit-wake').value;
+  const onset = parseInt(document.getElementById('edit-onset').value);
+  const quality = parseInt(document.getElementById('edit-quality').value);
+  const hrs = calcHrs(bed, wake, onset);
+  S.log = S.log.map(e => e.date === date ? { ...e, bed, wake, hrs, onset, quality } : e);
+  saveToFirestore();
+  closeEdit();
+  rLog();
+}
+
+// ── Week page ──────────────────────────────────────────────────
+function rWeek() {
+  const r = S.log.slice(0, 7);
+  if (r.length < 2) {
+    document.getElementById('page-week').innerHTML = `<div class="card" style="text-align:center;padding:40px 20px;">
+      <div style="font-size:48px;margin-bottom:16px;">📊</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.6;">Log at least 2 nights to see your weekly report.</div>
+    </div>`;
+    return;
+  }
+
+  const effs = r.map(e => effectiveHrs(e.hrs, e.quality || 3, e.wakeups || 0));
+  const avg = Math.round(effs.reduce((s, v) => s + v, 0) / effs.length * 10) / 10;
+  const best = Math.max(...effs), worst = Math.min(...effs);
+  const onTime = r.filter(e => bedDef(e.bed) === 0).length;
+  const wdays = r.filter(e => { const d = new Date(e.date + 'T12:00:00'); return d.getDay() > 0 && d.getDay() < 6; });
+  const wends = r.filter(e => { const d = new Date(e.date + 'T12:00:00'); return d.getDay() === 0 || d.getDay() === 6; });
+  const wdA = wdays.length ? Math.round(wdays.map(e => effectiveHrs(e.hrs, e.quality || 3, e.wakeups || 0)).reduce((s, v) => s + v, 0) / wdays.length * 10) / 10 : null;
+  const weA = wends.length ? Math.round(wends.map(e => effectiveHrs(e.hrs, e.quality || 3, e.wakeups || 0)).reduce((s, v) => s + v, 0) / wends.length * 10) / 10 : null;
+  const ddelta = Math.round((S.need - avg) * r.length * 10) / 10;
+  const ddC = ddelta <= 0 ? 'var(--green)' : 'var(--red)';
+  const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const maxH = Math.max(S.need + 1, ...effs);
+  const debt = getDebt(), nightly = avg - S.need;
+  let running = debt;
+
+  document.getElementById('page-week').innerHTML = `
+    <div class="card">
+      <div class="card-label">This week</div>
+      ${[
+        ['Avg effective sleep', avg + 'h'],
+        ['Best night', best + 'h'],
+        ['Worst night', worst + 'h'],
+        ['On-time bedtimes', `${onTime}/${r.length} nights`],
+        ...(wdA && weA ? [['Weekday avg', wdA + 'h'], ['Weekend avg', weA + 'h']] : []),
+        ['Debt change', `<span style="color:${ddC}">${ddelta > 0 ? '+' : ''}${ddelta}h</span>`]
+      ].map(([l, v]) => `<div class="srow2"><span style="color:var(--text2);">${l}</span><span style="font-weight:600;">${v}</span></div>`).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-label">Sleep per night</div>
+      ${r.slice().reverse().map((e, i) => {
+        const eff = effs[effs.length - 1 - i];
+        const d = new Date(e.date + 'T12:00:00');
+        const pct = Math.round(eff / maxH * 100);
+        const c = eff >= S.need - 0.5 ? 'var(--green)' : 'var(--red)';
+        return `<div class="wbar">
+          <div class="wlbl">${days[d.getDay()]}</div>
+          <div class="wtrack"><div class="wfill" style="width:${pct}%;background:${c};"></div></div>
+          <div class="wval" style="color:${c};">${eff}h</div>
+        </div>`;
+      }).join('')}
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">need: ${S.need}h/night</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Debt projection</div>
+      ${['Week 2', 'Week 3', 'Week 4', 'Month 2', 'Month 3'].map((w, i) => {
+        running = Math.max(0, running + nightly * (i < 3 ? 7 : 28));
+        const rv = Math.round(running * 10) / 10;
+        const c = rv < 5 ? 'var(--green)' : rv < 10 ? 'var(--amber)' : 'var(--red)';
+        return `<div class="proj-row"><span style="color:var(--text2);">${w}</span><span style="font-weight:600;color:${c};">${rv}h debt</span></div>`;
+      }).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-label">Export</div>
+      <button class="btn-outline" onclick="doExport()">Download sleep log as CSV</button>
+    </div>`;
+}
+
+// ── Settings page ──────────────────────────────────────────────
+function rSettings() {
+  document.getElementById('page-settings').innerHTML = `
+    <div class="card">
+      <div class="card-label">Sleep need</div>
+      <div class="srow" style="margin-bottom:8px;">
+        <input type="range" min="6" max="11" step="0.5" value="${S.need}" oninput="lv('need',this.value,'nd','h')">
+        <div class="sval" id="nd">${S.need}h</div>
+      </div>
+      <div class="snote">Your Rise-calculated need: 9.5h</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Wake time</div>
+      <div class="field" style="margin-bottom:0;">
+        <input type="time" value="${S.wakeTime}" oninput="S.wakeTime=this.value;saveToFirestore();">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Starting debt</div>
+      <div class="srow" style="margin-bottom:8px;">
+        <input type="range" min="0" max="30" step="0.5" value="${S.startingDebt}" oninput="lv('startingDebt',this.value,'sd','h')">
+        <div class="sval" id="sd">${S.startingDebt}h</div>
+      </div>
+      <div class="snote" style="margin-bottom:14px;">Set from Rise. Yours: 12.5h. This is your baseline before any logged nights.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="btn-outline" onclick="S.startingDebt=0;saveToFirestore();rSettings();">Reset to 0</button>
+        <button class="btn-outline" onclick="S.startingDebt=12.5;saveToFirestore();rSettings();">Set to 12.5h</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Account</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px;">
+        Signed in as <strong>${currentUser?.email || ''}</strong>.<br>
+        Your data syncs automatically to Firebase across all your devices.
+      </div>
+      <button class="btn-outline btn-red" onclick="doSignOut()">Sign out</button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Danger zone</div>
+      <div class="snote" style="margin-bottom:14px;">This permanently deletes all your sleep logs from Firebase.</div>
+      <button class="btn-outline btn-red" onclick="clearAll()">Delete all data</button>
+    </div>`;
+}
+
+function lv(key, val, id, sfx) {
+  S[key] = parseFloat(val);
+  document.getElementById(id).textContent = val + sfx;
+  saveToFirestore();
+}
+
+async function clearAll() {
+  if (!confirm('Permanently delete all Somnus data? This cannot be undone.')) return;
+  S.log = []; S.naps = []; S.checkins = []; S.startingDebt = 12.5;
+  await saveToFirestore();
+  rDebt();
+}
+
+// ── Export ─────────────────────────────────────────────────────
+function doExport() {
+  if (!S.log.length) { alert('No data to export'); return; }
+  const rows = ['Date,Bedtime,Wake,Onset(min),Raw(h),Quality,Wakeups,Effective(h),Deficit(h)'];
+  S.log.forEach(e => {
+    const eff = effectiveHrs(e.hrs, e.quality || 3, e.wakeups || 0);
+    rows.push(`${e.date},${e.bed},${e.wake},${e.onset || 15},${e.hrs},${e.quality || 3},${e.wakeups || 0},${eff},${Math.round((S.need - eff) * 10) / 10}`);
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')], { type: 'text/csv' }));
+  a.download = 'somnus-sleep-log.csv';
+  a.click();
+}
+</script>
+</body>
+</html>
