@@ -2,1312 +2,926 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IPL Match Simulator</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Somnus">
+<title>Somnus — Sleep Tracker</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#5b47e0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Somnus">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f0e8;
-  --white: #ffffff;
-  --surface: #ffffff;
-  --surface2: #faf8f4;
-  --border: #e8e2d8;
-  --border2: #d8d0c4;
-  --text: #1a1208;
-  --text2: #4a3f2f;
-  --muted: #9a8f7f;
-  --orange: #f97316;
-  --orange2: #ea6000;
-  --blue: #1d4ed8;
-  --blue2: #1e40af;
-  --green: #16a34a;
-  --red: #dc2626;
-  --yellow: #ca8a04;
-  --purple: #7c3aed;
-  --shadow: 0 2px 12px rgba(26,18,8,0.08);
-  --shadow-lg: 0 8px 32px rgba(26,18,8,0.12);
+  --bg:#f7f7f5;--surface:#fff;--surface2:#f2f2ef;
+  --border:#e8e8e4;--border2:#d4d4ce;
+  --text:#1a1a18;--text2:#6b6b63;--text3:#ababA0;
+  --accent:#5b47e0;--accent-l:#eeecfb;--accent-d:#4535c8;
+  --green:#16a34a;--green-l:#dcfce7;
+  --amber:#b45309;--amber-l:#fef3c7;
+  --red:#dc2626;--red-l:#fee2e2;
+  --blue:#1d4ed8;--blue-l:#dbeafe;
+  --r:12px;--r-lg:16px;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Source Sans 3', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  background-image:
-    radial-gradient(ellipse 60% 30% at 80% 0%, rgba(249,115,22,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 20% at 20% 100%, rgba(29,78,216,0.08) 0%, transparent 60%);
-}
-
-/* ── HEADER ── */
-.header {
-  background: var(--orange);
-  padding: 0 28px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 20px rgba(249,115,22,0.4);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.logo { display: flex; align-items: center; gap: 14px; }
-.logo-icon {
-  width: 42px; height: 42px;
-  background: white;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-.logo-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 28px;
-  letter-spacing: 3px;
-  color: white;
-  line-height: 1;
-}
-.logo-sub {
-  font-size: 11px;
-  color: rgba(255,255,255,0.75);
-  font-family: 'DM Mono', monospace;
-  margin-top: 2px;
-  letter-spacing: 0.5px;
-}
-.header-pill {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.35);
-  color: white;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  letter-spacing: 0.5px;
-}
-
-/* ── LAYOUT ── */
-.container { max-width: 980px; margin: 0 auto; padding: 28px 20px 80px; }
-
-/* ── SECTION HEADER ── */
-.sec-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.sec-icon {
-  width: 30px; height: 30px;
-  background: var(--orange);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.sec-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 18px;
-  letter-spacing: 1.5px;
-  color: var(--text);
-}
-.sec-sub { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; margin-left: auto; }
-
-/* ── CARD ── */
-.card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-}
-
-/* ── TEAM SELECTOR ── */
-.team-row {
-  display: grid;
-  grid-template-columns: 1fr 56px 1fr;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.team-box {
-  background: var(--surface2);
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.team-box:focus-within {
-  border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
-}
-.team-box-top {
-  height: 5px;
-  transition: background 0.3s;
-}
-.team-select {
-  width: 100%;
-  background: transparent;
-  border: none;
-  padding: 11px 14px;
-  color: var(--text);
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  appearance: none;
-  cursor: pointer;
-}
-.team-select:focus { outline: none; }
-.vs-circle {
-  width: 44px; height: 44px;
-  background: var(--orange);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 16px;
-  color: white;
-  letter-spacing: 1px;
-  margin: 0 auto;
-  box-shadow: 0 4px 12px rgba(249,115,22,0.35);
-}
-
-/* ── PARAMS ── */
-.params-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.param-group { display: flex; flex-direction: column; gap: 5px; }
-.param-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-}
-.param-select {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 9px 12px;
-  color: var(--text);
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  appearance: none;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-.param-select:focus { outline: none; border-color: var(--orange); }
-
-/* ── PLAYING XI ── */
-.xi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.xi-box {
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--white);
-}
-.xi-header {
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
-}
-.xi-team { font-size: 12px; font-weight: 800; color: var(--orange); font-family: 'DM Mono', monospace; letter-spacing: 0.5px; }
-.xi-count { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); }
-.xi-selected { padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; min-height: 72px; }
-.player-chip {
-  background: #fff7ed;
-  border: 1.5px solid #fed7aa;
-  border-radius: 6px;
-  padding: 4px 9px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.15s;
-  user-select: none;
-}
-.player-chip:hover { background: #ffedd5; border-color: var(--orange); }
-.player-chip .rdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-.squad-pool { border-top: 1px solid var(--border); padding: 10px; background: var(--surface2); }
-.pool-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; margin-bottom: 7px; text-transform: uppercase; }
-.squad-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-.squad-chip {
-  background: white;
-  border: 1px solid var(--border2);
-  border-radius: 5px;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text2);
-  cursor: pointer;
-  display: flex; align-items: center; gap: 3px;
-  transition: all 0.15s;
-}
-.squad-chip:hover { border-color: var(--orange); color: var(--orange); background: #fff7ed; }
-.squad-chip.in-xi { opacity: 0.3; cursor: default; pointer-events: none; }
-
-/* ── XI ACTIONS ── */
-.xi-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-.xi-btn {
-  background: var(--surface2);
-  border: 1.5px solid var(--border2);
-  border-radius: 7px;
-  padding: 7px 14px;
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text2);
-  cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 0.3px;
-}
-.xi-btn:hover { border-color: var(--orange); color: var(--orange); background: #fff7ed; }
-
-/* ── SIMULATE BUTTON ── */
-.sim-btn {
-  width: 100%;
-  background: var(--blue);
-  border: none;
-  border-radius: 14px;
-  padding: 18px;
-  color: white;
-  font-family: 'Oswald', sans-serif;
-  font-size: 22px;
-  letter-spacing: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.2s;
-  box-shadow: 0 6px 20px rgba(29,78,216,0.3);
-  position: relative;
-  overflow: hidden;
-}
-.sim-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
-}
-.sim-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(29,78,216,0.4); background: var(--blue2); }
-.sim-btn:active { transform: translateY(0); }
-.sim-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-
-/* ── LOADING ── */
-.loading-panel { display: none; }
-.loading-panel.active { display: block; }
-.loading-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
-.l-step {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--muted);
-  transition: all 0.3s;
-}
-.l-step.active { border-color: var(--orange); color: var(--orange); background: #fff7ed; }
-.l-step.done { border-color: var(--green); color: var(--green); background: #f0fdf4; }
-.l-spinner {
-  width: 16px; height: 16px;
-  border: 2.5px solid rgba(249,115,22,0.2);
-  border-top-color: var(--orange);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.l-note { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; text-align: center; }
-
-/* ── RESULTS ── */
-.results { display: none; }
-.results.visible { display: block; animation: rise 0.4s ease; }
-@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-/* WIN PROBABILITY */
-.win-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 14px;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.win-card {
-  border-radius: 14px;
-  padding: 20px;
-  text-align: center;
-  border: 2px solid var(--border);
-  background: var(--surface2);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s;
-}
-.win-card.winner {
-  border-color: var(--green);
-  background: #f0fdf4;
-}
-.win-card.winner::before {
-  content: '🏆 FAVOURITE';
-  position: absolute;
-  top: 8px; right: 10px;
-  font-size: 9px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 500;
-  color: var(--green);
-  letter-spacing: 0.5px;
-}
-.win-pct {
-  font-family: 'Oswald', sans-serif;
-  font-size: 52px;
-  letter-spacing: 2px;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.win-card:first-child .win-pct { color: var(--blue); }
-.win-card:last-child .win-pct { color: var(--orange); }
-.win-tname { font-size: 13px; font-weight: 700; color: var(--text2); }
-
-.verdict-box { text-align: center; }
-.verdict-tag {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-.verdict-tag.competitive { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-.verdict-tag.one-sided { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-.verdict-tag.coin-toss { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
-
-/* CONFIDENCE */
-.conf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.conf-card {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-}
-.conf-lbl { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-.conf-track { background: var(--border); border-radius: 4px; height: 7px; overflow: hidden; margin-bottom: 7px; }
-.conf-fill { height: 100%; border-radius: 4px; }
-.conf-val { font-family: 'Oswald', sans-serif; font-size: 26px; letter-spacing: 1px; }
-
-/* SUMMARY */
-.summary-box {
-  background: linear-gradient(135deg, #fff7ed, #fef9f0);
-  border: 1.5px solid #fed7aa;
-  border-radius: 10px;
-  padding: 14px 16px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
-  font-weight: 500;
-}
-
-/* SCORES */
-.scores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.score-block {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-}
-.score-inn { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
-.score-team { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
-.score-runs { font-family: 'Oswald', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--orange); }
-.score-range { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
-
-/* PHASES */
-.phases-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-.phase-card {
-  border-radius: 10px;
-  padding: 14px;
-  border: 1.5px solid var(--border);
-  background: var(--surface2);
-}
-.phase-card.pp { border-top: 3px solid var(--orange); }
-.phase-card.mid { border-top: 3px solid var(--purple); }
-.phase-card.death { border-top: 3px solid var(--green); }
-.phase-lbl { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-.phase-score { font-family: 'Oswald', sans-serif; font-size: 24px; letter-spacing: 1px; margin-bottom: 4px; }
-.phase-card.pp .phase-score { color: var(--orange); }
-.phase-card.mid .phase-score { color: var(--purple); }
-.phase-card.death .phase-score { color: var(--green); }
-.phase-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
-
-/* OVER CHART */
-.over-chart-wrap { margin-bottom: 4px; }
-.over-bars { display: flex; gap: 3px; align-items: flex-end; height: 64px; }
-.over-bar {
-  flex: 1;
-  border-radius: 3px 3px 0 0;
-  min-height: 4px;
-  cursor: default;
-  transition: opacity 0.15s;
-  position: relative;
-}
-.over-bar:hover { opacity: 0.75; }
-.over-bar:hover::after {
-  content: attr(data-tip);
-  position: absolute;
-  bottom: calc(100% + 5px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--text);
-  color: white;
-  border-radius: 5px;
-  padding: 3px 7px;
-  font-size: 10px;
-  font-family: 'DM Mono', monospace;
-  white-space: nowrap;
-  z-index: 10;
-  pointer-events: none;
-}
-.over-labels { display: flex; gap: 3px; margin-top: 5px; }
-.over-lbl { flex: 1; text-align: center; font-size: 8px; color: var(--muted); font-family: 'DM Mono', monospace; }
-.phase-dividers { display: grid; grid-template-columns: 6fr 9fr 5fr; gap: 3px; margin-top: 8px; }
-.phase-div { text-align: center; font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; padding: 3px 0; border-top: 2px solid; }
-.phase-div.pp { border-color: var(--orange); color: var(--orange); }
-.phase-div.mid { border-color: var(--purple); color: var(--purple); }
-.phase-div.death { border-color: var(--green); color: var(--green); }
-
-/* PLAYERS */
-.players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.player-block {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: border-color 0.2s;
-}
-.player-block:hover { border-color: var(--orange); }
-.p-avatar {
-  width: 42px; height: 42px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 17px;
-  letter-spacing: 1px;
-  flex-shrink: 0;
-}
-.p-name { font-size: 14px; font-weight: 800; color: var(--text); }
-.p-role { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
-.p-pred { font-size: 12px; font-weight: 700; color: var(--green); margin-top: 4px; }
-
-/* FACTORS */
-.factors-list { display: flex; flex-direction: column; gap: 8px; }
-.factor-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 11px 14px;
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--text);
-}
-.f-icon { color: var(--orange); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
-
-/* UPSET */
-.upset-box {
-  background: #faf5ff;
-  border: 1.5px solid #ddd6fe;
-  border-radius: 12px;
-  padding: 16px 18px;
-  margin-bottom: 16px;
-}
-.upset-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.upset-title { font-size: 13px; font-weight: 800; color: var(--purple); font-family: 'DM Mono', monospace; letter-spacing: 0.3px; }
-.upset-text { font-size: 13px; font-weight: 500; line-height: 1.7; color: var(--text2); }
-
-/* SCENARIOS */
-.scenario-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 11px 14px;
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-
-/* REASONING */
-.reasoning-text {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.85;
-  color: var(--text2);
-  white-space: pre-wrap;
-}
-
-/* RESEARCH BAR */
-.research-bar {
-  background: #eff6ff;
-  border: 1.5px solid #bfdbfe;
-  border-radius: 10px;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  font-family: 'DM Mono', monospace;
-  color: var(--blue);
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.r-dot { width: 7px; height: 7px; background: var(--blue); border-radius: 50%; flex-shrink: 0; }
-
-/* ERROR */
-.error-box {
-  background: #fef2f2;
-  border: 1.5px solid #fca5a5;
-  border-radius: 10px;
-  padding: 14px 16px;
-  color: var(--red);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.6;
-}
-
-/* DIVIDER */
-.divider { height: 1px; background: var(--border); margin: 16px 0; }
-
-@media (max-width: 600px) {
-  .params-grid { grid-template-columns: 1fr 1fr; }
-  .xi-grid, .players-grid, .scores-grid, .conf-row { grid-template-columns: 1fr; }
-  .team-row { grid-template-columns: 1fr 48px 1fr; }
-  .win-row { grid-template-columns: 1fr; }
-  .phases-strip { grid-template-columns: 1fr; }
-}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}
+.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg)}
+#auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:40px 24px;text-align:center}
+.auth-logo{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:8px}
+.auth-logo span{color:var(--accent)}
+.auth-tag{font-size:15px;color:var(--text2);margin-bottom:48px;line-height:1.5}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:320px;background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;padding:14px 20px;font-size:15px;font-weight:600;font-family:inherit;color:var(--text);cursor:pointer;transition:all .15s}
+.btn-google:hover{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d)}
+.btn-google img{width:20px;height:20px}
+.auth-note{font-size:12px;color:var(--text3);margin-top:20px;line-height:1.5}
+#loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;gap:16px}
+.spinner{width:32px;height:32px;border:2.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#main-app{display:none}
+.header{padding:16px 18px 0;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.logo{font-size:20px;font-weight:700;letter-spacing:-.5px}
+.logo-dot{color:var(--accent)}
+.hdr-date{font-size:12px;color:var(--text3);margin-top:2px}
+.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.streak-pill{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-l);border-radius:20px;padding:4px 10px}
+.user-pill{display:flex;align-items:center;gap:6px;cursor:pointer}
+.user-avatar{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);object-fit:cover}
+.user-name{font-size:12px;color:var(--text2);font-weight:500;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(247,247,245,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:8px 4px env(safe-area-inset-bottom,8px);z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 0;border-radius:10px;transition:background .15s}
+.nav-item:hover{background:var(--surface2)}
+.nav-icon{font-size:19px;color:var(--text3);line-height:1}
+.nav-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.02em}
+.nav-item.active .nav-icon,.nav-item.active .nav-label{color:var(--accent)}
+.page{display:none;padding-bottom:96px}
+.page.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin:0 14px 10px}
+.card-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.big-num{font-size:52px;font-weight:300;line-height:1;letter-spacing:-3px}
+.big-unit{font-size:17px;color:var(--text2);font-weight:400}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 14px 10px}
+.mgrid-2{grid-template-columns:repeat(2,1fr)}
+.mbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center}
+.mbox .mv{font-size:19px;font-weight:600;line-height:1;color:var(--text)}
+.mbox .ml{font-size:10px;color:var(--text3);font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.mbox .ms{font-size:10px;color:var(--text3);margin-top:3px}
+.track{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin:12px 0 5px}
+.fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.track-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
+.alert{margin:0 14px 10px;border-radius:var(--r);padding:12px 14px;font-size:13px;line-height:1.5;font-weight:500;border:1px solid}
+.tip{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);line-height:1.5}
+.tip:last-child{border-bottom:none;padding-bottom:0}
+.tdot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.ewrap{height:120px;position:relative;margin:8px 0 4px}
+.field{margin-bottom:12px}
+.field label{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.field input[type=time],.field input[type=date],.field select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:15px;font-family:inherit;font-weight:500;padding:11px 14px;outline:none;transition:border .15s,background .15s;appearance:none;-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:var(--accent);background:#fff}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--accent-d)}
+.btn:active{transform:scale(.98)}
+.btn-outline{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn-outline:hover{background:var(--surface2)}
+.btn-red{color:var(--red);border-color:#fca5a5}
+.btn-red:hover{background:var(--red-l)!important;border-color:var(--red)!important}
+.qual-row{display:flex;gap:5px}
+.qbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:8px 2px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2);line-height:1.4}
+.qbtn .qi{font-size:18px;display:block;margin-bottom:2px}
+.qbtn.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d)}
+.wakeup-row{display:flex;gap:6px}
+.wbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 4px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2)}
+.wbtn.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d)}
+.pblock{border-radius:var(--r);padding:13px 14px;margin-bottom:8px;border:1px solid}
+.ptime{font-size:10px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+.pdesc{font-size:13px;line-height:1.5}
+.lentry{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+.lentry:last-child{border-bottom:none}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.linfo{flex:1;min-width:0}
+.ldate{font-size:13px;font-weight:600}
+.ltimes{font-size:11px;color:var(--text3);margin-top:2px}
+.lhrs{font-size:15px;font-weight:700;flex-shrink:0}
+.icon-btn{background:none;border:none;cursor:pointer;font-size:14px;color:var(--text3);padding:5px;border-radius:6px;transition:.12s}
+.icon-btn:hover{color:var(--text);background:var(--surface2)}
+.wbar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.wlbl{font-size:11px;font-weight:600;color:var(--text3);width:24px;text-align:right}
+.wtrack{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.wfill{height:100%;border-radius:3px}
+.wval{font-size:12px;font-weight:600;width:32px}
+.srow-s{display:flex;align-items:center;gap:12px}
+.srow-s input[type=range]{flex:1;accent-color:var(--accent)}
+.sval{font-size:14px;font-weight:700;color:var(--accent);min-width:38px}
+.badge{display:inline-block;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600}
+.mood-row{display:flex;gap:6px;margin-top:10px}
+.mbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 0;font-size:22px;cursor:pointer;text-align:center;transition:all .15s}
+.mbtn:hover,.mbtn.sel{border-color:var(--accent);background:var(--accent-l)}
+.checkin{margin:0 14px 10px;background:linear-gradient(135deg,var(--accent-l),#e8f0fe);border:1px solid rgba(91,71,224,.15);border-radius:var(--r-lg);padding:16px}
+.srow2{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.srow2:last-child{border-bottom:none}
+.proj-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.proj-row:last-child{border-bottom:none}
+.preview-box{background:var(--accent-l);border:1px solid rgba(91,71,224,.15);border-radius:var(--r);padding:11px 13px;font-size:13px;color:var(--accent-d);font-weight:500;margin-bottom:13px;line-height:1.6;min-height:44px}
+.snote{font-size:12px;color:var(--text3);line-height:1.5;margin-top:6px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px}
+.save-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.save-toast.show{opacity:1}
+/* Insights */
+.heatmap-wrap{overflow-x:auto;padding-bottom:4px}
+.heatmap{display:grid;grid-template-rows:repeat(7,14px);grid-auto-flow:column;gap:2px;width:max-content}
+.hm-cell{width:14px;height:14px;border-radius:3px;background:var(--surface2)}
+.hm-days{display:grid;grid-template-rows:repeat(7,14px);gap:2px;margin-right:6px;font-size:9px;color:var(--text3);align-items:center;flex-shrink:0}
+.insight{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
+.insight-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.insight-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.insight-body{font-size:12px;color:var(--text2);line-height:1.5}
+.period-tabs{display:flex;gap:4px;margin-bottom:14px}
+.ptab{flex:1;padding:7px;font-size:12px;font-weight:600;text-align:center;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;color:var(--text2);background:var(--surface);transition:all .15s}
+.ptab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.corr-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.corr-row:last-child{border-bottom:none}
+.corr-emoji{font-size:16px;width:24px;text-align:center;flex-shrink:0}
+.corr-bar-wrap{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.corr-bar{height:100%;border-radius:3px;background:var(--accent)}
+.corr-val{font-size:11px;font-weight:600;color:var(--text2);width:28px;text-align:right;flex-shrink:0}
+.dow-row{display:flex;align-items:flex-end;gap:6px;height:80px;margin:8px 0 4px}
+.dow-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.dow-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.dow-bar{width:80%;border-radius:4px 4px 0 0;min-height:3px}
+.dow-lbl{font-size:10px;color:var(--text3);font-weight:500}
 </style>
 </head>
 <body>
+<div class="app">
+  <div id="loading-screen"><div class="spinner"></div><div style="font-size:13px;color:var(--text3)">Loading Somnus…</div></div>
 
-<div class="header">
-  <div class="logo">
-    <div class="logo-icon">🏏</div>
-    <div>
-      <div class="logo-title">IPL SIMULATOR</div>
-      <div class="logo-sub">AI-powered · web search · deep mode</div>
+  <div id="auth-screen" style="display:none">
+    <div style="font-size:72px;margin-bottom:24px">🌙</div>
+    <div class="auth-logo">Somnus<span>.</span></div>
+    <div class="auth-tag">Your personal sleep debt tracker.<br>Science-backed. Beautifully simple.</div>
+    <div id="auth-email-step" style="width:100%;max-width:320px;">
+      <input type="email" id="auth-email-input" placeholder="your@email.com"
+        style="width:100%;background:#f2f2ef;border:1.5px solid #d4d4ce;border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;color:#1a1a18;outline:none;margin-bottom:12px;box-sizing:border-box;"
+        onkeydown="if(event.key==='Enter')sendMagicLink()">
+      <button onclick="sendMagicLink()" class="btn-google" style="width:100%;justify-content:center;background:#5b47e0;color:#fff;border-color:#5b47e0;">
+        Send sign-in link
+      </button>
+      <div class="auth-note">We'll email you a link. No password needed. Works on all browsers.</div>
     </div>
-  </div>
-  <div class="header-pill">IPL 2025 · v2.1</div>
-</div>
-
-<div class="container">
-
-  <!-- MATCH SETUP -->
-  <div class="card">
-    <div class="sec-head">
-      <div class="sec-icon">⚙️</div>
-      <div class="sec-title">Match Setup</div>
-    </div>
-    <div class="team-row">
-      <div class="team-box">
-        <div class="team-box-top" id="colorA"></div>
-        <select class="team-select" id="teamA" onchange="onTeamChange()"></select>
-      </div>
-      <div class="vs-circle">VS</div>
-      <div class="team-box">
-        <div class="team-box-top" id="colorB"></div>
-        <select class="team-select" id="teamB" onchange="onTeamChange()"></select>
-      </div>
-    </div>
-    <div class="params-grid">
-      <div class="param-group">
-        <label class="param-label">Venue</label>
-        <select class="param-select" id="venue">
-          <option>Wankhede Stadium, Mumbai</option>
-          <option>M.A. Chidambaram Stadium, Chennai</option>
-          <option>Eden Gardens, Kolkata</option>
-          <option>M. Chinnaswamy Stadium, Bengaluru</option>
-          <option>Arun Jaitley Stadium, Delhi</option>
-          <option>Narendra Modi Stadium, Ahmedabad</option>
-          <option>Rajiv Gandhi Intl. Stadium, Hyderabad</option>
-          <option>Sawai Mansingh Stadium, Jaipur</option>
-          <option>Ekana Cricket Stadium, Lucknow</option>
-          <option>HPCA Stadium, Dharamsala</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Pitch Type</label>
-        <select class="param-select" id="pitch">
-          <option value="flat batting track">Flat batting track</option>
-          <option value="spin-friendly turning surface">Spin-friendly turner</option>
-          <option value="pace-friendly with good bounce">Pace-friendly bouncer</option>
-          <option value="slow and low with variable bounce">Slow and low</option>
-          <option value="damp morning pitch">Damp morning pitch</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Toss & Decision</label>
-        <select class="param-select" id="toss">
-          <option value="no toss yet">Toss not yet done</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Weather</label>
-        <select class="param-select" id="weather">
-          <option value="clear skies">Clear skies</option>
-          <option value="hot and humid">Hot &amp; humid</option>
-          <option value="overcast and cloudy">Overcast / cloudy</option>
-          <option value="light evening breeze">Light evening breeze</option>
-          <option value="chance of rain interruption">Rain risk</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Match Context</label>
-        <select class="param-select" id="context">
-          <option value="regular league match">Regular league match</option>
-          <option value="must-win match for both teams">Must-win for both</option>
-          <option value="dead rubber with nothing at stake">Dead rubber</option>
-          <option value="playoff qualifier match">Playoff qualifier</option>
-          <option value="final">Final</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Time of Match</label>
-        <select class="param-select" id="time">
-          <option value="day match (afternoon)">Day match</option>
-          <option value="day-night match (evening start)">Day-Night</option>
-          <option value="night match">Night match</option>
-        </select>
-      </div>
+    <div id="auth-sent-step" style="display:none;width:100%;max-width:320px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">📬</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1a1a18;">Check your email</div>
+      <div style="font-size:13px;color:#6b6b63;line-height:1.6;margin-bottom:20px;">We sent a sign-in link to <strong id="auth-sent-email" style="color:#1a1a18;"></strong>. Tap it to sign in.</div>
+      <button onclick="resetAuth()" style="background:none;border:none;color:#5b47e0;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Use a different email</button>
     </div>
   </div>
 
-  <!-- PLAYING XI -->
-  <div class="card">
-    <div class="sec-head">
-      <div class="sec-icon">👕</div>
-      <div class="sec-title">Playing XI</div>
-      <div class="sec-sub">Click squad players to add · max 11</div>
-    </div>
-    <div class="xi-grid">
-      <div class="xi-box">
-        <div class="xi-header">
-          <span class="xi-team" id="xiLabelA">TEAM A</span>
-          <span class="xi-count" id="xiCountA">0 / 11</span>
-        </div>
-        <div class="xi-selected" id="xiPlayersA"></div>
-        <div class="squad-pool">
-          <div class="pool-label">Full Squad</div>
-          <div class="squad-chips" id="squadA"></div>
-        </div>
-      </div>
-      <div class="xi-box">
-        <div class="xi-header">
-          <span class="xi-team" id="xiLabelB">TEAM B</span>
-          <span class="xi-count" id="xiCountB">0 / 11</span>
-        </div>
-        <div class="xi-selected" id="xiPlayersB"></div>
-        <div class="squad-pool">
-          <div class="pool-label">Full Squad</div>
-          <div class="squad-chips" id="squadB"></div>
-        </div>
-      </div>
-    </div>
-    <div class="xi-actions">
-      <button class="xi-btn" onclick="autoFillXI('A')">⚡ Auto-fill Team A</button>
-      <button class="xi-btn" onclick="autoFillXI('B')">⚡ Auto-fill Team B</button>
-      <button class="xi-btn" onclick="autoFillXI('A');autoFillXI('B')">⚡ Auto-fill Both</button>
-      <button class="xi-btn" onclick="clearXI('A');clearXI('B')">✕ Clear All</button>
-    </div>
-    <!-- IMPACT PLAYER -->
-    <div style="margin-top:14px;padding:14px;background:linear-gradient(135deg,#fffbeb,#fff7ed);border:1.5px solid #fcd34d;border-radius:8px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="background:#e85d04;color:white;font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;padding:3px 10px;border-radius:4px">IMPACT PLAYER RULE</span>
-        <span style="font-size:12px;color:#6b7280">IPL 2025 - 1 sub per team from remaining squad</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div style="display:flex;flex-direction:column;gap:5px">
-          <label style="font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;color:#b45309;text-transform:uppercase" id="impactLblA">Team A Impact Player</label>
-          <select id="impactA" style="background:white;border:1.5px solid #fcd34d;border-radius:6px;padding:8px 10px;color:#111827;font-size:13px;font-weight:700;appearance:none;cursor:pointer"><option value="">None / Not decided</option></select>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:5px">
-          <label style="font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;color:#b45309;text-transform:uppercase" id="impactLblB">Team B Impact Player</label>
-          <select id="impactB" style="background:white;border:1.5px solid #fcd34d;border-radius:6px;padding:8px 10px;color:#111827;font-size:13px;font-weight:700;appearance:none;cursor:pointer"><option value="">None / Not decided</option></select>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SIMULATE -->
-  <button class="sim-btn" id="simBtn" onclick="runSimulation()">
-    🔮 &nbsp;SIMULATE MATCH
-  </button>
-
-  <!-- LOADING -->
-  <div class="card loading-panel" id="loadingPanel" style="margin-top:16px">
-    <div class="loading-steps">
-      <div class="l-step" id="step1">
-        <span>🔍</span>
-        <span id="step1text">Searching live match intelligence — form, H2H, injuries...</span>
-        <div class="l-spinner" id="sp1" style="display:none"></div>
-        <span id="ck1" style="display:none;margin-left:auto;color:var(--green);font-weight:800">✓ Done</span>
-      </div>
-      <div class="l-step" id="step2">
-        <span>🎯</span>
-        <span id="step2text">Running deep 3-scenario simulation...</span>
-        <div class="l-spinner" id="sp2" style="display:none"></div>
-        <span id="ck2" style="display:none;margin-left:auto;color:var(--green);font-weight:800">✓ Done</span>
-      </div>
-    </div>
-    <div class="l-note" id="lNote">Takes 15–25 seconds for accurate results</div>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="results" id="results" style="margin-top:4px"></div>
-
-</div>
-
-<script>
-const SQUADS = {
-  "Mumbai Indians": {
-    color: "#005DA0",
-    players: [
-      {name:"Ryan Rickelton",role:"WK"},{name:"Quinton de Kock",role:"WK"},{name:"Robin Minz",role:"WK"},
-      {name:"Rohit Sharma",role:"BAT"},{name:"Suryakumar Yadav",role:"BAT"},{name:"Tilak Varma",role:"BAT"},
-      {name:"Sherfane Rutherford",role:"BAT"},{name:"Danish Malewar",role:"BAT"},
-      {name:"Hardik Pandya",role:"ALL"},{name:"Naman Dhir",role:"ALL"},{name:"Shardul Thakur",role:"ALL"},
-      {name:"Mitchell Santner",role:"ALL"},{name:"Will Jacks",role:"ALL"},{name:"Atharva Ankolekar",role:"ALL"},
-      {name:"Raj Angad Bawa",role:"ALL"},{name:"Mayank Rawat",role:"ALL"},{name:"Corbin Bosch",role:"ALL"},
-      {name:"Jasprit Bumrah",role:"BOWL"},{name:"Trent Boult",role:"BOWL"},{name:"Deepak Chahar",role:"BOWL"},
-      {name:"Ashwani Kumar",role:"BOWL"},{name:"Mayank Markande",role:"BOWL"},{name:"Raghu Sharma",role:"BOWL"},
-      {name:"Mohammad Izhar",role:"BOWL"},{name:"AM Ghazanfar",role:"BOWL"}
-    ]
-  },
-  "Chennai Super Kings": {
-    color: "#F9CD05",
-    players: [
-      {name:"Sanju Samson",role:"WK"},{name:"MS Dhoni",role:"WK"},{name:"Urvil Patel",role:"WK"},{name:"Kartik Sharma",role:"WK"},
-      {name:"Ruturaj Gaikwad",role:"BAT"},{name:"Ayush Mhatre",role:"BAT"},{name:"Sarfaraz Khan",role:"BAT"},
-      {name:"Shivam Dube",role:"ALL"},{name:"Dewald Brevis",role:"ALL"},{name:"Jamie Overton",role:"ALL"},
-      {name:"Prashant Veer",role:"ALL"},{name:"Zak Foulkes",role:"ALL"},{name:"Aman Khan",role:"ALL"},
-      {name:"Matthew Short",role:"ALL"},{name:"Shreyas Gopal",role:"ALL"},
-      {name:"Khaleel Ahmed",role:"BOWL"},{name:"Noor Ahmad",role:"BOWL"},{name:"Anshul Kamboj",role:"BOWL"},
-      {name:"Akeal Hosein",role:"BOWL"},{name:"Mukesh Choudhary",role:"BOWL"},{name:"Nathan Ellis",role:"BOWL"},
-      {name:"Matt Henry",role:"BOWL"},{name:"Ramakrishna Ghosh",role:"BOWL"},
-      {name:"Gurjapneet Singh",role:"BOWL"},{name:"Rahul Chahar",role:"BOWL"}
-    ]
-  },
-  "Royal Challengers Bengaluru": {
-    color: "#EC1C24",
-    players: [
-      {name:"Phil Salt",role:"WK"},{name:"Jitesh Sharma",role:"WK"},{name:"Jordan Cox",role:"WK"},
-      {name:"Virat Kohli",role:"BAT"},{name:"Tim David",role:"BAT"},{name:"Devdutt Padikkal",role:"BAT"},
-      {name:"Rajat Patidar",role:"BAT"},{name:"Jacob Bethell",role:"BAT"},
-      {name:"Venkatesh Iyer",role:"ALL"},{name:"Krunal Pandya",role:"ALL"},{name:"Romario Shepherd",role:"ALL"},
-      {name:"Satvik Deswal",role:"ALL"},{name:"Kanishk Chouhan",role:"ALL"},{name:"Vihaan Malhotra",role:"ALL"},
-      {name:"Swapnil Singh",role:"ALL"},{name:"Mangesh Yadav",role:"ALL"},
-      {name:"Josh Hazlewood",role:"BOWL"},{name:"Bhuvneshwar Kumar",role:"BOWL"},{name:"Yash Dayal",role:"BOWL"},
-      {name:"Suyash Sharma",role:"BOWL"},{name:"Nuwan Thushara",role:"BOWL"},{name:"Rasikh Dar",role:"BOWL"},
-      {name:"Vicky Ostwal",role:"BOWL"},{name:"Abhinandan Singh",role:"BOWL"},{name:"Jacob Duffy",role:"BOWL"}
-    ]
-  },
-  "Kolkata Knight Riders": {
-    color: "#3A225D",
-    players: [
-      {name:"Tim Seifert",role:"WK"},{name:"Tejasvi Singh",role:"WK"},{name:"Finn Allen",role:"WK"},
-      {name:"Rinku Singh",role:"BAT"},{name:"Angkrish Raghuvanshi",role:"BAT"},{name:"Ajinkya Rahane",role:"BAT"},
-      {name:"Manish Pandey",role:"BAT"},{name:"Rovman Powell",role:"BAT"},{name:"Rahul Tripathi",role:"BAT"},
-      {name:"Cameron Green",role:"BAT"},{name:"Ramandeep Singh",role:"BAT"},
-      {name:"Sunil Narine",role:"ALL"},{name:"Rachin Ravindra",role:"ALL"},{name:"Daksh Kamra",role:"ALL"},
-      {name:"Sarthak Ranjan",role:"ALL"},{name:"Anukul Roy",role:"ALL"},
-      {name:"Varun Chakravarthy",role:"BOWL"},{name:"Matheesha Pathirana",role:"BOWL"},
-      {name:"Vaibhav Arora",role:"BOWL"},{name:"Harshit Rana",role:"BOWL"},{name:"Umran Malik",role:"BOWL"},
-      {name:"Akash Deep",role:"BOWL"},{name:"Prashant Solanki",role:"BOWL"},
-      {name:"Kartik Tyagi",role:"BOWL"},{name:"Blessing Muzarabani",role:"BOWL"}
-    ]
-  },
-  "Delhi Capitals": {
-    color: "#0078BC",
-    players: [
-      {name:"KL Rahul",role:"WK"},{name:"Abishek Porel",role:"WK"},{name:"Ben Duckett",role:"WK"},
-      {name:"Ashutosh Sharma",role:"BAT"},{name:"David Miller",role:"BAT"},{name:"Tristan Stubbs",role:"BAT"},
-      {name:"Sameer Rizvi",role:"BAT"},{name:"Nitish Rana",role:"BAT"},{name:"Karun Nair",role:"BAT"},
-      {name:"Prithvi Shaw",role:"BAT"},{name:"Sahil Parakh",role:"BAT"},{name:"Pathum Nissanka",role:"BAT"},
-      {name:"Axar Patel",role:"ALL"},{name:"Vipraj Nigam",role:"ALL"},{name:"Ajay Mandal",role:"ALL"},
-      {name:"Tripurana Vijay",role:"ALL"},{name:"Madhav Tiwari",role:"ALL"},{name:"Auqib Dar",role:"ALL"},
-      {name:"Mitchell Starc",role:"BOWL"},{name:"Kuldeep Yadav",role:"BOWL"},{name:"Mukesh Kumar",role:"BOWL"},
-      {name:"Dushmantha Chameera",role:"BOWL"},{name:"Kyle Jamieson",role:"BOWL"},
-      {name:"Lungi Ngidi",role:"BOWL"},{name:"T Natarajan",role:"BOWL"}
-    ]
-  },
-  "Rajasthan Royals": {
-    color: "#EA1A85",
-    players: [
-      {name:"Dhruv Jurel",role:"WK"},{name:"Donovan Ferreira",role:"WK"},{name:"Ravi Singh",role:"WK"},
-      {name:"Lhuan-dre Pretorius",role:"WK"},
-      {name:"Yashasvi Jaiswal",role:"BAT"},{name:"Shimron Hetmyer",role:"BAT"},
-      {name:"Vaibhav Suryavanshi",role:"BAT"},{name:"Shubham Dubey",role:"BAT"},{name:"Aman Perala",role:"BAT"},
-      {name:"Ravindra Jadeja",role:"ALL"},{name:"Riyan Parag",role:"ALL"},{name:"Sam Curran",role:"ALL"},
-      {name:"Jofra Archer",role:"BOWL"},{name:"Tushar Deshpande",role:"BOWL"},{name:"Ravi Bishnoi",role:"BOWL"},
-      {name:"Vignesh Puthur",role:"BOWL"},{name:"Sandeep Sharma",role:"BOWL"},{name:"Yudhvir Singh",role:"BOWL"},
-      {name:"Kuldeep Sen",role:"BOWL"},{name:"Sushant Mishra",role:"BOWL"},{name:"Brijesh Sharma",role:"BOWL"},
-      {name:"Yash Punja",role:"BOWL"},{name:"Adam Milne",role:"BOWL"},
-      {name:"Kwena Maphaka",role:"BOWL"},{name:"Nandre Burger",role:"BOWL"}
-    ]
-  },
-  "Punjab Kings": {
-    color: "#ED1B24",
-    players: [
-      {name:"Prabhsimran Singh",role:"WK"},{name:"Vishnu Vinod",role:"WK"},
-      {name:"Shreyas Iyer",role:"BAT"},{name:"Nehal Wadhera",role:"BAT"},{name:"Priyansh Arya",role:"BAT"},
-      {name:"Shashank Singh",role:"BAT"},{name:"Harnoor Pannu",role:"BAT"},{name:"Pyla Avinash",role:"BAT"},
-      {name:"Marco Jansen",role:"ALL"},{name:"Azmatullah Omarzai",role:"ALL"},{name:"Marcus Stoinis",role:"ALL"},
-      {name:"Ben Dwarshuis",role:"ALL"},{name:"Suryansh Shedge",role:"ALL"},{name:"Musheer Khan",role:"ALL"},
-      {name:"Cooper Connolly",role:"ALL"},{name:"Mitchell Owen",role:"ALL"},
-      {name:"Arshdeep Singh",role:"BOWL"},{name:"Yuzvendra Chahal",role:"BOWL"},{name:"Harpreet Brar",role:"BOWL"},
-      {name:"Vijaykumar Vyshak",role:"BOWL"},{name:"Lockie Ferguson",role:"BOWL"},
-      {name:"Vishal Nishad",role:"BOWL"},{name:"Pravin Dubey",role:"BOWL"},
-      {name:"Xavier Bartlett",role:"BOWL"},{name:"Yash Thakur",role:"BOWL"}
-    ]
-  },
-  "Sunrisers Hyderabad": {
-    color: "#F26522",
-    players: [
-      {name:"Ishan Kishan",role:"WK"},{name:"Heinrich Klaasen",role:"WK"},{name:"Salil Arora",role:"WK"},
-      {name:"Travis Head",role:"BAT"},{name:"Smaran Ravichandran",role:"BAT"},
-      {name:"Abhishek Sharma",role:"ALL"},{name:"Aniket Verma",role:"ALL"},{name:"Liam Livingstone",role:"ALL"},
-      {name:"Nitish Kumar Reddy",role:"ALL"},{name:"Kamindu Mendis",role:"ALL"},{name:"Harsh Dubey",role:"ALL"},
-      {name:"Krains Fuletra",role:"ALL"},{name:"Jack Edwards",role:"ALL"},{name:"Shivang Kumar",role:"ALL"},
-      {name:"Pat Cummins",role:"BOWL"},{name:"Harshal Patel",role:"BOWL"},{name:"Eshan Malinga",role:"BOWL"},
-      {name:"Shivam Mavi",role:"BOWL"},{name:"Amit Kumar",role:"BOWL"},{name:"Praful Hinge",role:"BOWL"},
-      {name:"Onkar Tarmale",role:"BOWL"},{name:"Sakib Hussain",role:"BOWL"},{name:"Brydon Carse",role:"BOWL"},
-      {name:"Zeeshan Ansari",role:"BOWL"},{name:"Jaydev Unadkat",role:"BOWL"}
-    ]
-  },
-  "Lucknow Super Giants": {
-    color: "#A72056",
-    players: [
-      {name:"Nicholas Pooran",role:"WK"},{name:"Rishabh Pant",role:"WK"},{name:"Josh Inglis",role:"WK"},
-      {name:"Mukul Choudhary",role:"WK"},
-      {name:"Ayush Badoni",role:"BAT"},{name:"Abdul Samad",role:"BAT"},{name:"Matthew Breetzke",role:"BAT"},
-      {name:"Himmat Singh",role:"BAT"},{name:"Akshat Raghuwanshi",role:"BAT"},
-      {name:"Mitchell Marsh",role:"ALL"},{name:"Aiden Markram",role:"ALL"},{name:"Wanindu Hasaranga",role:"ALL"},
-      {name:"Arshin Kulkarni",role:"ALL"},{name:"Shahbaz Ahmed",role:"ALL"},
-      {name:"Digvesh Singh",role:"BOWL"},{name:"Mohammad Shami",role:"BOWL"},{name:"Akash Singh",role:"BOWL"},
-      {name:"Avesh Khan",role:"BOWL"},{name:"Manimaran Siddharth",role:"BOWL"},{name:"Mohsin Khan",role:"BOWL"},
-      {name:"Mayank Yadav",role:"BOWL"},{name:"Naman Tiwari",role:"BOWL"},{name:"Arjun Tendulkar",role:"BOWL"},
-      {name:"Prince Yadav",role:"BOWL"},{name:"Anrich Nortje",role:"BOWL"}
-    ]
-  },
-  "Gujarat Titans": {
-    color: "#1C4F9C",
-    players: [
-      {name:"Jos Buttler",role:"WK"},{name:"Kumar Kushagra",role:"WK"},{name:"Tom Banton",role:"WK"},
-      {name:"Anuj Rawat",role:"WK"},
-      {name:"Shubman Gill",role:"BAT"},{name:"Sai Sudharsan",role:"BAT"},{name:"Shahrukh Khan",role:"BAT"},
-      {name:"Rahul Tewatia",role:"ALL"},{name:"Washington Sundar",role:"ALL"},{name:"Jason Holder",role:"ALL"},
-      {name:"Glenn Phillips",role:"ALL"},{name:"Nishant Sindhu",role:"ALL"},
-      {name:"Sai Kishore",role:"BOWL"},{name:"Mohammed Siraj",role:"BOWL"},{name:"Rashid Khan",role:"BOWL"},
-      {name:"Prasidh Krishna",role:"BOWL"},{name:"Arshad Khan",role:"BOWL"},{name:"Ishant Sharma",role:"BOWL"},
-      {name:"Kagiso Rabada",role:"BOWL"},{name:"Gurnoor Brar",role:"BOWL"},{name:"Prithvi Raj Yarra",role:"BOWL"},
-      {name:"Manav Suthar",role:"BOWL"},{name:"Jayant Yadav",role:"BOWL"},
-      {name:"Luke Wood",role:"BOWL"},{name:"Ashok Sharma",role:"BOWL"}
-    ]
-  }
-};
-
-const ROLE_COLORS = { BAT:"#1d4ed8", BOWL:"#dc2626", ALL:"#16a34a", WK:"#ca8a04" };
-const ROLE_ICONS  = { BAT:"🏏", BOWL:"🎳", ALL:"⚡", WK:"🧤" };
-let xiA = [], xiB = [];
-
-function init() {
-  const teams = Object.keys(SQUADS);
-  const sA = document.getElementById('teamA');
-  const sB = document.getElementById('teamB');
-  teams.forEach((t,i) => {
-    sA.innerHTML += `<option value="${t}">${t}</option>`;
-    sB.innerHTML += `<option value="${t}"${i===1?' selected':''}>${t}</option>`;
-  });
-  updateToss(); renderSquads();
-}
-
-function onTeamChange() {
-  const a = document.getElementById('teamA').value;
-  const b = document.getElementById('teamB').value;
-  if (a === b) {
-    const other = Object.keys(SQUADS).find(t => t !== a);
-    document.getElementById('teamB').value = other;
-  }
-  updateToss(); xiA=[]; xiB=[]; renderSquads();
-}
-
-function updateToss() {
-  const a = document.getElementById('teamA').value;
-  const b = document.getElementById('teamB').value;
-  document.getElementById('toss').innerHTML = `
-    <option value="no toss yet">Toss not yet done</option>
-    <option value="${a} won toss, elected to bat">${a} — Bat first</option>
-    <option value="${a} won toss, elected to field">${a} — Field first</option>
-    <option value="${b} won toss, elected to bat">${b} — Bat first</option>
-    <option value="${b} won toss, elected to field">${b} — Field first</option>`;
-  document.getElementById('colorA').style.background = SQUADS[a]?.color || '#f97316';
-  document.getElementById('colorB').style.background = SQUADS[b]?.color || '#f97316';
-  document.getElementById('xiLabelA').textContent = a.replace('Indians','MI').replace('Super Kings','CSK').replace('Challengers Bengaluru','RCB').replace('Knight Riders','KKR').replace('Capitals','DC').replace('Royals','RR').replace('Kings','PBKS').replace('Sunrisers Hyderabad','SRH').replace('Super Giants','LSG').replace('Titans','GT');
-  document.getElementById('xiLabelB').textContent = document.getElementById('teamB').value.replace('Indians','MI').replace('Super Kings','CSK').replace('Challengers Bengaluru','RCB').replace('Knight Riders','KKR').replace('Capitals','DC').replace('Royals','RR').replace('Kings','PBKS').replace('Sunrisers Hyderabad','SRH').replace('Super Giants','LSG').replace('Titans','GT');
-}
-
-function renderSquads() {
-  const a = document.getElementById('teamA').value;
-  const b = document.getElementById('teamB').value;
-  renderSquad('A', SQUADS[a]?.players || []);
-  renderSquad('B', SQUADS[b]?.players || []);
-  if(typeof updateImpactDropdowns === 'function') updateImpactDropdowns();
-}
-
-function renderSquad(side, players) {
-  const xi = side==='A'?xiA:xiB;
-  const xiDiv = document.getElementById(`xiPlayers${side}`);
-  const sqDiv = document.getElementById(`squad${side}`);
-  const cntEl = document.getElementById(`xiCount${side}`);
-  xiDiv.innerHTML = xi.map(p =>
-    `<div class="player-chip" onclick="removeFromXI('${side}','${p.name}')">
-      <span class="rdot" style="background:${ROLE_COLORS[p.role]}"></span>${p.name}
-      <span style="font-size:10px;opacity:0.5;margin-left:2px">✕</span>
-    </div>`).join('');
-  sqDiv.innerHTML = players.map(p =>
-    `<div class="squad-chip${xi.some(x=>x.name===p.name)?' in-xi':''}" onclick="addToXI('${side}','${p.name}','${p.role}')">
-      <span style="color:${ROLE_COLORS[p.role]};font-size:9px">${ROLE_ICONS[p.role]}</span>${p.name}
-    </div>`).join('');
-  cntEl.textContent = `${xi.length} / 11`;
-  cntEl.style.color = xi.length===11 ? 'var(--green)' : xi.length>11 ? 'var(--red)' : 'var(--muted)';
-}
-
-function addToXI(side, name, role) {
-  const xi = side==='A'?xiA:xiB;
-  if (xi.length>=11||xi.some(p=>p.name===name)) return;
-  xi.push({name,role}); renderSquads();
-}
-function removeFromXI(side, name) {
-  if (side==='A') xiA=xiA.filter(p=>p.name!==name);
-  else xiB=xiB.filter(p=>p.name!==name);
-  renderSquads();
-}
-function autoFillXI(side) {
-  const team = document.getElementById(`team${side}`).value;
-  if (side==='A') xiA = (SQUADS[team]?.players||[]).slice(0,11).map(p=>({...p}));
-  else xiB = (SQUADS[team]?.players||[]).slice(0,11).map(p=>({...p}));
-  renderSquads();
-}
-function clearXI(side) {
-  if (side==='A') xiA=[]; else xiB=[];
-  renderSquads();
-}
-
-// ── SIMULATION ────────────────────────────────────────────────────────────────
-async function runSimulation() {
-  const teamA = document.getElementById('teamA').value;
-  const teamB = document.getElementById('teamB').value;
-  const venue = document.getElementById('venue').value;
-  const pitch = document.getElementById('pitch').value;
-  const impactA = (document.getElementById('impactA')?.value) || 'Not decided';
-  const impactB = (document.getElementById('impactB')?.value) || 'Not decided';
-  const toss  = document.getElementById('toss').value;
-  const weather = document.getElementById('weather').value;
-  const context = document.getElementById('context').value;
-  const time  = document.getElementById('time').value;
-
-  if (xiA.length<11||xiB.length<11) {
-    const msgs = [];
-    if (xiA.length<11) msgs.push(`${teamA}: ${11-xiA.length} more players needed`);
-    if (xiB.length<11) msgs.push(`${teamB}: ${11-xiB.length} more players needed`);
-    alert('Please complete Playing XI:\n\n' + msgs.join('\n') + '\n\nTip: Use "Auto-fill" buttons for quick setup.');
-    return;
-  }
-
-  const btn = document.getElementById('simBtn');
-  const loading = document.getElementById('loadingPanel');
-  const results = document.getElementById('results');
-  btn.disabled = true; btn.innerHTML = '⏳ &nbsp;SIMULATING...';
-  loading.classList.add('active');
-  results.classList.remove('visible'); results.innerHTML = '';
-
-  setStep(1,'active');
-
-  try {
-    const research = await callResearch(teamA, teamB, venue);
-    setStep(1,'done'); setStep(2,'active');
-
-    const xiAStr = xiA.map(p=>`${p.name}(${p.role})`).join(', ');
-    const xiBStr = xiB.map(p=>`${p.name}(${p.role})`).join(', ');
-    const sim = await callDeepSim(teamA,teamB,venue,pitch,toss,weather,context,time,xiAStr,xiBStr,research);
-    setStep(2,'done');
-
-    loading.classList.remove('active');
-    renderResults(sim, teamA, teamB, research);
-  } catch(err) {
-    loading.classList.remove('active');
-    results.innerHTML = `<div class="card"><div class="error-box">⚠️ Simulation failed: ${err.message}<br><br>Check your API connection and try again.</div></div>`;
-    results.classList.add('visible');
-  }
-  btn.disabled=false; btn.innerHTML='🔮 &nbsp;SIMULATE AGAIN';
-}
-
-function setStep(n, state) {
-  const el=document.getElementById(`step${n}`);
-  const sp=document.getElementById(`sp${n}`);
-  const ck=document.getElementById(`ck${n}`);
-  el.className='l-step '+(state==='active'?'active':state==='done'?'done':'');
-  sp.style.display=state==='active'?'block':'none';
-  ck.style.display=state==='done'?'inline':'none';
-}
-
-async function callResearch(teamA, teamB, venue) {
-  const resp = await fetch('/api/anthropic', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      model:'claude-sonnet-4-20250514', max_tokens:1000,
-      use_web_search: true,
-      messages:[{role:'user', content:`You are an IPL cricket research analyst. Using web search, find the latest IPL 2025 information about this match and return ONLY valid JSON with no markdown.
-
-Teams: ${teamA} vs ${teamB} | Venue: ${venue}
-
-Search for: recent form of both teams (last 3-5 matches), head-to-head record, injury news, venue pitch notes, points table positions.
-
-Return ONLY this JSON:
-{"team_a_form":"<W/L results>","team_b_form":"<W/L results>","team_a_position":"<e.g. 3rd, 8pts>","team_b_position":"<e.g. 5th, 6pts>","h2h_recent":"<last few encounters>","injuries_a":"<injuries or None>","injuries_b":"<injuries or None>","venue_notes":"<pitch behavior>","key_intel":"<any other intel>"}`}]
-    })
-  });
-  const data = await resp.json();
-  const text = data.content?.map(b=>b.text||'').join('')||'{}';
-  try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
-  catch { return {key_intel: text.slice(0,300)}; }
-}
-
-async function callDeepSim(teamA,teamB,venue,pitch,toss,weather,context,time,xiA,xiB,r,impactA,impactB) {
-  const resp = await fetch('/api/anthropic', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      model:'claude-sonnet-4-20250514', max_tokens:2000,
-      messages:[{role:'user', content:`You are an elite IPL match simulator. Simulate this match with maximum accuracy using all available data.
-
-MATCH: ${teamA} vs ${teamB} | ${venue} | ${pitch} | ${toss} | ${weather} | ${context} | ${time}
-${teamA} XI: ${xiA}
-${teamB} XI: ${xiB}
-Impact Player ${teamA}: ${impactA||"Not decided"}
-Impact Player ${teamB}: ${impactB||"Not decided"}
-
-NOTE: Factor in the Impact Player rule — these substitutes can be introduced mid-match and may significantly shift match dynamics.
-
-LIVE RESEARCH:
-${teamA} form: ${r.team_a_form||'unknown'} | standing: ${r.team_a_position||'unknown'}
-${teamB} form: ${r.team_b_form||'unknown'} | standing: ${r.team_b_position||'unknown'}
-H2H: ${r.h2h_recent||'unknown'}
-Injuries ${teamA}: ${r.injuries_a||'none'} | ${teamB}: ${r.injuries_b||'none'}
-Venue: ${r.venue_notes||'standard'} | Intel: ${r.key_intel||''}
-
-SIMULATE 3 INTERNAL SCENARIOS then weight-average:
-1. LIKELY (50% weight): Most probable outcome
-2. OPTIMISTIC_A (25%): ${teamA} performs above expectation  
-3. OPTIMISTIC_B (25%): ${teamB} performs above expectation
-
-Return ONLY valid JSON no markdown:
-{"win_probability_A":<0-100>,"win_probability_B":<0-100>,"confidence_score":<50-95>,"upset_probability":<0-40>,"match_type":"<one-sided|competitive|coin-toss>","batting_first_team":"<team or TBD>","predicted_score_1st":"<e.g. 178-192>","predicted_score_2nd":"<e.g. 162-175>","match_result_summary":"<2 sentences>","innings_phases":{"powerplay":{"score":"<e.g.54-1>","description":"<brief>"},"middle_overs":{"score":"<e.g.72-3>","description":"<brief>"},"death_overs":{"score":"<e.g.66-2>","description":"<brief>"}},"over_by_over":[<20 cumulative scores>],"wickets_by_over":[<20 cumulative wickets>],"key_players":[{"name":"<n>","team":"<t>","role":"<BAT|BOWL|ALL|WK>","prediction":"<specific>"},{"name":"<n>","team":"<t>","role":"<r>","prediction":"<p>"},{"name":"<n>","team":"<t>","role":"<r>","prediction":"<p>"},{"name":"<n>","team":"<t>","role":"<r>","prediction":"<p>"}],"key_factors":["<f1>","<f2>","<f3>","<f4>"],"upset_scenario":"<2-3 sentences on how underdog wins>","detailed_reasoning":"<4 paragraphs: pitch/conditions, batting matchups, bowling strategies, winning scenario>","scenario_summary":{"likely":"<1 line>","optimistic_a":"<1 line for ${teamA}>","optimistic_b":"<1 line for ${teamB}>"}}`}]
-    })
-  });
-  const data = await resp.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  const text = data.content?.map(b=>b.text||'').join('')||'';
-  return JSON.parse(text.replace(/```json|```/g,'').trim());
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function renderResults(r, teamA, teamB, research) {
-  const winnerA = r.win_probability_A > r.win_probability_B;
-  const av = ['#1d4ed8','#f97316','#7c3aed','#16a34a'];
-  const mtClass = r.match_type==='one-sided'?'one-sided':r.match_type==='coin-toss'?'coin-toss':'competitive';
-
-  const obo = r.over_by_over||Array.from({length:20},(_,i)=>Math.round((i+1)*8.7));
-  const wbo = r.wickets_by_over||Array.from({length:20},()=>0);
-  const barsHtml = obo.map((s,i)=>{
-    const prev=i>0?obo[i-1]:0;
-    const runs=s-prev;
-    const h=Math.max(6,Math.round((runs/20)*64));
-    const col=i<6?'#f97316':i<15?'#7c3aed':'#16a34a';
-    const wi=wbo[i]-(i>0?wbo[i-1]:0);
-    return `<div class="over-bar" style="background:${col};height:${h}px" data-tip="Ov${i+1}: ${runs}r${wi?` ${wi}w`:''}"></div>`;
-  }).join('');
-  const lblsHtml = obo.map((_,i)=>
-    `<div class="over-lbl">${(i===0||i===5||i===9||i===14||i===19)?i+1:''}</div>`
-  ).join('');
-
-  const playersHtml = (r.key_players||[]).slice(0,4).map((p,i)=>{
-    const init=p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    return `<div class="player-block">
-      <div class="p-avatar" style="background:${av[i]}18;color:${av[i]}">${init}</div>
+  <div id="main-app">
+    <div class="header">
       <div>
-        <div class="p-name">${ROLE_ICONS[p.role]||'🏏'} ${p.name}</div>
-        <div class="p-role">${p.role} · ${p.team}</div>
-        <div class="p-pred">${p.prediction}</div>
+        <div class="logo">Somnus<span class="logo-dot">.</span></div>
+        <div class="hdr-date" id="hdr-date"></div>
       </div>
+      <div class="hdr-right">
+        <div class="user-pill" onclick="showUserMenu()">
+          <img class="user-avatar" id="user-avatar" src="" alt="">
+          <span class="user-name" id="user-name"></span>
+        </div>
+        <div class="streak-pill" id="streak-pill"></div>
+      </div>
+    </div>
+    <div id="page-debt" class="page active"></div>
+    <div id="page-plan" class="page"></div>
+    <div id="page-log" class="page"></div>
+    <div id="page-insights" class="page"></div>
+    <div id="page-settings" class="page"></div>
+    <div class="nav">
+      <div class="nav-item active" onclick="go('debt',this)"><div class="nav-icon">◑</div><div class="nav-label">Debt</div></div>
+      <div class="nav-item" onclick="go('plan',this)"><div class="nav-icon">◈</div><div class="nav-label">Today</div></div>
+      <div class="nav-item" onclick="go('log',this)"><div class="nav-icon">⊕</div><div class="nav-label">Log</div></div>
+      <div class="nav-item" onclick="go('insights',this)"><div class="nav-icon">◉</div><div class="nav-label">Insights</div></div>
+      <div class="nav-item" onclick="go('settings',this)"><div class="nav-icon">◎</div><div class="nav-label">Settings</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">Edit entry</div>
+    <input type="hidden" id="edit-date">
+    <div class="frow" style="margin-bottom:12px">
+      <div class="field"><label>Bedtime</label><input type="time" id="edit-bed"></div>
+      <div class="field"><label>Wake time</label><input type="time" id="edit-wake"></div>
+    </div>
+    <div class="field"><label>Sleep onset</label>
+      <select id="edit-onset"><option value="5">5 min</option><option value="15" selected>15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option></select>
+    </div>
+    <div class="field" style="margin-bottom:16px"><label>Sleep quality</label>
+      <select id="edit-quality"><option value="1">😵 Terrible</option><option value="2">😩 Poor</option><option value="3" selected>😐 Okay</option><option value="4">🙂 Good</option><option value="5">⚡ Great</option></select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn-outline" onclick="closeEdit()">Cancel</button>
+      <button class="btn" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <img id="um-avatar" src="" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border2)" alt="">
+      <div><div style="font-size:15px;font-weight:600" id="um-name"></div><div style="font-size:12px;color:var(--text3)" id="um-email"></div></div>
+    </div>
+    <div style="display:grid;gap:8px">
+      <button class="btn-outline" onclick="closeUserMenu()">Cancel</button>
+      <button class="btn-outline btn-red" onclick="doSignOut()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-toast" id="save-toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyBN-35_PsP1gUIk3cthPzWtP3-xk-TfJt4",
+  authDomain:"somnus-4373f.firebaseapp.com",
+  projectId:"somnus-4373f",
+  storageBucket:"somnus-4373f.firebasestorage.app",
+  messagingSenderId:"853350236027",
+  appId:"1:853350236027:web:74812e033d376b93f847de"
+});
+const auth=firebase.auth();
+const db=firebase.firestore();
+const provider=new firebase.auth.GoogleAuthProvider();
+
+let S={need:9.5,wakeTime:'07:00',log:[],naps:[],startingDebt:12.5,checkins:[]};
+let CU=null,eChart=null,lq=3,lw=0,insPeriod='week';
+
+// ── Auth: redirect on mobile, popup on desktop (fixes Safari) ─
+auth.onAuthStateChanged(async user=>{
+  document.getElementById('loading-screen').style.display='none';
+  if(user){
+    CU=user;
+    document.getElementById('user-avatar').src=user.photoURL||'';
+    document.getElementById('user-name').textContent=user.displayName?.split(' ')[0]||'You';
+    document.getElementById('um-avatar').src=user.photoURL||'';
+    document.getElementById('um-name').textContent=user.displayName||'';
+    document.getElementById('um-email').textContent=user.email||'';
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('main-app').style.display='block';
+    await loadData();
+    go('debt',document.querySelector('.nav-item'));
+  } else {
+    CU=null;
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('main-app').style.display='none';
+  }
+});
+
+auth.getRedirectResult().catch(e=>console.error('Redirect:',e));
+
+async function sendMagicLink(){
+  const email=document.getElementById('auth-email-input').value.trim();
+  if(!email||!email.includes('@')){alert('Please enter a valid email.');return;}
+  const btn=document.querySelector('#auth-email-step button');
+  btn.textContent='Sending…';btn.disabled=true;
+  try{
+    await auth.sendSignInLinkToEmail(email,{url:window.location.origin,handleCodeInApp:true});
+    window.localStorage.setItem('emailForSignIn',email);
+    document.getElementById('auth-sent-email').textContent=email;
+    document.getElementById('auth-email-step').style.display='none';
+    document.getElementById('auth-sent-step').style.display='block';
+  }catch(e){
+    alert('Failed to send: '+e.message);
+    btn.textContent='Send sign-in link';btn.disabled=false;
+  }
+}
+function resetAuth(){
+  document.getElementById('auth-email-step').style.display='block';
+  document.getElementById('auth-sent-step').style.display='none';
+  document.getElementById('auth-email-input').value='';
+}
+
+async function doSignOut(){closeUserMenu();await auth.signOut();}
+function showUserMenu(){document.getElementById('user-modal').classList.add('open');}
+function closeUserMenu(){document.getElementById('user-modal').classList.remove('open');}
+
+// ── Firestore ─
+function uDoc(){return db.collection('users').doc(CU.uid);}
+async function loadData(){
+  try{const d=await uDoc().get();if(d.exists){S={...S,...d.data()};if(!Array.isArray(S.log))S.log=[];if(!Array.isArray(S.naps))S.naps=[];if(!Array.isArray(S.checkins))S.checkins=[];}}catch(e){console.error(e);}
+}
+let saveTimer;
+async function save(){
+  if(!CU)return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    try{await uDoc().set(S,{merge:true});toast('Saved ✓');}catch(e){console.error(e);toast('Save failed');}
+  },500);
+}
+let toastT;
+function toast(msg){const el=document.getElementById('save-toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2000);}
+
+// ── Nav ─
+function go(p,el){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  if(el)el.classList.add('active');
+  ({debt:rDebt,plan:rPlan,log:rLog,insights:rInsights,settings:rSettings})[p]?.();
+  window.scrollTo(0,0);
+}
+
+// ── Math ─
+function calcHrs(bed,wake,onset=15){
+  let[bh,bm]=bed.split(':').map(Number),[wh,wm]=wake.split(':').map(Number);
+  let b=bh*60+bm+onset,w=wh*60+wm;
+  if(w<=bh*60+bm)w+=1440;
+  return Math.max(0,Math.round((w-b)/60*10)/10);
+}
+function effHrs(hrs,q=3,wu=0){return Math.round(Math.max(0,hrs*([0,.75,.85,1,1.05,1.1][q]||1)-wu*.15)*10)/10;}
+function tBed(){const[wh,wm]=S.wakeTime.split(':').map(Number);const m=((wh*60+wm-S.need*60)%1440+1440)%1440;return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(Math.round(m%60)).padStart(2,'0')}`;}
+function fmt(t){let[h,m]=t.split(':').map(Number);const ap=h<12?'am':'pm';if(h===0)h=12;else if(h>12)h-=12;return `${h}:${String(m).padStart(2,'0')}${ap}`;}
+function fmtH(h){return `${h===0?12:h>12?h-12:h}${h<12?'am':'pm'}`;}
+function fmtDate(d){return new Date(d+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});}
+function today(){return new Date().toISOString().slice(0,10);}
+function bDef(bed){
+  const tb=tBed();const[th,tm]=tb.split(':').map(Number);let[ah,am]=bed.split(':').map(Number);
+  let tM=th*60+tm,aM=ah*60+am;if(aM<180)aM+=1440;if(tM<180)tM+=1440;
+  return Math.max(0,Math.round((aM-tM)/60*10)/10);
+}
+function recov(x){return x<=0?0:Math.round(Math.log(1+x*2)*.8*10)/10;}
+function napCredit(date){return(S.naps||[]).filter(n=>n.date===date).reduce((s,n)=>s+n.mins/60*.55,0);}
+function getDebt(){
+  const r=S.log.slice(0,14);if(!r.length)return Math.round(S.startingDebt*10)/10;
+  let net=S.startingDebt;
+  r.forEach(e=>{const nap=napCredit(e.date);const eff=effHrs(e.hrs,e.quality||3,e.wakeups||0);const def=S.need-eff-nap;if(def>0)net+=def;else net-=recov(Math.abs(def));});
+  return Math.round(Math.max(0,net)*10)/10;
+}
+function getStreak(){let s=0;const t=new Date();for(let i=0;i<S.log.length;i++){const d=new Date(S.log[i].date+'T12:00:00');if(Math.round((t-d)/86400000)===i)s++;else break;}return s;}
+function energyAt(nowH,wakeH){
+  const e=(nowH-wakeH+24)%24,pi=Math.PI;let v;
+  if(e<1.5)v=.3+(e/1.5)*.4;else if(e<5)v=.7+Math.sin((e-1.5)/3.5*pi)*.3;
+  else if(e<7)v=1-((e-5)/2)*.35;else if(e<9)v=.65+Math.sin((e-7)/2*pi)*.2;
+  else if(e<11)v=.85-((e-9)/2)*.3;else if(e<14)v=.55-((e-11)/3)*.25;
+  else v=Math.max(.1,.3-(e-14)*.03);
+  return Math.max(.05,Math.min(1,v*Math.max(.6,1-(getDebt()/30)*.35)));
+}
+function bedAlert(){
+  const tb=tBed();const[th,tm]=tb.split(':').map(Number);const n=new Date();
+  let tM=th*60+tm,nM=n.getHours()*60+n.getMinutes();
+  if(tM<180)tM+=1440;if(nM<180)nM+=1440;const d=tM-nM;return(d>0&&d<=120)?d:null;
+}
+function consistencyScore(r){
+  if(r.length<3)return 0;
+  const beds=r.map(e=>{let[h,m]=e.bed.split(':').map(Number);let mins=h*60+m;if(mins<180)mins+=1440;return mins;});
+  const avg=beds.reduce((s,v)=>s+v,0)/beds.length;
+  const sd=Math.sqrt(beds.reduce((s,v)=>s+(v-avg)**2,0)/beds.length);
+  return Math.max(0,Math.round(100-sd/60*30));
+}
+
+// ── Debt page ─
+function rDebt(){
+  const debt=getDebt(),last=S.log[0]||null,streak=getStreak(),tb=tBed(),mins=bedAlert();
+  document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});
+  document.getElementById('streak-pill').textContent=streak>0?`${streak} day streak`:'start logging';
+  const dc=debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)';
+  const dbg=debt<5?'var(--green-l)':debt<10?'var(--amber-l)':'var(--red-l)';
+  const dpct=Math.min(100,Math.round(debt/15*100));
+  const zones=['Low','Mild','Significant','High','Critical'];
+  const zi=debt<3?0:debt<6?1:debt<9?2:debt<13?3:4;
+  const msgs=['Feeling sharp. Keep the rhythm.','Some afternoon fatigue likely.','Focus and mood are affected.','Performance taking a real hit.','Sleep is your top priority.'];
+  let alertH='';
+  if(mins!==null)alertH=`<div class="alert" style="background:var(--accent-l);border-color:rgba(91,71,224,.2);color:var(--accent-d)">🌙 Bedtime in ${mins} min — target ${fmt(tb)} for ${S.need}h</div>`;
+  else if(debt>=12)alertH=`<div class="alert" style="background:var(--red-l);border-color:#fca5a5;color:var(--red)">⚠️ High debt (${debt}h). Target bed tonight: ${fmt(tb)}.</div>`;
+  const bd=last?bDef(last.bed):0;
+  const trend=last?(last.hrs>=S.need?'↓ recovering':'↑ building'):'';
+  const tc=last?(last.hrs>=S.need?'var(--green)':'var(--red)'):'';
+  const le=last?effHrs(last.hrs,last.quality||3,last.wakeups||0):null;
+  document.getElementById('page-debt').innerHTML=alertH+`
+    <div class="card">
+      <div class="card-label">Total sleep debt</div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px">
+        <div class="big-num" style="color:${dc}">${debt}</div><div class="big-unit">hrs owed</div>
+        ${trend?`<span style="font-size:12px;color:${tc};font-weight:600;margin-left:6px">${trend}</span>`:''}
+      </div>
+      <div class="track"><div class="fill" style="width:${dpct}%;background:${dc}"></div></div>
+      <div class="track-labels"><span>0</span><span>5h</span><span>10h</span><span>15h+</span></div>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+        <span class="badge" style="background:${dbg};color:${dc}">${zones[zi]}</span>
+        <span style="font-size:13px;color:var(--text2)">${msgs[zi]}</span>
+      </div>
+    </div>
+    <div class="mgrid">
+      <div class="mbox"><div class="mv">${last?last.hrs+'h':'—'}</div><div class="ml">Last night</div>${le&&le!==last?.hrs?`<div class="ms">${le}h eff.</div>`:''}</div>
+      <div class="mbox"><div class="mv">${S.need}h</div><div class="ml">Your need</div></div>
+      <div class="mbox"><div class="mv" style="font-size:15px">${fmt(tb)}</div><div class="ml">Target bed</div></div>
+    </div>
+    ${last?`<div class="mgrid mgrid-2">
+      <div class="mbox"><div class="mv" style="color:${bd>0?'var(--amber)':'var(--green)'}">${bd>0?'+'+bd+'h':'On time'}</div><div class="ml">Bedtime deficit</div><div class="ms">${fmt(last.bed)}</div></div>
+      <div class="mbox"><div class="mv" style="color:${le>=S.need?'var(--green)':'var(--red)'}">${le>=S.need?'+':''}${Math.round((le-S.need)*10)/10}h</div><div class="ml">vs need</div><div class="ms">${le>=S.need?'surplus':'deficit'}</div></div>
+    </div>`:''}
+    <div class="card"><div class="card-label">Energy — today</div><div class="ewrap"><canvas id="ec"></canvas></div></div>
+    <div class="card"><div class="card-label">Guidance</div><div id="tips"></div></div>`;
+  drawEnergy();renderTips();
+}
+
+function drawEnergy(){
+  const c=document.getElementById('ec');if(!c)return;
+  const[wh]=S.wakeTime.split(':').map(Number);
+  const n=new Date(),nowH=n.getHours()+n.getMinutes()/60;
+  const labels=[],data=[];
+  for(let i=0;i<=16;i++){const h=(wh+i)%24;labels.push(h===0?'12a':h<12?h+'a':h===12?'12p':(h-12)+'p');data.push(Math.round(energyAt(h,wh)*100));}
+  const ni=Math.max(0,Math.min(16,Math.round(nowH-wh)));
+  if(eChart)eChart.destroy();
+  eChart=new Chart(c,{type:'line',data:{labels,datasets:[
+    {data,borderColor:'#5b47e0',backgroundColor:'rgba(91,71,224,.06)',fill:true,tension:.4,pointRadius:0,borderWidth:2},
+    {data:data.map((v,i)=>i===ni?v:null),borderColor:'#5b47e0',backgroundColor:'#5b47e0',pointRadius:data.map((_,i)=>i===ni?5:0),showLine:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},
+    scales:{x:{ticks:{color:'#ababA0',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6},grid:{display:false},border:{display:false}},
+      y:{min:0,max:100,ticks:{display:false},grid:{color:'rgba(0,0,0,.04)'},border:{display:false}}}}});
+}
+
+function renderTips(){
+  const[wh]=S.wakeTime.split(':').map(Number);const debt=getDebt(),last=S.log[0]||null;
+  const tips=[];
+  if(debt>=10)tips.push({c:'var(--red)',t:`Critical debt (${debt}h). Sleep is your top priority.`});
+  else if(debt>=5)tips.push({c:'var(--amber)',t:`Significant debt (${debt}h). Add 30–60 min nightly.`});
+  else tips.push({c:'var(--green)',t:`Debt manageable. Consistency is the job.`});
+  tips.push({c:'var(--blue)',t:`No caffeine after ${fmtH((wh+10)%24)} — half-life disrupts sleep.`});
+  tips.push({c:'var(--accent)',t:`Target bedtime: ${fmt(tBed())} for your full ${S.need}h.`});
+  if(last){const e=effHrs(last.hrs,last.quality||3,last.wakeups||0);if(e<S.need-1.5)tips.push({c:'var(--amber)',t:`Effective sleep: ${e}h. 20-min nap before 2pm helps today.`});}
+  const el=document.getElementById('tips');
+  if(el)el.innerHTML=tips.map(t=>`<div class="tip"><div class="tdot" style="background:${t.c}"></div><div>${t.t}</div></div>`).join('');
+}
+
+// ── Plan page ─
+function rPlan(){
+  const last=S.log[0]||null;const[wh]=S.wakeTime.split(':').map(Number);
+  const tod=today();const ci=S.checkins&&S.checkins.find(c=>c.date===tod);
+  const now=new Date(),isMorn=now.getHours()>=6&&now.getHours()<=11;
+  let ciH='';
+  if(isMorn&&!ci){
+    ciH=`<div class="checkin">
+      <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Morning check-in</div>
+      <div style="font-size:13px;color:var(--text2)">How are you feeling today?</div>
+      <div class="mood-row">${['😵','😩','😐','🙂','⚡'].map((e,i)=>`<button class="mbtn" onclick="logMood(${i+1},'${e}')">${e}</button>`).join('')}</div>
+    </div>`;
+  }else if(ci){
+    ciH=`<div class="checkin"><div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Today's mood</div><div style="font-size:26px">${ci.emoji}</div></div>`;
+  }
+  if(!last){
+    document.getElementById('page-plan').innerHTML=ciH+`<div class="card" style="text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:16px">🌙</div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:8px">Log last night first</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">Your personalised day plan appears after logging sleep.</div>
+      <button class="btn" onclick="go('log',document.querySelectorAll('.nav-item')[2])">Log sleep →</button>
+    </div>`;return;
+  }
+  const eff=effHrs(last.hrs,last.quality||3,last.wakeups||0);
+  const need=S.need,def=need-eff;
+  let dtype,dc,dbg,dsum;
+  if(def<=0){dtype='Well rested';dc='var(--green)';dbg='var(--green-l)';dsum=`${eff}h effective — at your need. Expect a sharp, focused day.`;}
+  else if(def<1.5){dtype='Mildly short';dc='#16a34a';dbg='#dcfce7';dsum=`${eff}h effective (${def.toFixed(1)}h short). Mostly good, dip expected mid-afternoon.`;}
+  else if(def<3){dtype='Underslept';dc='var(--amber)';dbg='var(--amber-l)';dsum=`${eff}h effective (${def.toFixed(1)}h short). Some fog, slower reactions.`;}
+  else{dtype='Significantly short';dc='var(--red)';dbg='var(--red-l)';dsum=`${eff}h effective (${def.toFixed(1)}h short). Protect your schedule today.`;}
+  const p1s=wh+2,p1e=wh+5,d1s=wh+6,d1e=wh+8,p2s=wh+8,p2e=wh+10,d2s=wh+11,d2e=wh+14;
+  const blocks=[
+    {bg:'#f0fdf4',bc:'#bbf7d0',tc:'var(--green)',time:`${fmtH(p1s%24)}–${fmtH(p1e%24)}`,text:'Best focus window. Deep work, hard decisions, creative tasks.'},
+    def>=1.5?{bg:'var(--red-l)',bc:'#fca5a5',tc:'var(--red)',time:`${fmtH(d1s%24)}–${fmtH(d1e%24)}`,text:'Post-lunch crash hits harder today. Avoid critical decisions.'}
+            :{bg:'#f5f3ff',bc:'#ddd6fe',tc:'var(--accent)',time:`${fmtH(d1s%24)}–${fmtH(d1e%24)}`,text:'Natural afternoon dip. Emails, admin, routine tasks.'},
+    def<3?{bg:'var(--blue-l)',bc:'#93c5fd',tc:'var(--blue)',time:`${fmtH(p2s%24)}–${fmtH(p2e%24)}`,text:'Second wind. Good for meetings, calls, collaborative work.'}
+         :{bg:'var(--amber-l)',bc:'#fcd34d',tc:'var(--amber)',time:`${fmtH(p2s%24)}–${fmtH(p2e%24)}`,text:'Second wind blunted. Light tasks only.'},
+    {bg:'#f5f3ff',bc:'#ddd6fe',tc:'var(--accent)',time:`${fmtH(d2s%24)}–${fmtH(d2e%24)}`,text:'Energy dropping. Begin wind-down. Dim screens.'}
+  ];
+  const napRec=def>=3?`Strongly recommended. 20–30 min nap between ${fmtH((wh+6)%24)}–${fmtH((wh+8)%24)}.`
+    :def>=1.5?`Optional. 20 min nap before ${fmtH((wh+8)%24)} helps.`
+    :'Not needed — skip to protect tonight\'s sleep pressure.';
+  document.getElementById('page-plan').innerHTML=ciH+`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div><div class="card-label">Last night</div>
+          <div style="font-size:38px;font-weight:300;line-height:1;letter-spacing:-2px">${eff}h<span style="font-size:16px;color:var(--text2);font-weight:400"> / ${need}h</span></div>
+          ${last.hrs!==eff?`<div style="font-size:12px;color:var(--text3);margin-top:3px">${last.hrs}h raw · adjusted for quality & wakeups</div>`:''}
+        </div>
+        <span class="badge" style="background:${dbg};color:${dc};margin-top:4px">${dtype}</span>
+      </div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">${dsum}</div>
+    </div>
+    <div class="card"><div class="card-label">Hour by hour</div>
+      ${blocks.map(b=>`<div class="pblock" style="background:${b.bg};border-color:${b.bc}"><div class="ptime" style="color:${b.tc}">${b.time}</div><div class="pdesc" style="color:var(--text2)">${b.text}</div></div>`).join('')}
+    </div>
+    <div class="card"><div class="card-label">Nap window</div><div style="font-size:13px;color:var(--text2);line-height:1.6">${napRec}</div></div>
+    <div class="card"><div class="card-label">Tonight</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">Target: <strong style="color:var(--text)">${fmt(tBed())}</strong> for ${need}h.${def>=2?' Prioritise this tonight.':' Keep the rhythm.'}</div>
+    </div>`;
+}
+function logMood(score,emoji){
+  const tod=today();if(!S.checkins)S.checkins=[];
+  S.checkins=S.checkins.filter(c=>c.date!==tod);
+  S.checkins.push({date:tod,score,emoji});
+  save();rPlan();
+}
+
+// ── Log page ─
+function rLog(){
+  lq=3;lw=0;const md=today();
+  document.getElementById('page-log').innerHTML=`
+    <div class="card">
+      <div class="card-label">Log a night</div>
+      <div class="field"><label>Date</label><input type="date" id="ld" value="${md}" max="${md}" oninput="updPrev()"><div class="snote">Log any past night — just pick the date.</div></div>
+      <div class="frow">
+        <div class="field"><label>Bedtime</label><input type="time" id="lb" value="01:00" oninput="updPrev()"></div>
+        <div class="field"><label>Wake time</label><input type="time" id="lw2" value="07:00" oninput="updPrev()"></div>
+      </div>
+      <div class="field"><label>Time to fall asleep</label>
+        <select id="lo" oninput="updPrev()"><option value="5">5 min</option><option value="15" selected>15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option></select>
+      </div>
+      <div class="field"><label>Sleep quality</label>
+        <div class="qual-row">${[['😵','Terrible',1],['😩','Poor',2],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic,lb,v])=>`<button class="qbtn${v===3?' sel':''}" onclick="setQ(${v},this)"><span class="qi">${ic}</span>${lb}</button>`).join('')}</div>
+        <div class="snote">Poor quality = less restorative sleep.</div>
+      </div>
+      <div class="field"><label>Times woken up</label>
+        <div class="wakeup-row">${[0,1,2,3,'4+'].map((v,i)=>`<button class="wbtn${i===0?' sel':''}" onclick="setW(${i===4?4:v},this)">${v}</button>`).join('')}</div>
+      </div>
+      <div id="prev" class="preview-box">Enter your times above</div>
+      <button class="btn" onclick="doLog()">Save sleep</button>
+    </div>
+    <div class="card">
+      <div class="card-label">Log a nap</div>
+      <div class="frow">
+        <div class="field"><label>Date</label><input type="date" id="nd2" value="${md}" max="${md}"></div>
+        <div class="field"><label>Nap start</label><input type="time" id="ns" value="13:00"></div>
+      </div>
+      <div class="field"><label>Duration</label>
+        <select id="ndur"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option></select>
+      </div>
+      <button class="btn-outline" onclick="doNap()">Save nap</button>
+    </div>
+    <div class="card"><div class="card-label">History</div><div id="hist"></div></div>`;
+  updPrev();rHist();
+}
+function setQ(v,el){lq=v;document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
+function setW(v,el){lw=v;document.querySelectorAll('.wbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
+function updPrev(){
+  const bed=document.getElementById('lb')?.value,wake=document.getElementById('lw2')?.value;
+  const onset=parseInt(document.getElementById('lo')?.value||15),date=document.getElementById('ld')?.value;
+  if(!bed||!wake)return;
+  const raw=calcHrs(bed,wake,onset),eff=effHrs(raw,lq,lw),bd=bDef(bed),tb=tBed();
+  const existing=S.log.find(e=>e.date===date);
+  const el=document.getElementById('prev');
+  if(el)el.innerHTML=`${raw.toFixed(1)}h raw · <strong>${eff.toFixed(1)}h effective</strong><br>`+
+    `<span style="color:${bd>0?'#b45309':'#16a34a'};font-size:12px">${bd>0?`Bedtime ${bd}h past target ${fmt(tb)}`:'Bedtime on target ✓'}</span>`+
+    (existing?`<br><span style="color:var(--accent);font-size:12px">Will update entry for ${fmtDate(date)}</span>`:'');
+}
+function doLog(){
+  const bed=document.getElementById('lb').value,wake=document.getElementById('lw2').value;
+  const onset=parseInt(document.getElementById('lo').value),date=document.getElementById('ld').value;
+  const hrs=calcHrs(bed,wake,onset);
+  if(hrs<1||hrs>16){alert('Check your times');return;}
+  S.log=S.log.filter(e=>e.date!==date);
+  S.log.push({date,bed,wake,hrs,onset,quality:lq,wakeups:lw});
+  S.log.sort((a,b)=>b.date.localeCompare(a.date));
+  if(S.log.length>365)S.log=S.log.slice(0,365);
+  save();go('plan',document.querySelectorAll('.nav-item')[1]);
+}
+function doNap(){
+  const start=document.getElementById('ns').value,mins=parseInt(document.getElementById('ndur').value),date=document.getElementById('nd2').value;
+  if(!S.naps)S.naps=[];S.naps.push({date,start,mins});save();toast('Nap saved ✓');rLog();
+}
+function rHist(){
+  const el=document.getElementById('hist');if(!el)return;
+  if(!S.log.length){el.innerHTML='<div style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center">No entries yet</div>';return;}
+  const qi=['','😵','😩','😐','🙂','⚡'];
+  el.innerHTML=S.log.slice(0,30).map(e=>{
+    const eff=effHrs(e.hrs,e.quality||3,e.wakeups||0),good=eff>=S.need-.5,c=good?'var(--green)':'var(--red)';
+    return `<div class="lentry">
+      <div class="ldot" style="background:${c}"></div>
+      <div class="linfo"><div class="ldate">${fmtDate(e.date)}</div><div class="ltimes">${e.bed}→${e.wake} · ${qi[e.quality||3]}${e.wakeups?` · ${e.wakeups}x`:''}</div></div>
+      <div style="text-align:right;flex-shrink:0"><div class="lhrs" style="color:${c}">${eff}h</div>${eff!==e.hrs?`<div style="font-size:10px;color:var(--text3)">${e.hrs}h raw</div>`:''}</div>
+      <button class="icon-btn" onclick="openEdit('${e.date}')">✎</button>
+      <button class="icon-btn" onclick="delEntry('${e.date}')">✕</button>
     </div>`;
   }).join('');
-
-  const factorsHtml = (r.key_factors||[]).map(f=>
-    `<div class="factor-item"><span class="f-icon">▸</span>${f}</div>`
-  ).join('');
-
-  const researchBar = (research&&Object.keys(research).length>1) ?
-    `<div class="research-bar"><span class="r-dot"></span>LIVE DATA · ${teamA}: ${research.team_a_form||'—'} · ${teamB}: ${research.team_b_form||'—'}${research.injuries_a&&research.injuries_a!=='None'&&research.injuries_a!=='None reported'?` · ⚠️ ${teamA} injury: ${research.injuries_a}`:''}${research.injuries_b&&research.injuries_b!=='None'&&research.injuries_b!=='None reported'?` · ⚠️ ${teamB} injury: ${research.injuries_b}`:''}</div>` : '';
-
-  document.getElementById('results').innerHTML = `
-    ${researchBar}
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">📊</div><div class="sec-title">Win Probability</div></div>
-      <div class="win-row">
-        <div class="win-card${winnerA?' winner':''}">
-          <div class="win-pct">${r.win_probability_A}%</div>
-          <div class="win-tname">${teamA}</div>
-        </div>
-        <div class="verdict-box">
-          <div class="verdict-tag ${mtClass}">${(r.match_type||'competitive').replace('-',' ').toUpperCase()}</div>
-        </div>
-        <div class="win-card${!winnerA?' winner':''}">
-          <div class="win-pct">${r.win_probability_B}%</div>
-          <div class="win-tname">${teamB}</div>
-        </div>
-      </div>
-      <div class="conf-row">
-        <div class="conf-card">
-          <div class="conf-lbl">Prediction Confidence</div>
-          <div class="conf-track"><div class="conf-fill" style="width:${r.confidence_score||70}%;background:var(--green)"></div></div>
-          <div class="conf-val" style="color:var(--green)">${r.confidence_score||70}%</div>
-        </div>
-        <div class="conf-card">
-          <div class="conf-lbl">Upset Probability</div>
-          <div class="conf-track"><div class="conf-fill" style="width:${r.upset_probability||20}%;background:var(--purple)"></div></div>
-          <div class="conf-val" style="color:var(--purple)">${r.upset_probability||20}%</div>
-        </div>
-      </div>
-      <div class="summary-box">${r.match_result_summary||''}</div>
-    </div>
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">🏏</div><div class="sec-title">Predicted Scores</div></div>
-      <div class="scores-grid">
-        <div class="score-block">
-          <div class="score-inn">1ST INNINGS</div>
-          <div class="score-team">${r.batting_first_team||'Batting first'}</div>
-          <div class="score-runs">${r.predicted_score_1st||'—'}</div>
-          <div class="score-range">projected range</div>
-        </div>
-        <div class="score-block">
-          <div class="score-inn">2ND INNINGS</div>
-          <div class="score-team">Chasing team</div>
-          <div class="score-runs">${r.predicted_score_2nd||'—'}</div>
-          <div class="score-range">projected range</div>
-        </div>
-      </div>
-      <div class="sec-head" style="margin-bottom:12px"><div class="sec-icon">📈</div><div class="sec-title">Phase Breakdown</div></div>
-      <div class="phases-strip">
-        <div class="phase-card pp">
-          <div class="phase-lbl">POWERPLAY (1–6)</div>
-          <div class="phase-score">${r.innings_phases?.powerplay?.score||'—'}</div>
-          <div class="phase-desc">${r.innings_phases?.powerplay?.description||''}</div>
-        </div>
-        <div class="phase-card mid">
-          <div class="phase-lbl">MIDDLE OVERS (7–15)</div>
-          <div class="phase-score">${r.innings_phases?.middle_overs?.score||'—'}</div>
-          <div class="phase-desc">${r.innings_phases?.middle_overs?.description||''}</div>
-        </div>
-        <div class="phase-card death">
-          <div class="phase-lbl">DEATH OVERS (16–20)</div>
-          <div class="phase-score">${r.innings_phases?.death_overs?.score||'—'}</div>
-          <div class="phase-desc">${r.innings_phases?.death_overs?.description||''}</div>
-        </div>
-      </div>
-      <div class="sec-head" style="margin-bottom:10px"><div class="sec-icon">📉</div><div class="sec-title">Over-by-Over Run Flow</div></div>
-      <div class="over-chart-wrap">
-        <div class="over-bars">${barsHtml}</div>
-        <div class="over-labels">${lblsHtml}</div>
-        <div class="phase-dividers">
-          <div class="phase-div pp">POWERPLAY</div>
-          <div class="phase-div mid">MIDDLE OVERS</div>
-          <div class="phase-div death">DEATH</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">⭐</div><div class="sec-title">Key Players to Watch</div></div>
-      <div class="players-grid">${playersHtml}</div>
-    </div>
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">🔑</div><div class="sec-title">Key Factors</div></div>
-      <div class="factors-list">${factorsHtml}</div>
-    </div>
-
-    ${r.upset_scenario?`
-    <div class="upset-box">
-      <div class="upset-head"><span style="font-size:18px">⚡</span><span class="upset-title">UPSET SCENARIO — How the underdog wins</span></div>
-      <div class="upset-text">${r.upset_scenario}</div>
-    </div>`:''}
-
-    ${r.scenario_summary?`
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">🎲</div><div class="sec-title">3-Scenario Model</div></div>
-      <div class="scenario-item"><span style="color:var(--blue);font-weight:800;min-width:80px">LIKELY</span>${r.scenario_summary.likely||''}</div>
-      <div class="scenario-item"><span style="color:var(--blue);font-weight:800;min-width:80px">${teamA.split(' ').pop()}</span>${r.scenario_summary.optimistic_a||''}</div>
-      <div class="scenario-item"><span style="color:var(--orange);font-weight:800;min-width:80px">${teamB.split(' ').pop()}</span>${r.scenario_summary.optimistic_b||''}</div>
-    </div>`:''}
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">📝</div><div class="sec-title">Detailed Match Preview</div></div>
-      <div class="reasoning-text">${r.detailed_reasoning||''}</div>
-    </div>
-  `;
-  document.getElementById('results').classList.add('visible');
-  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function delEntry(date){if(!confirm(`Delete entry for ${fmtDate(date)}?`))return;S.log=S.log.filter(e=>e.date!==date);save();rLog();}
+function openEdit(date){
+  const e=S.log.find(e=>e.date===date);if(!e)return;
+  document.getElementById('edit-date').value=date;document.getElementById('edit-bed').value=e.bed;
+  document.getElementById('edit-wake').value=e.wake;document.getElementById('edit-onset').value=e.onset||15;
+  document.getElementById('edit-quality').value=e.quality||3;document.getElementById('edit-modal').classList.add('open');
+}
+function closeEdit(){document.getElementById('edit-modal').classList.remove('open');}
+function saveEdit(){
+  const date=document.getElementById('edit-date').value,bed=document.getElementById('edit-bed').value;
+  const wake=document.getElementById('edit-wake').value,onset=parseInt(document.getElementById('edit-onset').value);
+  const quality=parseInt(document.getElementById('edit-quality').value),hrs=calcHrs(bed,wake,onset);
+  S.log=S.log.map(e=>e.date===date?{...e,bed,wake,hrs,onset,quality}:e);
+  save();closeEdit();rLog();
 }
 
-
-function updateImpactDropdowns() {
-  const a = document.getElementById('teamA').value;
-  const b = document.getElementById('teamB').value;
-  const fillImpact = (selId, team, xi) => {
-    const sel = document.getElementById(selId);
-    const cur = sel.value;
-    const bench = (SQUADS[team]?.players || []).filter(p => !xi.some(x => x.name === p.name));
-    sel.innerHTML = '<option value="">None / Not decided</option>' +
-      bench.map(p => `<option value="${p.name} (${p.role})">${ROLE_ICONS[p.role]||''} ${p.name} (${p.role})</option>`).join('');
-    if (cur) sel.value = cur;
-  };
-  fillImpact('impactA', a, xiA);
-  fillImpact('impactB', b, xiB);
-  document.getElementById('impactLblA').textContent = a + ' Impact Player';
-  document.getElementById('impactLblB').textContent = b + ' Impact Player';
+// ── Insights page ─
+function rInsights(){
+  if(S.log.length<3){
+    document.getElementById('page-insights').innerHTML=`<div class="card" style="text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:16px">📊</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px">Not enough data yet</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">Log at least 3 nights to unlock insights, patterns, and your sleep heatmap.</div>
+    </div>`;return;
+  }
+  document.getElementById('page-insights').innerHTML=`
+    <div style="padding:0 14px;margin-bottom:10px">
+      <div class="period-tabs">
+        <div class="ptab${insPeriod==='week'?' active':''}" onclick="setPeriod('week')">Week</div>
+        <div class="ptab${insPeriod==='month'?' active':''}" onclick="setPeriod('month')">Month</div>
+        <div class="ptab${insPeriod==='all'?' active':''}" onclick="setPeriod('all')">All time</div>
+      </div>
+    </div>
+    <div id="ins-summary"></div>
+    <div id="ins-heatmap"></div>
+    <div id="ins-dow"></div>
+    <div id="ins-insights"></div>
+    <div id="ins-mood"></div>
+    <div id="ins-export"></div>`;
+  renderSummary();renderHeatmap();renderDOW();renderInsightCards();renderMoodCorr();
+  document.getElementById('ins-export').innerHTML=`<div class="card"><div class="card-label">Export</div><button class="btn-outline" onclick="doExport()">Download sleep log as CSV</button></div>`;
 }
-init();
+
+function setPeriod(p){insPeriod=p;rInsights();}
+
+function getPeriodLog(){
+  if(insPeriod==='all')return S.log;
+  const days=insPeriod==='week'?7:30;
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
+  return S.log.filter(e=>e.date>=cutoff.toISOString().slice(0,10));
+}
+
+function renderSummary(){
+  const r=getPeriodLog();if(!r.length){document.getElementById('ins-summary').innerHTML='';return;}
+  const effs=r.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0));
+  const avg=Math.round(effs.reduce((s,v)=>s+v,0)/effs.length*10)/10;
+  const best=Math.max(...effs),worst=Math.min(...effs);
+  const onTime=r.filter(e=>bDef(e.bed)===0).length;
+  const debt=getDebt();
+  const avgQ=Math.round(r.reduce((s,e)=>s+(e.quality||3),0)/r.length*10)/10;
+  const cs=consistencyScore(r);
+  document.getElementById('ins-summary').innerHTML=`
+    <div class="mgrid mgrid-2"><div class="mbox"><div class="mv" style="color:${avg>=S.need?'var(--green)':'var(--red)'}">${avg}h</div><div class="ml">Avg effective</div></div>
+      <div class="mbox"><div class="mv" style="color:${debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)'}">${debt}h</div><div class="ml">Current debt</div></div></div>
+    <div class="mgrid"><div class="mbox"><div class="mv">${best}h</div><div class="ml">Best night</div></div>
+      <div class="mbox"><div class="mv">${worst}h</div><div class="ml">Worst night</div></div>
+      <div class="mbox"><div class="mv">${onTime}/${r.length}</div><div class="ml">On-time beds</div></div></div>
+    <div class="mgrid mgrid-2"><div class="mbox"><div class="mv">${avgQ}/5</div><div class="ml">Avg quality</div></div>
+      <div class="mbox"><div class="mv" style="color:${cs>=70?'var(--green)':cs>=40?'var(--amber)':'var(--red)'}">${cs}%</div><div class="ml">Consistency</div></div></div>`;
+}
+
+function renderHeatmap(){
+  const el=document.getElementById('ins-heatmap');
+  if(S.log.length<5){el.innerHTML='';return;}
+  const logMap={};
+  S.log.forEach(e=>{logMap[e.date]=effHrs(e.hrs,e.quality||3,e.wakeups||0);});
+  const today2=new Date();
+  const start=new Date(today2);start.setDate(start.getDate()-363);
+  while(start.getDay()!==0)start.setDate(start.getDate()-1);
+  const cells=[];const monthLabels=[];let lastMonth=-1,colCount=0;
+  const cur=new Date(start);
+  while(cur<=today2){
+    if(cur.getDay()===0){
+      const mo=cur.getMonth();
+      if(mo!==lastMonth){monthLabels.push({col:colCount,label:cur.toLocaleDateString('en-IN',{month:'short'})});lastMonth=mo;}
+      colCount++;
+    }
+    const ds=cur.toISOString().slice(0,10);
+    const eff=logMap[ds];
+    let color;
+    if(eff===undefined)color='var(--surface2)';
+    else if(eff>=S.need)color='#16a34a';
+    else if(eff>=S.need-.5)color='#4ade80';
+    else if(eff>=S.need-1.5)color='#fbbf24';
+    else if(eff>=S.need-3)color='#f97316';
+    else color='#ef4444';
+    cells.push({ds,eff,color});
+    cur.setDate(cur.getDate()+1);
+  }
+  const mlHTML=monthLabels.map((m,i)=>{const next=monthLabels[i+1];const w=next?(next.col-m.col)*16:60;return `<div style="width:${w}px;flex-shrink:0;font-size:10px;color:var(--text3);font-weight:500">${m.label}</div>`;}).join('');
+  el.innerHTML=`<div class="card">
+    <div class="card-label">Sleep calendar — 52 weeks</div>
+    <div class="heatmap-wrap">
+      <div style="display:flex;margin-left:28px;margin-bottom:4px;width:max-content">${mlHTML}</div>
+      <div style="display:flex">
+        <div class="hm-days"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+        <div class="heatmap">${cells.map(c=>`<div class="hm-cell" style="background:${c.color}" title="${c.ds}${c.eff!==undefined?' · '+c.eff+'h':''}"></div>`).join('')}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;margin-top:10px;font-size:11px;color:var(--text3)">
+      <span>Less</span>${['var(--surface2)','#fbbf24','#f97316','#4ade80','#16a34a'].map(c=>`<div style="width:12px;height:12px;border-radius:2px;background:${c}"></div>`).join('')}<span>More</span>
+    </div>
+  </div>`;
+}
+
+function renderDOW(){
+  const r=getPeriodLog();if(r.length<5){document.getElementById('ins-dow').innerHTML='';return;}
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dd=Array(7).fill(null).map(()=>({total:0,count:0}));
+  r.forEach(e=>{const d=new Date(e.date+'T12:00:00').getDay();const eff=effHrs(e.hrs,e.quality||3,e.wakeups||0);dd[d].total+=eff;dd[d].count++;});
+  const avgs=dd.map(d=>d.count?Math.round(d.total/d.count*10)/10:null);
+  const validAvgs=avgs.filter(Boolean);if(!validAvgs.length)return;
+  const maxA=Math.max(...validAvgs);
+  const barsHTML=days.map((day,i)=>{
+    const v=avgs[i];
+    if(!v)return `<div class="dow-col"><div class="dow-bar-wrap"><div class="dow-bar" style="height:3px;background:var(--surface2)"></div></div><div class="dow-lbl">${day.slice(0,2)}</div></div>`;
+    const pct=Math.round(v/maxA*100);
+    const c=v>=S.need?'var(--green)':v>=S.need-.5?'#4ade80':v>=S.need-1.5?'var(--amber)':'var(--red)';
+    return `<div class="dow-col"><div style="font-size:10px;font-weight:600;color:${c}">${v}h</div><div class="dow-bar-wrap"><div class="dow-bar" style="height:${pct}%;background:${c}"></div></div><div class="dow-lbl">${day.slice(0,2)}</div></div>`;
+  }).join('');
+  const bestDay=days[avgs.indexOf(Math.max(...validAvgs))];
+  const worstDay=days[avgs.indexOf(Math.min(...validAvgs))];
+  document.getElementById('ins-dow').innerHTML=`<div class="card">
+    <div class="card-label">Sleep by day of week</div>
+    <div class="dow-row">${barsHTML}</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:8px;line-height:1.6">Best: <strong>${bestDay}</strong> · Worst: <strong>${worstDay}</strong></div>
+  </div>`;
+}
+
+function renderInsightCards(){
+  const r=S.log;if(r.length<5){document.getElementById('ins-insights').innerHTML='';return;}
+  const insights=[];
+  // Weekend vs weekday
+  const wdays=r.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d>0&&d<6;});
+  const wends=r.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d===0||d===6;});
+  if(wdays.length>=3&&wends.length>=1){
+    const wdA=wdays.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/wdays.length;
+    const weA=wends.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/wends.length;
+    const diff=Math.round((weA-wdA)*10)/10;
+    if(Math.abs(diff)>=0.4)insights.push({icon:diff>0?'🛌':'⚡',
+      title:diff>0?`You sleep ${diff}h more on weekends`:`Weekends surprisingly shorter`,
+      body:diff>0?`Weekday avg: ${Math.round(wdA*10)/10}h vs weekend: ${Math.round(weA*10)/10}h. You're using weekends to recover debt. This helps short-term but doesn't fully repair it.`
+        :`Unusual pattern. Weekend avg ${Math.round(weA*10)/10}h vs weekday ${Math.round(wdA*10)/10}h — social nights or activity?`});
+  }
+  // Consistency
+  const cs=consistencyScore(r.slice(0,14));
+  if(cs<50)insights.push({icon:'⏰',title:'Inconsistent bedtimes',body:`Your bedtime varies significantly. Consistency matters almost as much as duration — irregular sleep disrupts your circadian rhythm even if total hours are okay.`});
+  else if(cs>=80)insights.push({icon:'✅',title:'Great bedtime consistency',body:`Your bedtime is very regular (${cs}% score). This is one of the strongest predictors of sleep quality and daytime energy.`});
+  // Trend
+  if(r.length>=14){
+    const r7=r.slice(0,7).map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0));
+    const p7=r.slice(7,14).map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0));
+    const rA=r7.reduce((s,v)=>s+v,0)/r7.length,pA=p7.reduce((s,v)=>s+v,0)/p7.length;
+    const tr=Math.round((rA-pA)*10)/10;
+    if(Math.abs(tr)>=0.3)insights.push({icon:tr>0?'📈':'📉',
+      title:tr>0?`Sleep improving — +${tr}h this week`:`Sleep declining — ${tr}h this week`,
+      body:tr>0?`Last 7 nights: ${Math.round(rA*10)/10}h avg vs ${Math.round(pA*10)/10}h the week before. On the right track.`
+        :`Last 7 nights: ${Math.round(rA*10)/10}h avg vs ${Math.round(pA*10)/10}h the week before. Something changed in your schedule.`});
+  }
+  // Quality vs hours mismatch
+  const hiHrsLoQ=r.filter(e=>e.hrs>=S.need&&(e.quality||3)<=2);
+  if(hiHrsLoQ.length>=2)insights.push({icon:'🤔',title:'Long sleep, poor quality',body:`${hiHrsLoQ.length} nights with enough hours but poor quality. Possible causes: stress, alcohol, late eating, or room temperature.`});
+  // Wakeups
+  const hiWU=r.filter(e=>(e.wakeups||0)>=3);
+  if(hiWU.length>=3)insights.push({icon:'😤',title:'Frequent night wakeups',body:`${hiWU.length} nights with 3+ wakeups. Fragmented sleep is significantly less restorative. Common causes: caffeine too late, stress, room temp, sleep apnea.`});
+  // Bedtime correlation
+  const onT=r.filter(e=>bDef(e.bed)===0);const late=r.filter(e=>bDef(e.bed)>0.5);
+  if(onT.length>=3&&late.length>=3){
+    const oA=onT.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/onT.length;
+    const lA=late.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/late.length;
+    const diff=Math.round((oA-lA)*10)/10;
+    if(diff>0.3)insights.push({icon:'🎯',title:`On-time bedtime = +${diff}h sleep`,body:`When you hit your target bedtime you get ${diff}h more effective sleep on average. Bedtime discipline is your single biggest lever.`});
+  }
+  if(!insights.length)insights.push({icon:'💤',title:'Keep logging for insights',body:'After 14+ nights, Somnus detects your personal patterns and gives specific, data-driven observations.'});
+  document.getElementById('ins-insights').innerHTML=`<div style="padding:0 14px">
+    <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Your patterns</div>
+    ${insights.map(i=>`<div class="insight"><div class="insight-icon">${i.icon}</div><div><div class="insight-title">${i.title}</div><div class="insight-body">${i.body}</div></div></div>`).join('')}
+  </div>`;
+}
+
+function renderMoodCorr(){
+  const el=document.getElementById('ins-mood');
+  const paired=[];
+  S.log.forEach(e=>{
+    const ci=S.checkins&&S.checkins.find(c=>c.date===e.date);
+    if(ci)paired.push({eff:effHrs(e.hrs,e.quality||3,e.wakeups||0),mood:ci.score,emoji:ci.emoji});
+  });
+  if(paired.length<3){el.innerHTML='';return;}
+  const byMood={};
+  paired.forEach(p=>{if(!byMood[p.mood])byMood[p.mood]={total:0,count:0,emoji:p.emoji};byMood[p.mood].total+=p.eff;byMood[p.mood].count++;});
+  const maxAvg=Math.max(...Object.values(byMood).map(v=>v.total/v.count));
+  const rows=[5,4,3,2,1].filter(m=>byMood[m]).map(m=>{
+    const avg=Math.round(byMood[m].total/byMood[m].count*10)/10;
+    const pct=Math.round(avg/maxAvg*100);
+    return `<div class="corr-row"><div class="corr-emoji">${byMood[m].emoji}</div><div class="corr-bar-wrap"><div class="corr-bar" style="width:${pct}%"></div></div><div class="corr-val">${avg}h</div></div>`;
+  }).join('');
+  const scores=paired.map(p=>p.mood),effs=paired.map(p=>p.eff);
+  const aS=scores.reduce((s,v)=>s+v,0)/scores.length,aE=effs.reduce((s,v)=>s+v,0)/effs.length;
+  const corr=scores.reduce((s,v,i)=>s+(v-aS)*(effs[i]-aE),0)/(Math.sqrt(scores.reduce((s,v)=>s+(v-aS)**2,0))*Math.sqrt(effs.reduce((s,v)=>s+(v-aE)**2,0))||1);
+  el.innerHTML=`<div class="card">
+    <div class="card-label">Mood vs sleep (${paired.length} days)</div>
+    ${rows}
+    <div style="font-size:12px;color:var(--text2);margin-top:12px;line-height:1.5">
+      ${corr>0.3?`Your mood correlates with how much effective sleep you got the night before (r=${Math.round(corr*100)/100}). More sleep → better days.`
+        :`${paired.length<7?'Log your mood each morning (Today tab) to build this correlation.':'No strong pattern yet — keep logging.'}`}
+    </div>
+  </div>`;
+}
+
+// ── Settings ─
+function rSettings(){
+  document.getElementById('page-settings').innerHTML=`
+    <div class="card"><div class="card-label">Sleep need</div>
+      <div class="srow-s" style="margin-bottom:8px"><input type="range" min="6" max="11" step="0.5" value="${S.need}" oninput="lv('need',this.value,'nd','h')"><div class="sval" id="nd">${S.need}h</div></div>
+      <div class="snote">Your Rise-calculated need: 9.5h</div>
+    </div>
+    <div class="card"><div class="card-label">Wake time</div>
+      <div class="field" style="margin-bottom:0"><input type="time" value="${S.wakeTime}" oninput="S.wakeTime=this.value;save()"></div>
+    </div>
+    <div class="card"><div class="card-label">Starting debt</div>
+      <div class="srow-s" style="margin-bottom:8px"><input type="range" min="0" max="30" step="0.5" value="${S.startingDebt}" oninput="lv('startingDebt',this.value,'sd','h')"><div class="sval" id="sd">${S.startingDebt}h</div></div>
+      <div class="snote" style="margin-bottom:14px">Set from Rise. Yours: 12.5h.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="btn-outline" onclick="S.startingDebt=0;save();rSettings()">Reset to 0</button>
+        <button class="btn-outline" onclick="S.startingDebt=12.5;save();rSettings()">Set to 12.5h</button>
+      </div>
+    </div>
+    <div class="card"><div class="card-label">Account</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px">Signed in as <strong>${CU?.email||''}</strong>.<br>Data syncs automatically to Firebase.</div>
+      <button class="btn-outline btn-red" onclick="doSignOut()">Sign out</button>
+    </div>
+    <div class="card"><div class="card-label">Danger zone</div>
+      <div class="snote" style="margin-bottom:14px">Permanently deletes all sleep logs from Firebase.</div>
+      <button class="btn-outline btn-red" onclick="clearAll()">Delete all data</button>
+    </div>`;
+}
+function lv(key,val,id,sfx){S[key]=parseFloat(val);document.getElementById(id).textContent=val+sfx;save();}
+async function clearAll(){if(!confirm('Permanently delete all Somnus data?'))return;S.log=[];S.naps=[];S.checkins=[];S.startingDebt=12.5;await save();rDebt();}
+function doExport(){
+  if(!S.log.length){alert('No data to export');return;}
+  const rows=['Date,Bedtime,Wake,Onset(min),Raw(h),Quality,Wakeups,Effective(h),Deficit(h)'];
+  S.log.forEach(e=>{const eff=effHrs(e.hrs,e.quality||3,e.wakeups||0);rows.push(`${e.date},${e.bed},${e.wake},${e.onset||15},${e.hrs},${e.quality||3},${e.wakeups||0},${eff},${Math.round((S.need-eff)*10)/10}`);});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download='somnus-sleep-log.csv';a.click();
+}
 </script>
+
+<script>
+// ── PWA: Service worker ────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sw.js')
+      .then(r=>console.log('SW:',r.scope))
+      .catch(e=>console.warn('SW failed:',e));
+  });
+}
+
+// ── PWA: Android install prompt ────────────────────────────────
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  setTimeout(()=>{
+    if(deferredPrompt&&document.getElementById('main-app').style.display!=='none')
+      showInstallBanner();
+  },30000);
+});
+function showInstallBanner(){
+  if(document.getElementById('ibanner'))return;
+  const b=document.createElement('div');
+  b.id='ibanner';
+  b.style.cssText='position:fixed;bottom:80px;left:14px;right:14px;background:#1a1a18;color:#fff;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:150;font-family:"Plus Jakarta Sans",sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.2);animation:slideUp .3s ease;';
+  b.innerHTML='<div style="font-size:26px;flex-shrink:0;">🌙</div><div style="flex:1"><div style="font-size:13px;font-weight:700;margin-bottom:2px;">Add Somnus to home screen</div><div style="font-size:11px;color:rgba(255,255,255,.6);">Install for the full app experience</div></div><button onclick="doInstall()" style="background:#5b47e0;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Install</button><button onclick="this.closest(\'#ibanner\').remove()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;">✕</button>';
+  document.body.appendChild(b);
+}
+function doInstall(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{deferredPrompt=null;const b=document.getElementById('ibanner');if(b)b.remove();});
+}
+
+// ── PWA: iOS Safari hint (shows once after 10s) ────────────────
+window.addEventListener('load',()=>{
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isStandalone=window.navigator.standalone;
+  if(isIOS&&!isStandalone&&!localStorage.getItem('ios-hint-shown')){
+    setTimeout(()=>{
+      if(document.getElementById('main-app').style.display==='none')return;
+      const h=document.createElement('div');
+      h.style.cssText='position:fixed;bottom:80px;left:14px;right:14px;background:#1a1a18;color:#fff;border-radius:14px;padding:16px;z-index:150;font-family:"Plus Jakarta Sans",sans-serif;line-height:1.5;animation:slideUp .3s ease;';
+      h.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:13px;font-weight:700;">📲 Install Somnus</div><button onclick="this.closest(\'div[style]\').remove();localStorage.setItem(\'ios-hint-shown\',\'1\')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;line-height:1;">✕</button></div><div style="font-size:13px;color:rgba(255,255,255,.7);">Tap <strong style="color:#fff">Share ↑</strong> at the bottom of Safari, then <strong style="color:#fff">Add to Home Screen</strong>.</div>';
+      document.body.appendChild(h);
+      localStorage.setItem('ios-hint-shown','1');
+    },10000);
+  }
+});
+</script>
+<style>@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}</style>
 </body>
 </html>
