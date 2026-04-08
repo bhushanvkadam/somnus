@@ -1,4 +1,4 @@
-const CACHE = 'somnus-v2';
+const CACHE = 'somnus-v3';
 const SHELL = [
   '/',
   '/index.html',
