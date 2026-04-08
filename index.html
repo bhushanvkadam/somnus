@@ -180,6 +180,7 @@ html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',syste
       <div style="font-size:48px;margin-bottom:16px;">📬</div>
       <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1a1a18;">Check your email</div>
       <div style="font-size:13px;color:#6b6b63;line-height:1.6;margin-bottom:20px;">We sent a sign-in link to <strong id="auth-sent-email" style="color:#1a1a18;"></strong>. Tap it to sign in.</div>
+      <button onclick="checkAuthNow()" style="width:100%;background:#5b47e0;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;">I clicked the link — open app</button>
       <button onclick="resetAuth()" style="background:none;border:none;color:#5b47e0;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Use a different email</button>
     </div>
   </div>
@@ -317,6 +318,23 @@ async function sendMagicLink(){
   }catch(e){
     alert('Failed to send: '+e.message);
     btn.textContent='Send sign-in link';btn.disabled=false;
+  }
+}
+async function checkAuthNow(){
+  const btn=document.querySelector('#auth-sent-step button');
+  if(btn){btn.textContent='Checking…';btn.disabled=true;}
+  // Force refresh auth state
+  await auth.currentUser?.reload().catch(()=>{});
+  const user=auth.currentUser;
+  if(user){
+    CU=user;
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('main-app').style.display='block';
+    await loadData();
+    go('debt',document.querySelector('.nav-item'));
+  } else {
+    if(btn){btn.textContent='I clicked the link — open app';btn.disabled=false;}
+    alert('Not signed in yet. Make sure you tapped the link in your email, then try again.');
   }
 }
 function resetAuth(){
