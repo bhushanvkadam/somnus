@@ -325,6 +325,20 @@ function resetAuth(){
   document.getElementById('auth-email-input').value='';
 }
 
+// When PWA comes back into focus, check if user signed in via Safari
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&!CU){
+    auth.currentUser && auth.onAuthStateChanged(user=>{
+      if(user&&!CU){
+        CU=user;
+        document.getElementById('auth-screen').style.display='none';
+        document.getElementById('main-app').style.display='block';
+        loadData().then(()=>go('debt',document.querySelector('.nav-item')));
+      }
+    });
+  }
+});
+
 async function doSignOut(){closeUserMenu();await auth.signOut();}
 function showUserMenu(){document.getElementById('user-modal').classList.add('open');}
 function closeUserMenu(){document.getElementById('user-modal').classList.remove('open');}
