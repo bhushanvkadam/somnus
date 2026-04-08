@@ -285,6 +285,17 @@ auth.onAuthStateChanged(async user=>{
     go('debt',document.querySelector('.nav-item'));
   } else {
     CU=null;
+    // Check if this is a magic link return
+    if(auth.isSignInWithEmailLink(window.location.href)){
+      let email=window.localStorage.getItem('emailForSignIn');
+      if(!email) email=window.prompt('Please confirm your email:');
+      if(email){
+        auth.signInWithEmailLink(email, window.location.href)
+          .then(()=>{ window.history.replaceState({},'',window.location.pathname); })
+          .catch(e=>{ alert('Link expired or invalid. Please request a new one.'); });
+        return;
+      }
+    }
     document.getElementById('auth-screen').style.display='flex';
     document.getElementById('main-app').style.display='none';
   }
