@@ -167,17 +167,24 @@ html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',syste
     <div style="font-size:72px;margin-bottom:24px">🌙</div>
     <div class="auth-logo">Somnus<span>.</span></div>
     <div class="auth-tag">Your personal sleep debt tracker.<br>Science-backed. Beautifully simple.</div>
-    <div id="auth-email-step" style="width:100%;max-width:320px;">
-      <input type="email" id="auth-email-input" placeholder="your@email.com"
-        style="width:100%;background:#f2f2ef;border:1.5px solid #d4d4ce;border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;color:#1a1a18;outline:none;margin-bottom:12px;box-sizing:border-box;"
-        onkeydown="if(event.key==='Enter')sendMagicLink()">
-      <button onclick="sendMagicLink()" class="btn-google" style="width:100%;justify-content:center;background:#5b47e0;color:#fff;border-color:#5b47e0;">
-        Send sign-in link
+    <div style="width:100%;max-width:320px;">
+      <input type="email" id="auth-email" placeholder="Email address"
+        style="width:100%;background:#f2f2ef;border:1.5px solid #d4d4ce;border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;color:#1a1a18;outline:none;margin-bottom:10px;box-sizing:border-box;"
+        onkeydown="if(event.key==='Enter')document.getElementById('auth-pass').focus()">
+      <input type="password" id="auth-pass" placeholder="Password"
+        style="width:100%;background:#f2f2ef;border:1.5px solid #d4d4ce;border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;color:#1a1a18;outline:none;margin-bottom:10px;box-sizing:border-box;"
+        onkeydown="if(event.key==='Enter')doEmailSignIn()">
+      <div id="auth-error" style="font-size:12px;color:#dc2626;margin-bottom:8px;display:none;"></div>
+      <button onclick="doEmailSignIn()" id="auth-btn"
+        style="width:100%;background:#5b47e0;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;">
+        Sign in
       </button>
-      <div class="auth-note">We'll email you a link. No password needed. Works on all browsers.</div>
+      <button onclick="doEmailRegister()" id="auth-reg-btn"
+        style="width:100%;background:transparent;color:#5b47e0;border:1.5px solid #5b47e0;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">
+        Create account
+      </button>
+      <div style="font-size:12px;color:#ababA0;margin-top:12px;text-align:center;">Stays signed in. Works on all browsers.</div>
     </div>
-    <div id="auth-sent-step" style="display:none;width:100%;max-width:320px;text-align:center;">
-      <div style="font-size:48px;margin-bottom:16px;">📬</div>
       <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1a1a18;">Check your email</div>
       <div style="font-size:13px;color:#6b6b63;line-height:1.6;margin-bottom:20px;">We sent a sign-in link to <strong id="auth-sent-email" style="color:#1a1a18;"></strong>. Tap it to sign in.</div>
       <button onclick="checkAuthNow()" style="width:100%;background:#5b47e0;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;">I clicked the link — open app</button>
@@ -286,17 +293,7 @@ auth.onAuthStateChanged(async user=>{
     go('debt',document.querySelector('.nav-item'));
   } else {
     CU=null;
-    // Check if this is a magic link return
-    if(auth.isSignInWithEmailLink(window.location.href)){
-      let email=window.localStorage.getItem('emailForSignIn');
-      if(!email) email=window.prompt('Please confirm your email:');
-      if(email){
-        auth.signInWithEmailLink(email, window.location.href)
-          .then(()=>{ window.history.replaceState({},'',window.location.pathname); })
-          .catch(e=>{ alert('Link expired or invalid. Please request a new one.'); });
-        return;
-      }
-    }
+
     document.getElementById('auth-screen').style.display='flex';
     document.getElementById('main-app').style.display='none';
   }
@@ -304,44 +301,9 @@ auth.onAuthStateChanged(async user=>{
 
 auth.getRedirectResult().catch(e=>console.error('Redirect:',e));
 
-async function sendMagicLink(){
-  const email=document.getElementById('auth-email-input').value.trim();
-  if(!email||!email.includes('@')){alert('Please enter a valid email.');return;}
-  const btn=document.querySelector('#auth-email-step button');
-  btn.textContent='Sending…';btn.disabled=true;
-  try{
-    await auth.sendSignInLinkToEmail(email,{url:window.location.origin,handleCodeInApp:true});
-    window.localStorage.setItem('emailForSignIn',email);
-    document.getElementById('auth-sent-email').textContent=email;
-    document.getElementById('auth-email-step').style.display='none';
-    document.getElementById('auth-sent-step').style.display='block';
-  }catch(e){
-    alert('Failed to send: '+e.message);
-    btn.textContent='Send sign-in link';btn.disabled=false;
-  }
-}
-async function checkAuthNow(){
-  const btn=document.querySelector('#auth-sent-step button');
-  if(btn){btn.textContent='Checking…';btn.disabled=true;}
-  // Force refresh auth state
-  await auth.currentUser?.reload().catch(()=>{});
-  const user=auth.currentUser;
-  if(user){
-    CU=user;
-    document.getElementById('auth-screen').style.display='none';
-    document.getElementById('main-app').style.display='block';
-    await loadData();
-    go('debt',document.querySelector('.nav-item'));
-  } else {
-    if(btn){btn.textContent='I clicked the link — open app';btn.disabled=false;}
-    alert('Not signed in yet. Make sure you tapped the link in your email, then try again.');
-  }
-}
-function resetAuth(){
-  document.getElementById('auth-email-step').style.display='block';
-  document.getElementById('auth-sent-step').style.display='none';
-  document.getElementById('auth-email-input').value='';
-}
+
+
+
 
 // When PWA comes back into focus, check if user signed in via Safari
 document.addEventListener('visibilitychange',()=>{
@@ -356,6 +318,49 @@ document.addEventListener('visibilitychange',()=>{
     });
   }
 });
+
+async function doEmailSignIn(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  if(!email||!pass){showAuthError('Please enter email and password.');return;}
+  const btn=document.getElementById('auth-btn');
+  btn.textContent='Signing in…';btn.disabled=true;
+  try{
+    await auth.signInWithEmailAndPassword(email,pass);
+  }catch(e){
+    let msg='Sign in failed.';
+    if(e.code==='auth/user-not-found')msg='No account found. Create one below.';
+    else if(e.code==='auth/wrong-password')msg='Wrong password. Try again.';
+    else if(e.code==='auth/invalid-email')msg='Invalid email address.';
+    else if(e.code==='auth/too-many-requests')msg='Too many attempts. Try again later.';
+    showAuthError(msg);
+    btn.textContent='Sign in';btn.disabled=false;
+  }
+}
+
+async function doEmailRegister(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  if(!email||!pass){showAuthError('Please enter email and password.');return;}
+  if(pass.length<6){showAuthError('Password must be at least 6 characters.');return;}
+  const btn=document.getElementById('auth-reg-btn');
+  btn.textContent='Creating…';btn.disabled=true;
+  try{
+    await auth.createUserWithEmailAndPassword(email,pass);
+  }catch(e){
+    let msg='Could not create account.';
+    if(e.code==='auth/email-already-in-use')msg='Account exists. Sign in instead.';
+    else if(e.code==='auth/invalid-email')msg='Invalid email address.';
+    else if(e.code==='auth/weak-password')msg='Password too weak. Use 6+ characters.';
+    showAuthError(msg);
+    btn.textContent='Create account';btn.disabled=false;
+  }
+}
+
+function showAuthError(msg){
+  const el=document.getElementById('auth-error');
+  if(el){el.textContent=msg;el.style.display='block';}
+}
 
 async function doSignOut(){closeUserMenu();await auth.signOut();}
 function showUserMenu(){document.getElementById('user-modal').classList.add('open');}
