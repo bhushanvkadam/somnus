@@ -9,187 +9,255 @@
 <title>Somnus — Sleep Tracker</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#5b47e0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Somnus">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#f7f7f5;--surface:#fff;--surface2:#f2f2ef;
-  --border:#e8e8e4;--border2:#d4d4ce;
-  --text:#1a1a18;--text2:#6b6b63;--text3:#ababA0;
-  --accent:#5b47e0;--accent-l:#eeecfb;--accent-d:#4535c8;
-  --green:#16a34a;--green-l:#dcfce7;
-  --amber:#b45309;--amber-l:#fef3c7;
-  --red:#dc2626;--red-l:#fee2e2;
-  --blue:#1d4ed8;--blue-l:#dbeafe;
-  --r:12px;--r-lg:16px;
+  --bg:#f7f7f5; --surface:#fff; --surface2:#f2f2ef;
+  --border:#e8e8e4; --border2:#d4d4ce;
+  --text:#1a1a18; --text2:#6b6b63; --text3:#ababA0;
+  --accent:#5b47e0; --accent-l:#eeecfb; --accent-d:#4535c8;
+  --green:#16a34a; --green-l:#dcfce7;
+  --amber:#b45309; --amber-l:#fef3c7;
+  --red:#dc2626; --red-l:#fee2e2;
+  --blue:#1d4ed8; --blue-l:#dbeafe;
+  --r:12px; --r-lg:16px;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;margin:0;padding:0;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;}
 .app{max-width:480px;margin:0 auto;background:var(--bg);}
-#auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:40px 24px;text-align:center}
-.auth-logo{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:8px}
-.auth-logo span{color:var(--accent)}
-.auth-tag{font-size:15px;color:var(--text2);margin-bottom:48px;line-height:1.5}
-.btn-google{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:320px;background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;padding:14px 20px;font-size:15px;font-weight:600;font-family:inherit;color:var(--text);cursor:pointer;transition:all .15s}
-.btn-google:hover{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d)}
-.btn-google img{width:20px;height:20px}
-.auth-note{font-size:12px;color:var(--text3);margin-top:20px;line-height:1.5}
-#loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;gap:16px}
-.spinner{width:32px;height:32px;border:2.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#main-app{display:none;}
-.header{padding:max(12px,env(safe-area-inset-top)) 18px 0;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.logo{font-size:20px;font-weight:700;letter-spacing:-.5px}
-.logo-dot{color:var(--accent)}
-.hdr-date{font-size:12px;color:var(--text3);margin-top:2px}
-.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.streak-pill{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-l);border-radius:20px;padding:4px 10px}
-.user-pill{display:flex;align-items:center;gap:6px;cursor:pointer}
-.user-avatar{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);object-fit:cover}
-.user-name{font-size:12px;color:var(--text2);font-weight:500;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(247,247,245,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:8px 4px env(safe-area-inset-bottom,8px);z-index:100}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 0;border-radius:10px;transition:background .15s}
-.nav-item:hover{background:var(--surface2)}
-.nav-icon{font-size:19px;color:var(--text3);line-height:1}
-.nav-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.02em}
-.nav-item.active .nav-icon,.nav-item.active .nav-label{color:var(--accent)}
-.page{display:none;padding-bottom:96px}
-.page.active{display:block}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin:0 14px 10px}
-.card-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
-.big-num{font-size:52px;font-weight:300;line-height:1;letter-spacing:-3px}
-.big-unit{font-size:17px;color:var(--text2);font-weight:400}
-.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 14px 10px}
-.mgrid-2{grid-template-columns:repeat(2,1fr)}
-.mbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center}
-.mbox .mv{font-size:19px;font-weight:600;line-height:1;color:var(--text)}
-.mbox .ml{font-size:10px;color:var(--text3);font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
-.mbox .ms{font-size:10px;color:var(--text3);margin-top:3px}
-.track{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin:12px 0 5px}
-.fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.track-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
-.alert{margin:0 14px 10px;border-radius:var(--r);padding:12px 14px;font-size:13px;line-height:1.5;font-weight:500;border:1px solid}
-.tip{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);line-height:1.5}
-.tip:last-child{border-bottom:none;padding-bottom:0}
-.tdot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.ewrap{height:120px;position:relative;margin:8px 0 4px}
-.field{margin-bottom:12px}
-.field label{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
-.field input[type=time],.field input[type=date],.field select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:15px;font-family:inherit;font-weight:500;padding:11px 14px;outline:none;transition:border .15s,background .15s;appearance:none;-webkit-appearance:none}
-.field input:focus,.field select:focus{border-color:var(--accent);background:#fff}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
-.btn:hover{background:var(--accent-d)}
-.btn:active{transform:scale(.98)}
-.btn-outline{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s}
-.btn-outline:hover{background:var(--surface2)}
-.btn-red{color:var(--red);border-color:#fca5a5}
-.btn-red:hover{background:var(--red-l)!important;border-color:var(--red)!important}
-.qual-row{display:flex;gap:5px}
-.qbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:8px 2px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2);line-height:1.4}
-.qbtn .qi{font-size:18px;display:block;margin-bottom:2px}
-.qbtn.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d)}
-.wakeup-row{display:flex;gap:6px}
-.wbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 4px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2)}
-.wbtn.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d)}
-.pblock{border-radius:var(--r);padding:13px 14px;margin-bottom:8px;border:1px solid}
-.ptime{font-size:10px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
-.pdesc{font-size:13px;line-height:1.5}
-.lentry{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
-.lentry:last-child{border-bottom:none}
-.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.linfo{flex:1;min-width:0}
-.ldate{font-size:13px;font-weight:600}
-.ltimes{font-size:11px;color:var(--text3);margin-top:2px}
-.lhrs{font-size:15px;font-weight:700;flex-shrink:0}
-.icon-btn{background:none;border:none;cursor:pointer;font-size:14px;color:var(--text3);padding:5px;border-radius:6px;transition:.12s}
-.icon-btn:hover{color:var(--text);background:var(--surface2)}
-.wbar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.wlbl{font-size:11px;font-weight:600;color:var(--text3);width:24px;text-align:right}
-.wtrack{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
-.wfill{height:100%;border-radius:3px}
-.wval{font-size:12px;font-weight:600;width:32px}
-.srow-s{display:flex;align-items:center;gap:12px}
-.srow-s input[type=range]{flex:1;accent-color:var(--accent)}
-.sval{font-size:14px;font-weight:700;color:var(--accent);min-width:38px}
-.badge{display:inline-block;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600}
-.mood-row{display:flex;gap:6px;margin-top:10px}
-.mbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 0;font-size:22px;cursor:pointer;text-align:center;transition:all .15s}
-.mbtn:hover,.mbtn.sel{border-color:var(--accent);background:var(--accent-l)}
-.checkin{margin:0 14px 10px;background:linear-gradient(135deg,var(--accent-l),#e8f0fe);border:1px solid rgba(91,71,224,.15);border-radius:var(--r-lg);padding:16px}
-.srow2{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
-.srow2:last-child{border-bottom:none}
-.proj-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
-.proj-row:last-child{border-bottom:none}
-.preview-box{background:var(--accent-l);border:1px solid rgba(91,71,224,.15);border-radius:var(--r);padding:11px 13px;font-size:13px;color:var(--accent-d);font-weight:500;margin-bottom:13px;line-height:1.6;min-height:44px}
-.snote{font-size:12px;color:var(--text3);line-height:1.5;margin-top:6px}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:flex-end;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}
-.modal-title{font-size:16px;font-weight:700;margin-bottom:16px}
-.save-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
-.save-toast.show{opacity:1}
-/* Insights */
-.heatmap-wrap{overflow-x:auto;padding-bottom:4px}
-.heatmap{display:grid;grid-template-rows:repeat(7,14px);grid-auto-flow:column;gap:2px;width:max-content}
-.hm-cell{width:14px;height:14px;border-radius:3px;background:var(--surface2)}
-.hm-days{display:grid;grid-template-rows:repeat(7,14px);gap:2px;margin-right:6px;font-size:9px;color:var(--text3);align-items:center;flex-shrink:0}
-.insight{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
-.insight-icon{font-size:22px;flex-shrink:0;margin-top:1px}
-.insight-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
-.insight-body{font-size:12px;color:var(--text2);line-height:1.5}
-.period-tabs{display:flex;gap:4px;margin-bottom:14px}
-.ptab{flex:1;padding:7px;font-size:12px;font-weight:600;text-align:center;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;color:var(--text2);background:var(--surface);transition:all .15s}
-.ptab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.corr-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
-.corr-row:last-child{border-bottom:none}
-.corr-emoji{font-size:16px;width:24px;text-align:center;flex-shrink:0}
-.corr-bar-wrap{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
-.corr-bar{height:100%;border-radius:3px;background:var(--accent)}
-.corr-val{font-size:11px;font-weight:600;color:var(--text2);width:28px;text-align:right;flex-shrink:0}
-.dow-row{display:flex;align-items:flex-end;gap:6px;height:80px;margin:8px 0 4px}
-.dow-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-.dow-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
-.dow-bar{width:80%;border-radius:4px 4px 0 0;min-height:3px}
-.dow-lbl{font-size:10px;color:var(--text3);font-weight:500}
+
+/* ── Auth ── */
+#auth-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:40px 24px;text-align:center;}
+.auth-logo{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;}
+.auth-logo span{color:var(--accent);}
+.auth-tag{font-size:15px;color:var(--text2);margin-bottom:40px;line-height:1.6;}
+.auth-input{width:100%;max-width:320px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;color:var(--text);outline:none;margin-bottom:10px;transition:border .15s;}
+.auth-input:focus{border-color:var(--accent);}
+#auth-error{font-size:12px;color:var(--red);margin-bottom:8px;display:none;max-width:320px;}
+.auth-btn{width:100%;max-width:320px;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:10px;transition:background .15s;}
+.auth-btn:hover{background:var(--accent-d);}
+.auth-btn-out{width:100%;max-width:320px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:12px;padding:13px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;}
+.auth-note{font-size:12px;color:var(--text3);margin-top:12px;line-height:1.5;max-width:280px;}
+
+/* ── Loading ── */
+#loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;gap:16px;}
+.spinner{width:32px;height:32px;border:2.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Main ── */
+#main-app{display:none;padding-bottom:88px;}
+.header{padding:16px 18px 0;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.logo{font-size:20px;font-weight:700;letter-spacing:-.5px;}
+.logo-dot{color:var(--accent);}
+.hdr-date{font-size:12px;color:var(--text3);margin-top:2px;}
+.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.streak-pill{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-l);border-radius:20px;padding:4px 10px;}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
+
+/* ── Nav ── */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(247,247,245,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:8px 4px env(safe-area-inset-bottom,8px);z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 0;border-radius:10px;transition:background .15s;}
+.nav-item:hover{background:var(--surface2);}
+.nav-icon{font-size:18px;color:var(--text3);line-height:1;}
+.nav-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.02em;}
+.nav-item.active .nav-icon,.nav-item.active .nav-label{color:var(--accent);}
+
+/* ── Pages ── */
+.page{display:none;}.page.active{display:block;}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin:0 14px 10px;}
+.card-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+
+/* ── DEBT TAB SPECIFIC ── */
+.debt-hero{margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;}
+.debt-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.debt-number{font-size:64px;font-weight:300;line-height:1;letter-spacing:-4px;}
+.debt-unit{font-size:16px;font-weight:400;color:var(--text2);margin-top:8px;}
+.debt-arc-wrap{position:relative;width:72px;height:72px;flex-shrink:0;}
+.debt-arc-wrap svg{transform:rotate(-90deg);}
+.debt-arc-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.debt-arc-pct{font-size:15px;font-weight:700;line-height:1;}
+.debt-arc-sub{font-size:9px;color:var(--text3);font-weight:500;margin-top:1px;}
+.debt-bar{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-bottom:6px;}
+.debt-bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+.debt-meta{font-size:12px;color:var(--text3);}
+.safe-zone-label{font-size:11px;font-weight:600;color:var(--green);background:var(--green-l);border-radius:20px;padding:3px 8px;display:inline-block;margin-top:10px;}
+
+/* Last night strip */
+.ln-strip{margin:0 14px 10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ln-main{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;display:flex;align-items:center;gap:14px;}
+.ln-hours{font-size:36px;font-weight:300;line-height:1;letter-spacing:-2px;}
+.ln-label{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
+.ln-sub{font-size:12px;color:var(--text2);}
+.ln-quality-ring{width:44px;height:44px;flex-shrink:0;}
+.ln-right{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;}
+.ln-bedtime{font-size:24px;font-weight:600;line-height:1;margin-bottom:2px;}
+.ln-countdown{font-size:11px;font-weight:600;border-radius:20px;padding:3px 8px;display:inline-block;margin-top:6px;}
+
+/* Timeline energy */
+.energy-timeline{margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;}
+.timeline-strip{height:10px;border-radius:5px;overflow:hidden;display:flex;margin:10px 0 8px;position:relative;}
+.timeline-seg{height:100%;flex-shrink:0;}
+.timeline-marker{position:absolute;top:-4px;width:3px;height:18px;background:var(--text);border-radius:2px;transform:translateX(-50%);}
+.timeline-zones{display:flex;justify-content:space-between;margin-top:4px;}
+.tz{font-size:10px;color:var(--text3);}
+.tz-label{font-size:10px;font-weight:600;margin-bottom:1px;}
+.zone-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.zone-pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid;}
+
+/* Single tip */
+.tip-card{margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;}
+.tip-main{font-size:15px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:4px;}
+.tip-sub{font-size:13px;color:var(--text2);line-height:1.5;}
+.tip-nav{display:flex;align-items:center;gap:8px;margin-top:12px;}
+.tip-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);}
+.tip-dot.active{background:var(--accent);}
+.tip-next{font-size:12px;color:var(--accent);font-weight:600;cursor:pointer;margin-left:auto;}
+
+/* Debt goal card */
+.goal-card{margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;}
+.goal-progress{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin:12px 0 8px;}
+.goal-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .5s;}
+.goal-stats{display:flex;justify-content:space-between;font-size:12px;color:var(--text3);}
+
+/* TODAY TAB */
+.day-hero{margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;}
+.day-type{font-size:28px;font-weight:700;line-height:1;margin-bottom:4px;}
+.day-hrs{font-size:14px;color:var(--text2);margin-bottom:10px;}
+.day-bar{height:4px;border-radius:2px;margin-bottom:14px;}
+.day-summary{font-size:13px;color:var(--text2);line-height:1.6;}
+
+.visual-timeline{margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;}
+.vt-strip{display:flex;height:32px;border-radius:8px;overflow:hidden;margin:10px 0;position:relative;cursor:pointer;}
+.vt-seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(255,255,255,.8);flex-shrink:0;}
+.vt-now{position:absolute;top:0;bottom:0;width:2px;background:#1a1a18;opacity:.6;}
+.vt-detail{background:var(--surface2);border-radius:var(--r);padding:12px;font-size:13px;color:var(--text2);line-height:1.5;margin-top:8px;min-height:44px;}
+
+.today-pills{margin:0 14px 10px;display:flex;gap:8px;}
+.today-pill{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;text-align:center;}
+.today-pill-val{font-size:15px;font-weight:700;margin-bottom:3px;}
+.today-pill-lbl{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.05em;}
+
+.nap-banner{margin:0 14px 10px;border-radius:var(--r);padding:12px 14px;border:1px solid;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;}
+
+/* Mood */
+.checkin{margin:0 14px 10px;background:linear-gradient(135deg,var(--accent-l),#e8f0fe);border:1px solid rgba(91,71,224,.15);border-radius:var(--r-lg);padding:16px;}
+.mood-row{display:flex;gap:6px;margin-top:10px;}
+.mbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 0;font-size:22px;cursor:pointer;text-align:center;transition:all .15s;}
+.mbtn:hover,.mbtn.sel{border-color:var(--accent);background:var(--accent-l);}
+
+/* LOG TAB */
+.field{margin-bottom:12px;}
+.field label{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;}
+.field input[type=time],.field input[type=date],.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;padding:11px 14px;outline:none;transition:border .15s,background .15s;appearance:none;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:#fff;}
+.field textarea{resize:none;height:72px;font-size:14px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.tag{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all .15s;}
+.tag.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d);}
+.qual-row{display:flex;gap:5px;}
+.qbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:8px 2px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2);line-height:1.4;}
+.qbtn .qi{font-size:18px;display:block;margin-bottom:2px;}
+.qbtn.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d);}
+.wakeup-row{display:flex;gap:6px;}
+.wbtn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 4px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:var(--text2);}
+.wbtn.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent-d);}
+.preview-box{background:var(--accent-l);border:1px solid rgba(91,71,224,.15);border-radius:var(--r);padding:11px 13px;font-size:13px;color:var(--accent-d);font-weight:500;margin-bottom:13px;line-height:1.6;min-height:44px;}
+.snote{font-size:12px;color:var(--text3);line-height:1.5;margin-top:6px;}
+.btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s;}
+.btn:hover{background:var(--accent-d);}
+.btn:active{transform:scale(.98);}
+.btn-outline{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;}
+.btn-outline:hover{background:var(--surface2);}
+.btn-red{color:var(--red);border-color:#fca5a5;}
+
+/* History */
+.lentry{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);}
+.lentry:last-child{border-bottom:none;}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.linfo{flex:1;min-width:0;}
+.ldate{font-size:13px;font-weight:600;}
+.ltimes{font-size:11px;color:var(--text3);margin-top:2px;}
+.ltags{font-size:10px;color:var(--accent);margin-top:2px;}
+.lhrs{font-size:15px;font-weight:700;flex-shrink:0;}
+.icon-btn{background:none;border:none;cursor:pointer;font-size:14px;color:var(--text3);padding:5px;border-radius:6px;transition:.12s;}
+.icon-btn:hover{color:var(--text);background:var(--surface2);}
+
+/* INSIGHTS TAB */
+.period-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.ptab{flex:1;padding:8px;font-size:12px;font-weight:600;text-align:center;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;color:var(--text3);background:var(--surface2);transition:all .15s;}
+.ptab.active{border-color:var(--accent);color:var(--accent);background:var(--accent-l);}
+.period-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.pstat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;}
+.pstat-val{font-size:20px;font-weight:700;line-height:1;}
+.pstat-lbl{font-size:10px;color:var(--text3);font-weight:500;margin-top:3px;text-transform:uppercase;letter-spacing:.05em;}
+.dow-bar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.dow-lbl{font-size:11px;font-weight:600;color:var(--text2);width:28px;}
+.dow-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.dow-fill{height:100%;border-radius:4px;}
+.dow-val{font-size:11px;font-weight:600;width:32px;text-align:right;}
+.trend-wrap{height:100px;position:relative;margin:8px 0 4px;}
+.score-ring{display:flex;align-items:center;gap:16px;}
+.ring-wrap{position:relative;width:72px;height:72px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-num{font-size:18px;font-weight:700;line-height:1;}
+.ring-sub{font-size:9px;color:var(--text3);font-weight:500;}
+.insight-card{border-radius:var(--r);padding:14px;margin-bottom:8px;border:1px solid;}
+.insight-icon{font-size:20px;margin-bottom:6px;}
+.insight-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.insight-body{font-size:12px;line-height:1.6;}
+.wbar{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.wlbl{font-size:11px;font-weight:600;color:var(--text3);width:24px;text-align:right;}
+.wtrack{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.wfill{height:100%;border-radius:3px;}
+.wval{font-size:12px;font-weight:600;width:32px;}
+
+/* SETTINGS */
+.srow{display:flex;align-items:center;gap:12px;}
+.srow input[type=range]{flex:1;accent-color:var(--accent);}
+.sval{font-size:14px;font-weight:700;color:var(--accent);min-width:38px;}
+.srow2{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.srow2:last-child{border-bottom:none;}
+.proj-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.proj-row:last-child{border-bottom:none;}
+
+/* Alert */
+.alert{margin:0 14px 10px;border-radius:var(--r);padding:12px 14px;font-size:13px;line-height:1.5;font-weight:500;border:1px solid;}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px));}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;}
+
+/* Toast */
+.save-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
+.save-toast.show{opacity:1;}
+
+/* PWA install */
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
 </style>
 </head>
 <body>
 <div class="app">
   <div id="loading-screen"><div class="spinner"></div><div style="font-size:13px;color:var(--text3)">Loading Somnus…</div></div>
 
-  <div id="auth-screen" style="display:none">
-    <div style="font-size:72px;margin-bottom:24px">🌙</div>
+  <div id="auth-screen">
+    <div style="font-size:64px;margin-bottom:20px">🌙</div>
     <div class="auth-logo">Somnus<span>.</span></div>
     <div class="auth-tag">Your personal sleep debt tracker.<br>Science-backed. Beautifully simple.</div>
-    <div style="width:100%;max-width:320px;">
-      <input type="email" id="auth-email" placeholder="Email address"
-        style="width:100%;background:#f2f2ef;border:1.5px solid #d4d4ce;border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;color:#1a1a18;outline:none;margin-bottom:10px;box-sizing:border-box;"
-        onkeydown="if(event.key==='Enter')document.getElementById('auth-pass').focus()">
-      <input type="password" id="auth-pass" placeholder="Password"
-        style="width:100%;background:#f2f2ef;border:1.5px solid #d4d4ce;border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;color:#1a1a18;outline:none;margin-bottom:10px;box-sizing:border-box;"
-        onkeydown="if(event.key==='Enter')doEmailSignIn()">
-      <div id="auth-error" style="font-size:12px;color:#dc2626;margin-bottom:8px;display:none;"></div>
-      <button onclick="doEmailSignIn()" id="auth-btn"
-        style="width:100%;background:#5b47e0;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;">
-        Sign in
-      </button>
-      <button onclick="doEmailRegister()" id="auth-reg-btn"
-        style="width:100%;background:transparent;color:#5b47e0;border:1.5px solid #5b47e0;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">
-        Create account
-      </button>
-      <div style="font-size:12px;color:#ababA0;margin-top:12px;text-align:center;">Stays signed in. Works on all browsers.</div>
-    </div>
-      <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1a1a18;">Check your email</div>
-      <div style="font-size:13px;color:#6b6b63;line-height:1.6;margin-bottom:20px;">We sent a sign-in link to <strong id="auth-sent-email" style="color:#1a1a18;"></strong>. Tap it to sign in.</div>
-      <button onclick="checkAuthNow()" style="width:100%;background:#5b47e0;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;">I clicked the link — open app</button>
-      <button onclick="resetAuth()" style="background:none;border:none;color:#5b47e0;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Use a different email</button>
-    </div>
+    <input type="email" id="auth-email" class="auth-input" placeholder="Email address" onkeydown="if(event.key==='Enter')document.getElementById('auth-pass').focus()">
+    <input type="password" id="auth-pass" class="auth-input" placeholder="Password (6+ characters)" onkeydown="if(event.key==='Enter')doSignIn()">
+    <div id="auth-error"></div>
+    <button onclick="doSignIn()" class="auth-btn">Sign in</button>
+    <button onclick="doRegister()" class="auth-btn-out">Create account</button>
+    <div class="auth-note">Stays signed in permanently. Works on all browsers including Safari.</div>
   </div>
 
   <div id="main-app">
@@ -199,21 +267,22 @@ html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',syste
         <div class="hdr-date" id="hdr-date"></div>
       </div>
       <div class="hdr-right">
-        <div class="user-pill" onclick="showUserMenu()">
-          <img class="user-avatar" id="user-avatar" src="" alt="">
-          <span class="user-name" id="user-name"></span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="avatar" id="user-avatar" onclick="showUserMenu()"></div>
         </div>
         <div class="streak-pill" id="streak-pill"></div>
       </div>
     </div>
+
     <div id="page-debt" class="page active"></div>
-    <div id="page-plan" class="page"></div>
+    <div id="page-today" class="page"></div>
     <div id="page-log" class="page"></div>
     <div id="page-insights" class="page"></div>
     <div id="page-settings" class="page"></div>
+
     <div class="nav">
       <div class="nav-item active" onclick="go('debt',this)"><div class="nav-icon">◑</div><div class="nav-label">Debt</div></div>
-      <div class="nav-item" onclick="go('plan',this)"><div class="nav-icon">◈</div><div class="nav-label">Today</div></div>
+      <div class="nav-item" onclick="go('today',this)"><div class="nav-icon">◈</div><div class="nav-label">Today</div></div>
       <div class="nav-item" onclick="go('log',this)"><div class="nav-icon">⊕</div><div class="nav-label">Log</div></div>
       <div class="nav-item" onclick="go('insights',this)"><div class="nav-icon">◉</div><div class="nav-label">Insights</div></div>
       <div class="nav-item" onclick="go('settings',this)"><div class="nav-icon">◎</div><div class="nav-label">Settings</div></div>
@@ -221,34 +290,36 @@ html,body{height:100%;background:var(--bg);font-family:'Plus Jakarta Sans',syste
   </div>
 </div>
 
+<!-- Edit modal -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <div class="modal-title">Edit entry</div>
     <input type="hidden" id="edit-date">
-    <div class="frow" style="margin-bottom:12px">
+    <div class="frow" style="margin-bottom:12px;">
       <div class="field"><label>Bedtime</label><input type="time" id="edit-bed"></div>
       <div class="field"><label>Wake time</label><input type="time" id="edit-wake"></div>
     </div>
     <div class="field"><label>Sleep onset</label>
       <select id="edit-onset"><option value="5">5 min</option><option value="15" selected>15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option></select>
     </div>
-    <div class="field" style="margin-bottom:16px"><label>Sleep quality</label>
+    <div class="field" style="margin-bottom:16px;"><label>Sleep quality</label>
       <select id="edit-quality"><option value="1">😵 Terrible</option><option value="2">😩 Poor</option><option value="3" selected>😐 Okay</option><option value="4">🙂 Good</option><option value="5">⚡ Great</option></select>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <button class="btn-outline" onclick="closeEdit()">Cancel</button>
       <button class="btn" onclick="saveEdit()">Save</button>
     </div>
   </div>
 </div>
 
+<!-- User modal -->
 <div class="modal-overlay" id="user-modal">
   <div class="modal">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-      <img id="um-avatar" src="" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border2)" alt="">
-      <div><div style="font-size:15px;font-weight:600" id="um-name"></div><div style="font-size:12px;color:var(--text3)" id="um-email"></div></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div class="avatar" id="um-avatar" style="width:44px;height:44px;font-size:18px;"></div>
+      <div><div style="font-size:15px;font-weight:600;" id="um-name"></div><div style="font-size:12px;color:var(--text3);" id="um-email"></div></div>
     </div>
-    <div style="display:grid;gap:8px">
+    <div style="display:grid;gap:8px;">
       <button class="btn-outline" onclick="closeUserMenu()">Cancel</button>
       <button class="btn-outline btn-red" onclick="doSignOut()">Sign out</button>
     </div>
@@ -272,127 +343,122 @@ firebase.initializeApp({
 });
 const auth=firebase.auth();
 const db=firebase.firestore();
-const provider=new firebase.auth.GoogleAuthProvider();
 
-let S={need:9.5,wakeTime:'07:00',log:[],naps:[],startingDebt:12.5,checkins:[]};
-let CU=null,eChart=null,lq=3,lw=0,insPeriod='week';
+// ── State ──────────────────────────────────────────────────────
+let S={need:9.5,wakeTime:'07:00',log:[],naps:[],startingDebt:12.5,checkins:[],goal:{targetDebt:5,targetDays:60,startDate:null,startDebt:null}};
+let CU=null, eChart=null, tChart=null;
+let logQuality=3, logWakeups=0, logTags=[], insPeriod='month', tipIdx=0;
+const TAGS=['Alcohol','Stress','Travel','Illness','Cinema','Football','Late work','Exercise'];
 
-// ── Auth: redirect on mobile, popup on desktop (fixes Safari) ─
+// ── Auth ──────────────────────────────────────────────────────
 auth.onAuthStateChanged(async user=>{
   document.getElementById('loading-screen').style.display='none';
   if(user){
     CU=user;
-    document.getElementById('user-avatar').src=user.photoURL||'';
-    document.getElementById('user-name').textContent=user.displayName?.split(' ')[0]||'You';
-    document.getElementById('um-avatar').src=user.photoURL||'';
-    document.getElementById('um-name').textContent=user.displayName||'';
+    const initials=getInitials(user.displayName||user.email||'?');
+    const color=avatarColor(user.email||'a');
+    document.getElementById('user-avatar').textContent=initials;
+    document.getElementById('user-avatar').style.background=color;
+    document.getElementById('um-avatar').textContent=initials;
+    document.getElementById('um-avatar').style.background=color;
+    document.getElementById('um-name').textContent=user.displayName||user.email||'';
     document.getElementById('um-email').textContent=user.email||'';
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('main-app').style.display='block';
-    await loadData();
+    await loadFS();
     go('debt',document.querySelector('.nav-item'));
   } else {
     CU=null;
-
     document.getElementById('auth-screen').style.display='flex';
     document.getElementById('main-app').style.display='none';
   }
 });
 
-auth.getRedirectResult().catch(e=>console.error('Redirect:',e));
-
-
-
-
-
-// When PWA comes back into focus, check if user signed in via Safari
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&!CU){
-    auth.currentUser && auth.onAuthStateChanged(user=>{
-      if(user&&!CU){
-        CU=user;
-        document.getElementById('auth-screen').style.display='none';
-        document.getElementById('main-app').style.display='block';
-        loadData().then(()=>go('debt',document.querySelector('.nav-item')));
-      }
-    });
-  }
-});
-
-async function doEmailSignIn(){
-  const email=document.getElementById('auth-email').value.trim();
-  const pass=document.getElementById('auth-pass').value;
-  if(!email||!pass){showAuthError('Please enter email and password.');return;}
-  const btn=document.getElementById('auth-btn');
-  btn.textContent='Signing in…';btn.disabled=true;
-  try{
-    await auth.signInWithEmailAndPassword(email,pass);
-  }catch(e){
-    let msg='Sign in failed.';
-    if(e.code==='auth/user-not-found')msg='No account found. Create one below.';
-    else if(e.code==='auth/wrong-password')msg='Wrong password. Try again.';
-    else if(e.code==='auth/invalid-email')msg='Invalid email address.';
-    else if(e.code==='auth/too-many-requests')msg='Too many attempts. Try again later.';
-    showAuthError(msg);
-    btn.textContent='Sign in';btn.disabled=false;
-  }
+function getInitials(name){
+  const parts=name.split(/[\s@]/);
+  if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase();
+  return name.slice(0,2).toUpperCase();
 }
 
-async function doEmailRegister(){
-  const email=document.getElementById('auth-email').value.trim();
-  const pass=document.getElementById('auth-pass').value;
-  if(!email||!pass){showAuthError('Please enter email and password.');return;}
-  if(pass.length<6){showAuthError('Password must be at least 6 characters.');return;}
-  const btn=document.getElementById('auth-reg-btn');
-  btn.textContent='Creating…';btn.disabled=true;
-  try{
-    await auth.createUserWithEmailAndPassword(email,pass);
-  }catch(e){
-    let msg='Could not create account.';
-    if(e.code==='auth/email-already-in-use')msg='Account exists. Sign in instead.';
-    else if(e.code==='auth/invalid-email')msg='Invalid email address.';
-    else if(e.code==='auth/weak-password')msg='Password too weak. Use 6+ characters.';
-    showAuthError(msg);
-    btn.textContent='Create account';btn.disabled=false;
-  }
+function avatarColor(email){
+  const colors=['#5b47e0','#16a34a','#b45309','#dc2626','#1d4ed8','#7c3aed','#0891b2','#be185d'];
+  let h=0; for(let c of email) h=(h*31+c.charCodeAt(0))%colors.length;
+  return colors[Math.abs(h)];
 }
 
 function showAuthError(msg){
   const el=document.getElementById('auth-error');
-  if(el){el.textContent=msg;el.style.display='block';}
+  el.textContent=msg; el.style.display='block';
+}
+
+async function doSignIn(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  if(!email||!pass){showAuthError('Please enter email and password.');return;}
+  document.getElementById('auth-error').style.display='none';
+  try{
+    await auth.signInWithEmailAndPassword(email,pass);
+  }catch(e){
+    const msgs={'auth/user-not-found':'No account found. Create one below.','auth/wrong-password':'Wrong password.','auth/invalid-email':'Invalid email.','auth/invalid-credential':'Wrong email or password.'};
+    showAuthError(msgs[e.code]||'Sign in failed. Try again.');
+  }
+}
+
+async function doRegister(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  if(!email||!pass){showAuthError('Please enter email and password.');return;}
+  if(pass.length<6){showAuthError('Password must be at least 6 characters.');return;}
+  document.getElementById('auth-error').style.display='none';
+  try{
+    await auth.createUserWithEmailAndPassword(email,pass);
+  }catch(e){
+    const msgs={'auth/email-already-in-use':'Account exists. Sign in instead.','auth/weak-password':'Password too weak.','auth/invalid-email':'Invalid email.'};
+    showAuthError(msgs[e.code]||'Could not create account.');
+  }
 }
 
 async function doSignOut(){closeUserMenu();await auth.signOut();}
 function showUserMenu(){document.getElementById('user-modal').classList.add('open');}
 function closeUserMenu(){document.getElementById('user-modal').classList.remove('open');}
 
-// ── Firestore ─
-function uDoc(){return db.collection('users').doc(CU.uid);}
-async function loadData(){
-  try{const d=await uDoc().get();if(d.exists){S={...S,...d.data()};if(!Array.isArray(S.log))S.log=[];if(!Array.isArray(S.naps))S.naps=[];if(!Array.isArray(S.checkins))S.checkins=[];}}catch(e){console.error(e);}
+// ── Firestore ──────────────────────────────────────────────────
+const uDoc=()=>db.collection('users').doc(CU.uid);
+async function loadFS(){
+  try{
+    const d=await uDoc().get();
+    if(d.exists){
+      S={...S,...d.data()};
+      if(!Array.isArray(S.log))S.log=[];
+      if(!Array.isArray(S.naps))S.naps=[];
+      if(!Array.isArray(S.checkins))S.checkins=[];
+      if(!S.goal)S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};
+    }
+  }catch(e){console.error(e);}
 }
 let saveTimer;
-async function save(){
-  if(!CU)return;
+function saveFS(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
-    try{await uDoc().set(S,{merge:true});toast('Saved ✓');}catch(e){console.error(e);toast('Save failed');}
-  },500);
+    if(!CU)return;
+    showToast('Saving…');
+    try{await uDoc().set(S,{merge:true});showToast('Saved ✓');}
+    catch(e){showToast('Save failed');}
+  },800);
 }
-let toastT;
-function toast(msg){const el=document.getElementById('save-toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2000);}
+function showToast(m){const t=document.getElementById('save-toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2000);}
 
-// ── Nav ─
+// ── Nav ───────────────────────────────────────────────────────
 function go(p,el){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   if(el)el.classList.add('active');
-  ({debt:rDebt,plan:rPlan,log:rLog,insights:rInsights,settings:rSettings})[p]?.();
   window.scrollTo(0,0);
+  ({debt:rDebt,today:rToday,log:rLog,insights:rInsights,settings:rSettings})[p]?.();
 }
 
-// ── Math ─
+// ── Core math ─────────────────────────────────────────────────
 function calcHrs(bed,wake,onset=15){
   let[bh,bm]=bed.split(':').map(Number),[wh,wm]=wake.split(':').map(Number);
   let b=bh*60+bm+onset,w=wh*60+wm;
@@ -400,126 +466,268 @@ function calcHrs(bed,wake,onset=15){
   return Math.max(0,Math.round((w-b)/60*10)/10);
 }
 function effHrs(hrs,q=3,wu=0){return Math.round(Math.max(0,hrs*([0,.75,.85,1,1.05,1.1][q]||1)-wu*.15)*10)/10;}
-function tBed(){const[wh,wm]=S.wakeTime.split(':').map(Number);const m=((wh*60+wm-S.need*60)%1440+1440)%1440;return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(Math.round(m%60)).padStart(2,'0')}`;}
+function targetBed(){
+  const[wh,wm]=S.wakeTime.split(':').map(Number);
+  const m=((wh*60+wm-S.need*60)%1440+1440)%1440;
+  return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(Math.round(m%60)).padStart(2,'0')}`;
+}
 function fmt(t){let[h,m]=t.split(':').map(Number);const ap=h<12?'am':'pm';if(h===0)h=12;else if(h>12)h-=12;return `${h}:${String(m).padStart(2,'0')}${ap}`;}
 function fmtH(h){return `${h===0?12:h>12?h-12:h}${h<12?'am':'pm'}`;}
 function fmtDate(d){return new Date(d+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});}
+function yesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 function today(){return new Date().toISOString().slice(0,10);}
-function bDef(bed){
-  const tb=tBed();const[th,tm]=tb.split(':').map(Number);let[ah,am]=bed.split(':').map(Number);
-  let tM=th*60+tm,aM=ah*60+am;if(aM<180)aM+=1440;if(tM<180)tM+=1440;
+
+function bedDef(bed){
+  const tb=targetBed(),[th,tm]=tb.split(':').map(Number);
+  let[ah,am]=bed.split(':').map(Number);
+  let tM=th*60+tm,aM=ah*60+am;
+  if(aM<720)aM+=1440;
+  if(tM<720)tM+=1440;
   return Math.max(0,Math.round((aM-tM)/60*10)/10);
 }
 function recov(x){return x<=0?0:Math.round(Math.log(1+x*2)*.8*10)/10;}
 function napCredit(date){return(S.naps||[]).filter(n=>n.date===date).reduce((s,n)=>s+n.mins/60*.55,0);}
+
 function getDebt(){
-  const r=S.log.slice(0,14);if(!r.length)return Math.round(S.startingDebt*10)/10;
+  const r=S.log.slice(0,14);
+  if(!r.length)return Math.round(S.startingDebt*10)/10;
   let net=S.startingDebt;
-  r.forEach(e=>{const nap=napCredit(e.date);const eff=effHrs(e.hrs,e.quality||3,e.wakeups||0);const def=S.need-eff-nap;if(def>0)net+=def;else net-=recov(Math.abs(def));});
+  r.forEach(e=>{
+    const def=S.need-effHrs(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);
+    if(def>0)net+=def;else net-=recov(-def);
+  });
   return Math.round(Math.max(0,net)*10)/10;
 }
-function getStreak(){let s=0;const t=new Date();for(let i=0;i<S.log.length;i++){const d=new Date(S.log[i].date+'T12:00:00');if(Math.round((t-d)/86400000)===i)s++;else break;}return s;}
-function energyAt(nowH,wakeH){
-  const e=(nowH-wakeH+24)%24,pi=Math.PI;let v;
-  if(e<1.5)v=.3+(e/1.5)*.4;else if(e<5)v=.7+Math.sin((e-1.5)/3.5*pi)*.3;
-  else if(e<7)v=1-((e-5)/2)*.35;else if(e<9)v=.65+Math.sin((e-7)/2*pi)*.2;
-  else if(e<11)v=.85-((e-9)/2)*.3;else if(e<14)v=.55-((e-11)/3)*.25;
-  else v=Math.max(.1,.3-(e-14)*.03);
-  return Math.max(.05,Math.min(1,v*Math.max(.6,1-(getDebt()/30)*.35)));
-}
-function bedAlert(){
-  const tb=tBed();const[th,tm]=tb.split(':').map(Number);const n=new Date();
-  let tM=th*60+tm,nM=n.getHours()*60+n.getMinutes();
-  if(tM<180)tM+=1440;if(nM<180)nM+=1440;const d=tM-nM;return(d>0&&d<=120)?d:null;
-}
-function consistencyScore(r){
-  if(r.length<3)return 0;
-  const beds=r.map(e=>{let[h,m]=e.bed.split(':').map(Number);let mins=h*60+m;if(mins<180)mins+=1440;return mins;});
-  const avg=beds.reduce((s,v)=>s+v,0)/beds.length;
-  const sd=Math.sqrt(beds.reduce((s,v)=>s+(v-avg)**2,0)/beds.length);
-  return Math.max(0,Math.round(100-sd/60*30));
+
+function getStreak(){
+  let s=0;const t=new Date();
+  for(let i=0;i<S.log.length;i++){
+    if(Math.round((t-new Date(S.log[i].date+'T12:00:00'))/86400000)===i)s++;else break;
+  }
+  return s;
 }
 
-// ── Debt page ─
+function eLevel(nowH,wH){
+  const e=(nowH-wH+24)%24,pi=Math.PI;let v;
+  if(e<1.5)v=.3+(e/1.5)*.4;else if(e<5)v=.7+Math.sin((e-1.5)/3.5*pi)*.3;
+  else if(e<7)v=1-(e-5)/2*.35;else if(e<9)v=.65+Math.sin((e-7)/2*pi)*.2;
+  else if(e<11)v=.85-(e-9)/2*.3;else if(e<14)v=.55-(e-11)/3*.25;
+  else v=Math.max(.1,.3-(e-14)*.03);
+  return Math.max(.05,Math.min(1,v*Math.max(.6,1-getDebt()/30*.35)));
+}
+
+function bedAlert(){
+  const tb=targetBed(),[th,tm]=tb.split(':').map(Number),n=new Date();
+  let tM=th*60+tm,nM=n.getHours()*60+n.getMinutes();
+  if(tM<720)tM+=1440;if(nM<720)nM+=1440;
+  const d=tM-nM;return(d>0&&d<=180)?d:null;
+}
+
+function countdown(mins){
+  if(mins<60)return `${mins}min`;
+  return `${Math.floor(mins/60)}h ${mins%60>0?mins%60+'min':''}`.trim();
+}
+
+// ── DEBT PAGE ─────────────────────────────────────────────────
+const TIPS=[
+  {main:'Avoid caffeine after {cutoff}',sub:'Caffeine has a 6h half-life. Drinking it later delays your sleep onset significantly.'},
+  {main:'Target bedtime: {bed} tonight',sub:'Getting {need}h gives your brain and body full recovery time. Consistency matters as much as duration.'},
+  {main:'Sleep debt compounds like interest',sub:'Every short night adds to debt. But every good night chips away at it. Tonight counts.'},
+  {main:'Your peak focus window is {peak}',sub:'This is when your cortisol and body temperature are optimal for hard thinking. Protect this time.'},
+  {main:'Napping before 3pm doesn\'t hurt night sleep',sub:'A 20–30 min nap earlier in the day can offset up to 0.4h of sleep debt without disrupting tonight.'},
+];
+
+function getTipText(t){
+  const[wh]=S.wakeTime.split(':').map(Number);
+  return {
+    main:t.main.replace('{cutoff}',fmtH((wh+10)%24)).replace('{bed}',fmt(targetBed())).replace('{need}',S.need+'h').replace('{peak}',fmtH(wh+2)+'–'+fmtH(wh+5)),
+    sub:t.sub
+  };
+}
+
 function rDebt(){
-  const debt=getDebt(),last=S.log[0]||null,streak=getStreak(),tb=tBed(),mins=bedAlert();
+  const debt=getDebt(),last=S.log[0]||null,streak=getStreak(),tb=targetBed();
+  const mins=bedAlert();
+
   document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});
   document.getElementById('streak-pill').textContent=streak>0?`${streak} day streak`:'start logging';
-  const dc=debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)';
-  const dbg=debt<5?'var(--green-l)':debt<10?'var(--amber-l)':'var(--red-l)';
-  const dpct=Math.min(100,Math.round(debt/15*100));
-  const zones=['Low','Mild','Significant','High','Critical'];
-  const zi=debt<3?0:debt<6?1:debt<9?2:debt<13?3:4;
-  const msgs=['Feeling sharp. Keep the rhythm.','Some afternoon fatigue likely.','Focus and mood are affected.','Performance taking a real hit.','Sleep is your top priority.'];
+
+  const dC=debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)';
+  const dPct=Math.min(100,Math.round(debt/20*100));
+  const arcLen=Math.round(dPct/100*188.5);
+
+  // Alert
   let alertH='';
-  if(mins!==null)alertH=`<div class="alert" style="background:var(--accent-l);border-color:rgba(91,71,224,.2);color:var(--accent-d)">🌙 Bedtime in ${mins} min — target ${fmt(tb)} for ${S.need}h</div>`;
-  else if(debt>=12)alertH=`<div class="alert" style="background:var(--red-l);border-color:#fca5a5;color:var(--red)">⚠️ High debt (${debt}h). Target bed tonight: ${fmt(tb)}.</div>`;
-  const bd=last?bDef(last.bed):0;
-  const trend=last?(last.hrs>=S.need?'↓ recovering':'↑ building'):'';
-  const tc=last?(last.hrs>=S.need?'var(--green)':'var(--red)'):'';
-  const le=last?effHrs(last.hrs,last.quality||3,last.wakeups||0):null;
+  if(mins!==null){
+    alertH=`<div class="alert" style="background:var(--accent-l);border-color:rgba(91,71,224,.2);color:var(--accent-d);">🌙 Bedtime in ${countdown(mins)} — target ${fmt(tb)}</div>`;
+  }
+
+  // Last night strip
+  const lEff=last?effHrs(last.hrs,last.quality||3,last.wakeups||0):null;
+  const lDef=last?bedDef(last.bed):0;
+  const qColor=last?(last.quality>=4?'#16a34a':last.quality<=2?'#dc2626':'#b45309'):'#e8e8e4';
+  const qArc=last?Math.round((last.quality||3)/5*100):0;
+
+  // Bedtime countdown
+  const [th2,tm2]=tb.split(':').map(Number);
+  const now2=new Date();
+  let tMins2=th2*60+tm2,nMins2=now2.getHours()*60+now2.getMinutes();
+  if(tMins2<720)tMins2+=1440;if(nMins2<720)nMins2+=1440;
+  const bedMinsLeft=tMins2-nMins2;
+  const bedCountdown=bedMinsLeft>0?`in ${countdown(bedMinsLeft)}`:'now';
+  const bedCountdownColor=bedMinsLeft<60?'var(--red-l);color:var(--red)':bedMinsLeft<120?'var(--amber-l);color:var(--amber)':'var(--green-l);color:var(--green)';
+
+  // Goal progress
+  let goalH='';
+  if(S.goal&&S.goal.startDate){
+    const startD=new Date(S.goal.startDate),nowD=new Date();
+    const daysElapsed=Math.max(0,Math.round((nowD-startD)/86400000));
+    const daysLeft=Math.max(0,S.goal.targetDays-daysElapsed);
+    const debtReduced=Math.max(0,S.goal.startDebt-debt);
+    const targetReduction=S.goal.startDebt-S.goal.targetDebt;
+    const pct=Math.min(100,Math.round(debtReduced/targetReduction*100));
+    const dailyNeeded=daysLeft>0?Math.round((debt-S.goal.targetDebt)/daysLeft*10)/10:0;
+    goalH=`<div class="goal-card">
+      <div class="card-label">Debt goal</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div style="font-size:13px;color:var(--text2);">Get below <strong style="color:var(--text)">${S.goal.targetDebt}h</strong> in ${daysLeft} days</div>
+        <div style="font-size:12px;color:var(--text3)">${pct}% done</div>
+      </div>
+      <div class="goal-progress"><div class="goal-fill" style="width:${pct}%"></div></div>
+      <div class="goal-stats">
+        <span>Reduced ${debtReduced.toFixed(1)}h so far</span>
+        ${daysLeft>0&&debt>S.goal.targetDebt?`<span>Need +${dailyNeeded}h sleep/night</span>`:'<span style="color:var(--green)">Goal reached! 🎉</span>'}
+      </div>
+    </div>`;
+  }
+
+  // Tip
+  const tip=getTipText(TIPS[tipIdx%TIPS.length]);
+  const tipDots=TIPS.map((_,i)=>`<div class="tip-dot${i===tipIdx%TIPS.length?' active':''}"></div>`).join('');
+
   document.getElementById('page-debt').innerHTML=alertH+`
-    <div class="card">
-      <div class="card-label">Total sleep debt</div>
-      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px">
-        <div class="big-num" style="color:${dc}">${debt}</div><div class="big-unit">hrs owed</div>
-        ${trend?`<span style="font-size:12px;color:${tc};font-weight:600;margin-left:6px">${trend}</span>`:''}
+
+    <div class="debt-hero">
+      <div class="debt-top">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Total sleep debt</div>
+          <div class="debt-number" style="color:${dC}">${debt}</div>
+          <div class="debt-unit">hrs owed</div>
+          <div class="safe-zone-label">Safe zone: under 5h</div>
+        </div>
+        <div class="debt-arc-wrap">
+          <svg width="72" height="72" viewBox="0 0 72 72">
+            <circle cx="36" cy="36" r="30" fill="none" stroke="#e8e8e4" stroke-width="7"/>
+            <circle cx="36" cy="36" r="30" fill="none" stroke="${dC}" stroke-width="7"
+              stroke-dasharray="${arcLen} 188.5" stroke-linecap="round"/>
+          </svg>
+          <div class="debt-arc-label">
+            <div class="debt-arc-pct" style="color:${dC}">${dPct}%</div>
+            <div class="debt-arc-sub">of max</div>
+          </div>
+        </div>
       </div>
-      <div class="track"><div class="fill" style="width:${dpct}%;background:${dc}"></div></div>
-      <div class="track-labels"><span>0</span><span>5h</span><span>10h</span><span>15h+</span></div>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
-        <span class="badge" style="background:${dbg};color:${dc}">${zones[zi]}</span>
-        <span style="font-size:13px;color:var(--text2)">${msgs[zi]}</span>
+      <div class="debt-bar"><div class="debt-bar-fill" style="width:${Math.min(100,debt/20*100)}%;background:${dC}"></div></div>
+      <div class="debt-meta">${S.need}h need · target bed ${fmt(tb)} · ${debt<5?'✓ in safe zone':debt<10?`${(debt-5).toFixed(1)}h above safe zone`:`${(debt-5).toFixed(1)}h above safe zone`}</div>
+    </div>
+
+    <div class="ln-strip">
+      <div class="ln-main">
+        <svg class="ln-quality-ring" viewBox="0 0 44 44">
+          <circle cx="22" cy="22" r="18" fill="none" stroke="#e8e8e4" stroke-width="4"/>
+          ${last?`<circle cx="22" cy="22" r="18" fill="none" stroke="${qColor}" stroke-width="4"
+            stroke-dasharray="${Math.round(qArc/100*113.1)} 113.1" stroke-linecap="round" transform="rotate(-90 22 22)"/>`:''}
+        </svg>
+        <div>
+          <div class="ln-label">Last night</div>
+          <div class="ln-hours" style="color:${last&&lEff>=S.need?'var(--green)':last&&lEff>=S.need*.8?'var(--amber)':'var(--red)'}">${last?lEff+'h':'—'}</div>
+          <div class="ln-sub">${last?last.hrs+'h raw':''}</div>
+        </div>
+      </div>
+      <div class="ln-right">
+        <div class="ln-label">Target bed</div>
+        <div class="ln-bedtime">${fmt(tb)}</div>
+        <div class="ln-countdown" style="background:${bedCountdownColor}">${bedCountdown}</div>
       </div>
     </div>
-    <div class="mgrid">
-      <div class="mbox"><div class="mv">${last?last.hrs+'h':'—'}</div><div class="ml">Last night</div>${le&&le!==last?.hrs?`<div class="ms">${le}h eff.</div>`:''}</div>
-      <div class="mbox"><div class="mv">${S.need}h</div><div class="ml">Your need</div></div>
-      <div class="mbox"><div class="mv" style="font-size:15px">${fmt(tb)}</div><div class="ml">Target bed</div></div>
-    </div>
-    ${last?`<div class="mgrid mgrid-2">
-      <div class="mbox"><div class="mv" style="color:${bd>0?'var(--amber)':'var(--green)'}">${bd>0?'+'+bd+'h':'On time'}</div><div class="ml">Bedtime deficit</div><div class="ms">${fmt(last.bed)}</div></div>
-      <div class="mbox"><div class="mv" style="color:${le>=S.need?'var(--green)':'var(--red)'}">${le>=S.need?'+':''}${Math.round((le-S.need)*10)/10}h</div><div class="ml">vs need</div><div class="ms">${le>=S.need?'surplus':'deficit'}</div></div>
+
+    ${last?`<div style="margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Last night detail</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8;">
+        Slept at ${fmt(last.bed)} · woke ${fmt(last.wake)}
+        ${lDef>0?`· <span style="color:var(--amber)">${lDef}h past target</span>`:'· <span style="color:var(--green)">on time</span>'}
+        <br>${lEff>=S.need?`<span style="color:var(--green)">+${Math.round((lEff-S.need)*10)/10}h surplus</span>`:`<span style="color:var(--red)">-${Math.round((S.need-lEff)*10)/10}h deficit</span>`}
+        · quality ${['','Terrible','Poor','Okay','Good','Great'][last.quality||3]}
+        ${last.wakeups?`· woke ${last.wakeups}x`:''}
+        ${last.tags&&last.tags.length?`<br><span style="color:var(--accent)">${last.tags.join(', ')}</span>`:''}
+        ${last.note?`<br><em style="color:var(--text3)">"${last.note}"</em>`:''}
+      </div>
     </div>`:''}
-    <div class="card"><div class="card-label">Energy — today</div><div class="ewrap"><canvas id="ec"></canvas></div></div>
-    <div class="card"><div class="card-label">Guidance</div><div id="tips"></div></div>`;
-  drawEnergy();renderTips();
+
+    ${buildEnergyTimeline()}
+
+    <div class="tip-card">
+      <div class="tip-main">${tip.main}</div>
+      <div class="tip-sub">${tip.sub}</div>
+      <div class="tip-nav">
+        ${tipDots}
+        <span class="tip-next" onclick="tipIdx++;rDebt()">Next tip →</span>
+      </div>
+    </div>
+
+    ${goalH}`;
 }
 
-function drawEnergy(){
-  const c=document.getElementById('ec');if(!c)return;
+function buildEnergyTimeline(){
   const[wh]=S.wakeTime.split(':').map(Number);
-  const n=new Date(),nowH=n.getHours()+n.getMinutes()/60;
-  const labels=[],data=[];
-  for(let i=0;i<=16;i++){const h=(wh+i)%24;labels.push(h===0?'12a':h<12?h+'a':h===12?'12p':(h-12)+'p');data.push(Math.round(energyAt(h,wh)*100));}
-  const ni=Math.max(0,Math.min(16,Math.round(nowH-wh)));
-  if(eChart)eChart.destroy();
-  eChart=new Chart(c,{type:'line',data:{labels,datasets:[
-    {data,borderColor:'#5b47e0',backgroundColor:'rgba(91,71,224,.06)',fill:true,tension:.4,pointRadius:0,borderWidth:2},
-    {data:data.map((v,i)=>i===ni?v:null),borderColor:'#5b47e0',backgroundColor:'#5b47e0',pointRadius:data.map((_,i)=>i===ni?5:0),showLine:false}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},
-    scales:{x:{ticks:{color:'#ababA0',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6},grid:{display:false},border:{display:false}},
-      y:{min:0,max:100,ticks:{display:false},grid:{color:'rgba(0,0,0,.04)'},border:{display:false}}}}});
+  const now=new Date(),nowH=now.getHours()+now.getMinutes()/60;
+  const totalHrs=16;
+  const segs=[];
+  const zones=[
+    {label:'Rise',h:0,len:1.5,color:'#ddd6fe',tc:'#5b47e0'},
+    {label:'Focus',h:1.5,len:3.5,color:'#86efac',tc:'#16a34a'},
+    {label:'Dip',h:5,len:2,color:'#fde68a',tc:'#b45309'},
+    {label:'Wind',h:7,len:2,color:'#93c5fd',tc:'#1d4ed8'},
+    {label:'Peak',h:9,len:2,color:'#86efac',tc:'#16a34a'},
+    {label:'Down',h:11,len:5,color:'#fca5a5',tc:'#dc2626'},
+  ];
+
+  const pillsHTML=zones.map(z=>`<div class="zone-pill" style="background:${z.color};border-color:${z.color};color:${z.tc};">${fmtH((wh+z.h)%24)} ${z.label}</div>`).join('');
+
+  const segsHTML=zones.map(z=>`<div class="timeline-seg" style="flex:${z.len};background:${z.color};"></div>`).join('');
+
+  const elapsed=(nowH-wh+24)%24;
+  const markerPct=Math.min(100,Math.max(0,elapsed/totalHrs*100));
+
+  // Current zone
+  let currentZone=zones[zones.length-1];
+  for(const z of zones){if(elapsed>=z.h&&elapsed<z.h+z.len)currentZone=z;}
+
+  return `<div class="energy-timeline">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">
+      <div class="card-label" style="margin-bottom:0">Energy — today</div>
+      <div style="font-size:11px;font-weight:600;color:${currentZone.tc}">${currentZone.label} zone now</div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:8px">${fmtH(wh%24)} wake → ${fmtH((wh+16)%24)} wind-down</div>
+    <div class="timeline-strip">
+      ${segsHTML}
+      <div class="timeline-marker" style="left:${markerPct}%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:10px;">
+      <span>${fmtH(wh%24)}</span><span>${fmtH((wh+4)%24)}</span><span>${fmtH((wh+8)%24)}</span><span>${fmtH((wh+12)%24)}</span><span>${fmtH((wh+16)%24)}</span>
+    </div>
+    <div class="zone-pills">${pillsHTML}</div>
+  </div>`;
 }
 
-function renderTips(){
-  const[wh]=S.wakeTime.split(':').map(Number);const debt=getDebt(),last=S.log[0]||null;
-  const tips=[];
-  if(debt>=10)tips.push({c:'var(--red)',t:`Critical debt (${debt}h). Sleep is your top priority.`});
-  else if(debt>=5)tips.push({c:'var(--amber)',t:`Significant debt (${debt}h). Add 30–60 min nightly.`});
-  else tips.push({c:'var(--green)',t:`Debt manageable. Consistency is the job.`});
-  tips.push({c:'var(--blue)',t:`No caffeine after ${fmtH((wh+10)%24)} — half-life disrupts sleep.`});
-  tips.push({c:'var(--accent)',t:`Target bedtime: ${fmt(tBed())} for your full ${S.need}h.`});
-  if(last){const e=effHrs(last.hrs,last.quality||3,last.wakeups||0);if(e<S.need-1.5)tips.push({c:'var(--amber)',t:`Effective sleep: ${e}h. 20-min nap before 2pm helps today.`});}
-  const el=document.getElementById('tips');
-  if(el)el.innerHTML=tips.map(t=>`<div class="tip"><div class="tdot" style="background:${t.c}"></div><div>${t.t}</div></div>`).join('');
-}
-
-// ── Plan page ─
-function rPlan(){
-  const last=S.log[0]||null;const[wh]=S.wakeTime.split(':').map(Number);
-  const tod=today();const ci=S.checkins&&S.checkins.find(c=>c.date===tod);
+// ── TODAY PAGE ────────────────────────────────────────────────
+function rToday(){
+  const last=S.log[0]||null;
+  const[wh]=S.wakeTime.split(':').map(Number);
+  const td=today();
+  const ci=S.checkins?.find(c=>c.date===td);
   const now=new Date(),isMorn=now.getHours()>=6&&now.getHours()<=11;
+
   let ciH='';
   if(isMorn&&!ci){
     ciH=`<div class="checkin">
@@ -530,446 +738,514 @@ function rPlan(){
   }else if(ci){
     ciH=`<div class="checkin"><div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Today's mood</div><div style="font-size:26px">${ci.emoji}</div></div>`;
   }
+
   if(!last){
-    document.getElementById('page-plan').innerHTML=ciH+`<div class="card" style="text-align:center;padding:40px 20px">
+    document.getElementById('page-today').innerHTML=ciH+`<div class="card" style="text-align:center;padding:40px 20px;">
       <div style="font-size:48px;margin-bottom:16px">🌙</div>
       <div style="font-size:17px;font-weight:700;margin-bottom:8px">Log last night first</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">Your personalised day plan appears after logging sleep.</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">Your personalised day plan appears here after logging sleep.</div>
       <button class="btn" onclick="go('log',document.querySelectorAll('.nav-item')[2])">Log sleep →</button>
-    </div>`;return;
-  }
-  const eff=effHrs(last.hrs,last.quality||3,last.wakeups||0);
-  const need=S.need,def=need-eff;
-  let dtype,dc,dbg,dsum;
-  if(def<=0){dtype='Well rested';dc='var(--green)';dbg='var(--green-l)';dsum=`${eff}h effective — at your need. Expect a sharp, focused day.`;}
-  else if(def<1.5){dtype='Mildly short';dc='#16a34a';dbg='#dcfce7';dsum=`${eff}h effective (${def.toFixed(1)}h short). Mostly good, dip expected mid-afternoon.`;}
-  else if(def<3){dtype='Underslept';dc='var(--amber)';dbg='var(--amber-l)';dsum=`${eff}h effective (${def.toFixed(1)}h short). Some fog, slower reactions.`;}
-  else{dtype='Significantly short';dc='var(--red)';dbg='var(--red-l)';dsum=`${eff}h effective (${def.toFixed(1)}h short). Protect your schedule today.`;}
-  const p1s=wh+2,p1e=wh+5,d1s=wh+6,d1e=wh+8,p2s=wh+8,p2e=wh+10,d2s=wh+11,d2e=wh+14;
-  const blocks=[
-    {bg:'#f0fdf4',bc:'#bbf7d0',tc:'var(--green)',time:`${fmtH(p1s%24)}–${fmtH(p1e%24)}`,text:'Best focus window. Deep work, hard decisions, creative tasks.'},
-    def>=1.5?{bg:'var(--red-l)',bc:'#fca5a5',tc:'var(--red)',time:`${fmtH(d1s%24)}–${fmtH(d1e%24)}`,text:'Post-lunch crash hits harder today. Avoid critical decisions.'}
-            :{bg:'#f5f3ff',bc:'#ddd6fe',tc:'var(--accent)',time:`${fmtH(d1s%24)}–${fmtH(d1e%24)}`,text:'Natural afternoon dip. Emails, admin, routine tasks.'},
-    def<3?{bg:'var(--blue-l)',bc:'#93c5fd',tc:'var(--blue)',time:`${fmtH(p2s%24)}–${fmtH(p2e%24)}`,text:'Second wind. Good for meetings, calls, collaborative work.'}
-         :{bg:'var(--amber-l)',bc:'#fcd34d',tc:'var(--amber)',time:`${fmtH(p2s%24)}–${fmtH(p2e%24)}`,text:'Second wind blunted. Light tasks only.'},
-    {bg:'#f5f3ff',bc:'#ddd6fe',tc:'var(--accent)',time:`${fmtH(d2s%24)}–${fmtH(d2e%24)}`,text:'Energy dropping. Begin wind-down. Dim screens.'}
-  ];
-  const napRec=def>=3?`Strongly recommended. 20–30 min nap between ${fmtH((wh+6)%24)}–${fmtH((wh+8)%24)}.`
-    :def>=1.5?`Optional. 20 min nap before ${fmtH((wh+8)%24)} helps.`
-    :'Not needed — skip to protect tonight\'s sleep pressure.';
-  document.getElementById('page-plan').innerHTML=ciH+`
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-        <div><div class="card-label">Last night</div>
-          <div style="font-size:38px;font-weight:300;line-height:1;letter-spacing:-2px">${eff}h<span style="font-size:16px;color:var(--text2);font-weight:400"> / ${need}h</span></div>
-          ${last.hrs!==eff?`<div style="font-size:12px;color:var(--text3);margin-top:3px">${last.hrs}h raw · adjusted for quality & wakeups</div>`:''}
-        </div>
-        <span class="badge" style="background:${dbg};color:${dc};margin-top:4px">${dtype}</span>
-      </div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.6">${dsum}</div>
-    </div>
-    <div class="card"><div class="card-label">Hour by hour</div>
-      ${blocks.map(b=>`<div class="pblock" style="background:${b.bg};border-color:${b.bc}"><div class="ptime" style="color:${b.tc}">${b.time}</div><div class="pdesc" style="color:var(--text2)">${b.text}</div></div>`).join('')}
-    </div>
-    <div class="card"><div class="card-label">Nap window</div><div style="font-size:13px;color:var(--text2);line-height:1.6">${napRec}</div></div>
-    <div class="card"><div class="card-label">Tonight</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.6">Target: <strong style="color:var(--text)">${fmt(tBed())}</strong> for ${need}h.${def>=2?' Prioritise this tonight.':' Keep the rhythm.'}</div>
     </div>`;
-}
-function logMood(score,emoji){
-  const tod=today();if(!S.checkins)S.checkins=[];
-  S.checkins=S.checkins.filter(c=>c.date!==tod);
-  S.checkins.push({date:tod,score,emoji});
-  save();rPlan();
+    return;
+  }
+
+  const ef=effHrs(last.hrs,last.quality||3,last.wakeups||0);
+  const need=S.need,def=need-ef;
+  let dtype,dc,dbg,dsum,barColor;
+  if(def<=0){dtype='Well rested';dc='var(--green)';dbg='var(--green-l)';dsum=`At your ${need}h need. Expect a sharp, focused day.`;barColor='var(--green)';}
+  else if(def<1.5){dtype='Mildly short';dc='#16a34a';dbg='#dcfce7';dsum=`${def.toFixed(1)}h short. Mostly good — expect a dip around ${fmtH((wh+7)%24)}.`;barColor='#86efac';}
+  else if(def<3){dtype='Underslept';dc='var(--amber)';dbg='var(--amber-l)';dsum=`${def.toFixed(1)}h short. Some fog and slower reactions today.`;barColor='var(--amber)';}
+  else{dtype='Significantly short';dc='var(--red)';dbg='var(--red-l)';dsum=`${def.toFixed(1)}h short. Protect your schedule. Delegate where possible.`;barColor='var(--red)';}
+
+  const p1s=wh+2,p1e=wh+5,d1s=wh+6,d1e=wh+8,p2s=wh+8,p2e=wh+10,d2s=wh+11,d2e=wh+14;
+
+  const zones=[
+    {start:p1s,end:p1e,color:def<1.5?'#86efac':'#fde68a',tc:def<1.5?'#15803d':'#92400e',label:'Focus',desc:def<1.5?'Best focus window. Deep work, hard decisions, creative tasks.':'Reduced focus today. Do important tasks early before energy drops further.'},
+    {start:d1s,end:d1e,color:def>=1.5?'#fca5a5':'#ddd6fe',tc:def>=1.5?'#991b1b':'#4c1d95',label:'Dip',desc:def>=1.5?'Post-lunch crash hits harder today. Avoid important decisions.':'Natural afternoon dip. Emails, admin, routine tasks.'},
+    {start:p2s,end:p2e,color:def<3?'#93c5fd':'#fde68a',tc:def<3?'#1e40af':'#92400e',label:'Second wind',desc:def<3?'Second wind. Good for meetings, calls, collaborative work.':'Second wind blunted today. Light tasks only.'},
+    {start:d2s,end:d2e,color:'#ddd6fe',tc:'#4c1d95',label:'Wind-down',desc:'Energy dropping. Begin wind-down. Dim screens.'},
+  ];
+
+  const napRec=def>=3?{show:true,text:`Nap recommended — ${fmtH((wh+6)%24)} to ${fmtH((wh+8)%24)}`,color:'var(--red-l)',bc:'#fca5a5',tc:'var(--red)'}
+    :def>=1.5?{show:true,text:`Optional nap before ${fmtH((wh+8)%24)} if you feel the dip`,color:'var(--amber-l)',bc:'#fcd34d',tc:'var(--amber)'}
+    :{show:false,text:'No nap needed today',color:'var(--green-l)',bc:'#86efac',tc:'var(--green)'};
+
+  const tb=targetBed();
+  const[th,tm]=tb.split(':').map(Number);
+  const n=new Date();let tM2=th*60+tm,nM2=n.getHours()*60+n.getMinutes();
+  if(tM2<720)tM2+=1440;if(nM2<720)nM2+=1440;
+  const mLeft=tM2-nM2;
+
+  document.getElementById('page-today').innerHTML=ciH+`
+    <div class="day-hero">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Today's outlook</div>
+          <div class="day-type" style="color:${dc}">${dtype}</div>
+          <div class="day-hrs">${ef}h effective last night / ${need}h needed</div>
+        </div>
+        <span style="background:${dbg};color:${dc};font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;flex-shrink:0;margin-top:4px;">${ef}h</span>
+      </div>
+      <div class="day-bar" style="background:${barColor};opacity:.3;"></div>
+      <div class="day-summary">${dsum}</div>
+    </div>
+
+    <div class="visual-timeline">
+      <div class="card-label">Your day — tap a zone</div>
+      <div class="vt-strip" id="vt-strip">
+        ${zones.map((z,i)=>`<div class="vt-seg" style="flex:${z.end-z.start};background:${z.color};color:${z.tc};" onclick="showZone(${i})">${z.label}</div>`).join('')}
+      </div>
+      <div class="vt-detail" id="vt-detail">Tap a coloured zone to see what to do during that time.</div>
+    </div>
+
+    <div class="today-pills">
+      <div class="today-pill">
+        <div class="today-pill-val">${fmtH((wh+10)%24)}</div>
+        <div class="today-pill-lbl">Last coffee</div>
+      </div>
+      <div class="today-pill">
+        <div class="today-pill-val">${fmt(tb)}</div>
+        <div class="today-pill-lbl">Target bed</div>
+      </div>
+      <div class="today-pill">
+        <div class="today-pill-val">${mLeft>0?countdown(mLeft):'Now'}</div>
+        <div class="today-pill-lbl">Bed in</div>
+      </div>
+    </div>
+
+    <div class="nap-banner" style="background:${napRec.color};border-color:${napRec.bc};color:${napRec.tc};">
+      <span style="font-size:18px">${napRec.show?'💤':'✓'}</span>
+      <span>${napRec.text}</span>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Tonight</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7">
+        Target bedtime: <strong style="color:var(--text)">${fmt(tb)}</strong> for your full ${need}h.
+        ${def>=2?' Given today\'s short night, prioritise hitting this.':' Keep the rhythm.'}
+        ${mLeft>0&&mLeft<120?`<br><span style="color:var(--accent);font-weight:600">That's in ${countdown(mLeft)} — start winding down.</span>`:''}
+      </div>
+    </div>`;
+
+  // Store zones for tap handler
+  window._zones=zones;
 }
 
-// ── Log page ─
+function showZone(i){
+  const z=window._zones[i];
+  const[wh]=S.wakeTime.split(':').map(Number);
+  document.getElementById('vt-detail').innerHTML=`<span style="font-weight:600;color:${z.tc}">${fmtH(z.start%24)} – ${fmtH(z.end%24)} · ${z.label}</span><br>${z.desc}`;
+  document.getElementById('vt-detail').style.borderLeft=`3px solid ${z.color}`;
+  document.getElementById('vt-detail').style.paddingLeft='12px';
+}
+
+function logMood(score,emoji){
+  const td=today();
+  if(!S.checkins)S.checkins=[];
+  S.checkins=S.checkins.filter(c=>c.date!==td);
+  S.checkins.push({date:td,score,emoji});
+  saveFS();rToday();
+}
+
+// ── LOG PAGE ─────────────────────────────────────────────────
 function rLog(){
-  lq=3;lw=0;const md=today();
+  logQuality=3;logWakeups=0;logTags=[];
+  const yd=yesterday();
+  const hasYesterday=S.log.find(e=>e.date===yd);
+  const defaultDate=hasYesterday?today():yd;
+
   document.getElementById('page-log').innerHTML=`
     <div class="card">
       <div class="card-label">Log a night</div>
-      <div class="field"><label>Date</label><input type="date" id="ld" value="${md}" max="${md}" oninput="updPrev()"><div class="snote">Log any past night — just pick the date.</div></div>
+      <div class="field">
+        <label>Date (this is the morning after)</label>
+        <input type="date" id="log-date" value="${yd}" max="${today()}" oninput="updPrev()">
+        <div class="snote">Defaults to yesterday — the night you're logging.</div>
+      </div>
       <div class="frow">
         <div class="field"><label>Bedtime</label><input type="time" id="lb" value="01:00" oninput="updPrev()"></div>
-        <div class="field"><label>Wake time</label><input type="time" id="lw2" value="07:00" oninput="updPrev()"></div>
+        <div class="field"><label>Wake time</label><input type="time" id="lw" value="07:00" oninput="updPrev()"></div>
       </div>
       <div class="field"><label>Time to fall asleep</label>
-        <select id="lo" oninput="updPrev()"><option value="5">5 min</option><option value="15" selected>15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option></select>
+        <select id="lo" oninput="updPrev()">
+          <option value="5">5 min</option><option value="15" selected>15 min</option>
+          <option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option>
+        </select>
       </div>
       <div class="field"><label>Sleep quality</label>
-        <div class="qual-row">${[['😵','Terrible',1],['😩','Poor',2],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic,lb,v])=>`<button class="qbtn${v===3?' sel':''}" onclick="setQ(${v},this)"><span class="qi">${ic}</span>${lb}</button>`).join('')}</div>
-        <div class="snote">Poor quality = less restorative sleep.</div>
+        <div class="qual-row">${[['😵','Terrible',1],['😩','Poor',2],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic,lb,v])=>
+          `<button class="qbtn${v===3?' sel':''}" onclick="setQ(${v},this)"><span class="qi">${ic}</span>${lb}</button>`).join('')}
+        </div>
+        <div class="snote">Adjusts effective sleep hours.</div>
       </div>
       <div class="field"><label>Times woken up</label>
-        <div class="wakeup-row">${[0,1,2,3,'4+'].map((v,i)=>`<button class="wbtn${i===0?' sel':''}" onclick="setW(${i===4?4:v},this)">${v}</button>`).join('')}</div>
+        <div class="wakeup-row">${[0,1,2,3,'4+'].map((v,i)=>
+          `<button class="wbtn${i===0?' sel':''}" onclick="setWU(${i===4?4:v},this)">${v}</button>`).join('')}
+        </div>
+      </div>
+      <div class="field"><label>Tags</label>
+        <div class="tags-wrap">${TAGS.map(t=>`<div class="tag" onclick="toggleTag('${t}',this)">${t}</div>`).join('')}</div>
+        <div class="snote">What was different about this night?</div>
+      </div>
+      <div class="field"><label>Notes (optional)</label>
+        <textarea id="log-note" placeholder="Anything else worth noting…"></textarea>
       </div>
       <div id="prev" class="preview-box">Enter your times above</div>
       <button class="btn" onclick="doLog()">Save sleep</button>
     </div>
+
     <div class="card">
       <div class="card-label">Log a nap</div>
       <div class="frow">
-        <div class="field"><label>Date</label><input type="date" id="nd2" value="${md}" max="${md}"></div>
+        <div class="field"><label>Date</label><input type="date" id="nap-date" value="${yd}" max="${today()}"></div>
         <div class="field"><label>Nap start</label><input type="time" id="ns" value="13:00"></div>
       </div>
       <div class="field"><label>Duration</label>
-        <select id="ndur"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option></select>
+        <select id="nd"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option></select>
       </div>
       <button class="btn-outline" onclick="doNap()">Save nap</button>
     </div>
+
     <div class="card"><div class="card-label">History</div><div id="hist"></div></div>`;
+
   updPrev();rHist();
 }
-function setQ(v,el){lq=v;document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
-function setW(v,el){lw=v;document.querySelectorAll('.wbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
-function updPrev(){
-  const bed=document.getElementById('lb')?.value,wake=document.getElementById('lw2')?.value;
-  const onset=parseInt(document.getElementById('lo')?.value||15),date=document.getElementById('ld')?.value;
-  if(!bed||!wake)return;
-  const raw=calcHrs(bed,wake,onset),eff=effHrs(raw,lq,lw),bd=bDef(bed),tb=tBed();
-  const existing=S.log.find(e=>e.date===date);
-  const el=document.getElementById('prev');
-  if(el)el.innerHTML=`${raw.toFixed(1)}h raw · <strong>${eff.toFixed(1)}h effective</strong><br>`+
-    `<span style="color:${bd>0?'#b45309':'#16a34a'};font-size:12px">${bd>0?`Bedtime ${bd}h past target ${fmt(tb)}`:'Bedtime on target ✓'}</span>`+
-    (existing?`<br><span style="color:var(--accent);font-size:12px">Will update entry for ${fmtDate(date)}</span>`:'');
+
+function setQ(v,el){logQuality=v;document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
+function setWU(v,el){logWakeups=v;document.querySelectorAll('.wbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
+function toggleTag(t,el){
+  if(logTags.includes(t)){logTags=logTags.filter(x=>x!==t);el.classList.remove('sel');}
+  else{logTags.push(t);el.classList.add('sel');}
 }
+
+function updPrev(){
+  const bed=document.getElementById('lb')?.value;
+  const wake=document.getElementById('lw')?.value;
+  const onset=parseInt(document.getElementById('lo')?.value||15);
+  const date=document.getElementById('log-date')?.value;
+  if(!bed||!wake)return;
+  const raw=calcHrs(bed,wake,onset),ef=effHrs(raw,logQuality,logWakeups),bd=bedDef(bed),tb=targetBed();
+  const ex=S.log.find(e=>e.date===date);
+  const el=document.getElementById('prev');
+  if(el)el.innerHTML=`${raw.toFixed(1)}h raw · <strong>${ef.toFixed(1)}h effective</strong><br><span style="color:${bd>0?'#b45309':'#16a34a'};font-size:12px">${bd>0?`Bedtime ${bd}h past target ${fmt(tb)}`:'Bedtime on target ✓'}</span>${ex?`<br><span style="color:var(--accent);font-size:12px">Updates entry for ${fmtDate(date)}</span>`:''}`;
+}
+
 function doLog(){
-  const bed=document.getElementById('lb').value,wake=document.getElementById('lw2').value;
-  const onset=parseInt(document.getElementById('lo').value),date=document.getElementById('ld').value;
+  const bed=document.getElementById('lb').value;
+  const wake=document.getElementById('lw').value;
+  const onset=parseInt(document.getElementById('lo').value);
+  const date=document.getElementById('log-date').value;
+  const note=document.getElementById('log-note').value.trim();
   const hrs=calcHrs(bed,wake,onset);
   if(hrs<1||hrs>16){alert('Check your times');return;}
   S.log=S.log.filter(e=>e.date!==date);
-  S.log.push({date,bed,wake,hrs,onset,quality:lq,wakeups:lw});
+  S.log.push({date,bed,wake,hrs,onset,quality:logQuality,wakeups:logWakeups,tags:[...logTags],note});
   S.log.sort((a,b)=>b.date.localeCompare(a.date));
   if(S.log.length>365)S.log=S.log.slice(0,365);
-  save();go('plan',document.querySelectorAll('.nav-item')[1]);
+  saveFS();
+  go('today',document.querySelectorAll('.nav-item')[1]);
 }
+
 function doNap(){
-  const start=document.getElementById('ns').value,mins=parseInt(document.getElementById('ndur').value),date=document.getElementById('nd2').value;
-  if(!S.naps)S.naps=[];S.naps.push({date,start,mins});save();toast('Nap saved ✓');rLog();
+  const start=document.getElementById('ns').value,mins=parseInt(document.getElementById('nd').value),date=document.getElementById('nap-date').value;
+  if(!S.naps)S.naps=[];
+  S.naps.push({date,start,mins});
+  saveFS();showToast('Nap saved ✓');rLog();
 }
+
 function rHist(){
   const el=document.getElementById('hist');if(!el)return;
   if(!S.log.length){el.innerHTML='<div style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center">No entries yet</div>';return;}
-  const qi=['','😵','😩','😐','🙂','⚡'];
-  el.innerHTML=S.log.slice(0,30).map(e=>{
-    const eff=effHrs(e.hrs,e.quality||3,e.wakeups||0),good=eff>=S.need-.5,c=good?'var(--green)':'var(--red)';
+  const qI=['','😵','😩','😐','🙂','⚡'];
+  el.innerHTML=S.log.slice(0,21).map(e=>{
+    const ef=effHrs(e.hrs,e.quality||3,e.wakeups||0),good=ef>=S.need-.5,c=good?'var(--green)':'var(--red)';
     return `<div class="lentry">
       <div class="ldot" style="background:${c}"></div>
-      <div class="linfo"><div class="ldate">${fmtDate(e.date)}</div><div class="ltimes">${e.bed}→${e.wake} · ${qi[e.quality||3]}${e.wakeups?` · ${e.wakeups}x`:''}</div></div>
-      <div style="text-align:right;flex-shrink:0"><div class="lhrs" style="color:${c}">${eff}h</div>${eff!==e.hrs?`<div style="font-size:10px;color:var(--text3)">${e.hrs}h raw</div>`:''}</div>
+      <div class="linfo">
+        <div class="ldate">${fmtDate(e.date)}</div>
+        <div class="ltimes">${e.bed}→${e.wake} · ${qI[e.quality||3]}${e.wakeups?` · ${e.wakeups}x awake`:''}</div>
+        ${e.tags&&e.tags.length?`<div class="ltags">${e.tags.join(' · ')}</div>`:''}
+        ${e.note?`<div style="font-size:11px;color:var(--text3);margin-top:1px">"${e.note}"</div>`:''}
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="lhrs" style="color:${c}">${ef}h</div>
+        ${ef!==e.hrs?`<div style="font-size:10px;color:var(--text3)">${e.hrs}h raw</div>`:''}
+      </div>
       <button class="icon-btn" onclick="openEdit('${e.date}')">✎</button>
       <button class="icon-btn" onclick="delEntry('${e.date}')">✕</button>
     </div>`;
   }).join('');
 }
-function delEntry(date){if(!confirm(`Delete entry for ${fmtDate(date)}?`))return;S.log=S.log.filter(e=>e.date!==date);save();rLog();}
+
+function delEntry(date){if(!confirm(`Delete entry for ${fmtDate(date)}?`))return;S.log=S.log.filter(e=>e.date!==date);saveFS();rLog();}
 function openEdit(date){
   const e=S.log.find(e=>e.date===date);if(!e)return;
-  document.getElementById('edit-date').value=date;document.getElementById('edit-bed').value=e.bed;
-  document.getElementById('edit-wake').value=e.wake;document.getElementById('edit-onset').value=e.onset||15;
-  document.getElementById('edit-quality').value=e.quality||3;document.getElementById('edit-modal').classList.add('open');
+  document.getElementById('edit-date').value=date;
+  document.getElementById('edit-bed').value=e.bed;
+  document.getElementById('edit-wake').value=e.wake;
+  document.getElementById('edit-onset').value=e.onset||15;
+  document.getElementById('edit-quality').value=e.quality||3;
+  document.getElementById('edit-modal').classList.add('open');
 }
 function closeEdit(){document.getElementById('edit-modal').classList.remove('open');}
 function saveEdit(){
-  const date=document.getElementById('edit-date').value,bed=document.getElementById('edit-bed').value;
-  const wake=document.getElementById('edit-wake').value,onset=parseInt(document.getElementById('edit-onset').value);
-  const quality=parseInt(document.getElementById('edit-quality').value),hrs=calcHrs(bed,wake,onset);
+  const date=document.getElementById('edit-date').value;
+  const bed=document.getElementById('edit-bed').value,wake=document.getElementById('edit-wake').value;
+  const onset=parseInt(document.getElementById('edit-onset').value),quality=parseInt(document.getElementById('edit-quality').value);
+  const hrs=calcHrs(bed,wake,onset);
   S.log=S.log.map(e=>e.date===date?{...e,bed,wake,hrs,onset,quality}:e);
-  save();closeEdit();rLog();
+  saveFS();closeEdit();rLog();
 }
 
-// ── Insights page ─
+// ── INSIGHTS PAGE ─────────────────────────────────────────────
 function rInsights(){
   if(S.log.length<3){
-    document.getElementById('page-insights').innerHTML=`<div class="card" style="text-align:center;padding:40px 20px">
+    document.getElementById('page-insights').innerHTML=`<div class="card" style="text-align:center;padding:40px 20px;">
       <div style="font-size:48px;margin-bottom:16px">📊</div>
-      <div style="font-size:16px;font-weight:700;margin-bottom:8px">Not enough data yet</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.6">Log at least 3 nights to unlock insights, patterns, and your sleep heatmap.</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px">Need more data</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">Log at least 3 nights to unlock insights.</div>
     </div>`;return;
   }
+
+  const pl=getPL(insPeriod),effs=pl.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0));
+  const avg=effs.length?Math.round(effs.reduce((s,v)=>s+v,0)/effs.length*10)/10:0;
+  const best=effs.length?Math.max(...effs):0,worst=effs.length?Math.min(...effs):0;
+  const cons=calcCons(pl),ins=genInsights();
+  const debt=getDebt(),nightly=avg-S.need;
+  let running=debt;
+
   document.getElementById('page-insights').innerHTML=`
-    <div style="padding:0 14px;margin-bottom:10px">
-      <div class="period-tabs">
-        <div class="ptab${insPeriod==='week'?' active':''}" onclick="setPeriod('week')">Week</div>
-        <div class="ptab${insPeriod==='month'?' active':''}" onclick="setPeriod('month')">Month</div>
-        <div class="ptab${insPeriod==='all'?' active':''}" onclick="setPeriod('all')">All time</div>
+    <div style="padding:0 14px;margin-bottom:10px;">
+      <div class="period-tabs">${['week','month','year','all'].map(p=>`<div class="ptab${insPeriod===p?' active':''}" onclick="setP('${p}')">${p==='all'?'All':p.charAt(0).toUpperCase()+p.slice(1)}</div>`).join('')}</div>
+    </div>
+    <div class="period-stats" style="padding:0 14px;margin-bottom:10px;">
+      <div class="pstat"><div class="pstat-val" style="color:${avg>=S.need?'var(--green)':'var(--red)'}">${avg}h</div><div class="pstat-lbl">Avg effective</div></div>
+      <div class="pstat"><div class="pstat-val">${pl.length}</div><div class="pstat-lbl">Nights logged</div></div>
+      <div class="pstat"><div class="pstat-val" style="color:var(--green)">${best}h</div><div class="pstat-lbl">Best night</div></div>
+      <div class="pstat"><div class="pstat-val" style="color:var(--red)">${worst}h</div><div class="pstat-lbl">Worst night</div></div>
+    </div>
+    <div class="card"><div class="card-label">Sleep heatmap — last 16 weeks</div><div id="hm"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--text3);flex-wrap:wrap"><span>Less</span>${['#e8e8e4','#fca5a5','#fcd34d','#86efac','#16a34a'].map(c=>`<div style="width:12px;height:12px;border-radius:2px;background:${c};flex-shrink:0"></div>`).join('')}<span>More</span></div>
+    </div>
+    <div class="card"><div class="card-label">Bedtime consistency</div>
+      <div class="score-ring">
+        <div class="ring-wrap">
+          <svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" fill="none" stroke="#e8e8e4" stroke-width="6"/><circle cx="36" cy="36" r="30" fill="none" stroke="${cons>=80?'#16a34a':cons>=60?'#b45309':'#dc2626'}" stroke-width="6" stroke-dasharray="${Math.round(cons/100*188.5)} 188.5" stroke-linecap="round"/></svg>
+          <div class="ring-label"><div class="ring-num" style="color:${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}">${cons}</div><div class="ring-sub">/ 100</div></div>
+        </div>
+        <div><div style="font-size:14px;font-weight:600;margin-bottom:4px">${cons>=80?'Very consistent':cons>=60?'Fairly consistent':'Inconsistent'}</div><div style="font-size:12px;color:var(--text2);line-height:1.6">Based on bedtime variance. Consistent timing matters as much as total hours.</div></div>
       </div>
     </div>
-    <div id="ins-summary"></div>
-    <div id="ins-heatmap"></div>
-    <div id="ins-dow"></div>
-    <div id="ins-insights"></div>
-    <div id="ins-mood"></div>
-    <div id="ins-export"></div>`;
-  renderSummary();renderHeatmap();renderDOW();renderInsightCards();renderMoodCorr();
-  document.getElementById('ins-export').innerHTML=`<div class="card"><div class="card-label">Export</div><button class="btn-outline" onclick="doExport()">Download sleep log as CSV</button></div>`;
+    <div class="card"><div class="card-label">Sleep by day of week</div><div id="dow"></div><div style="font-size:11px;color:var(--text3);margin-top:6px">avg effective · need: ${S.need}h</div></div>
+    <div class="card"><div class="card-label">Debt trend</div><div class="trend-wrap"><canvas id="tc"></canvas></div></div>
+    ${ins.length?`<div class="card"><div class="card-label">Insights</div>${ins.map(i=>`<div class="insight-card" style="background:${i.bg};border-color:${i.bc}"><div class="insight-icon">${i.icon}</div><div class="insight-title" style="color:${i.tc}">${i.title}</div><div class="insight-body" style="color:var(--text2)">${i.body}</div></div>`).join('')}</div>`:''}
+    <div class="card"><div class="card-label">Projection</div>
+      ${['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{running=Math.max(0,running+nightly*(i<3?7:28));const rv=Math.round(running*10)/10;const c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';return `<div class="proj-row"><span style="color:var(--text2)">${w}</span><span style="font-weight:600;color:${c}">${rv}h debt</span></div>`;}).join('')}
+    </div>
+    <div class="card"><div class="card-label">Export</div><button class="btn-outline" onclick="doExport()">Download CSV</button></div>`;
+
+  buildHM();buildDOW();buildTrend(pl);
 }
 
-function setPeriod(p){insPeriod=p;rInsights();}
+function setP(p){insPeriod=p;rInsights();}
 
-function getPeriodLog(){
-  if(insPeriod==='all')return S.log;
-  const days=insPeriod==='week'?7:30;
-  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
-  return S.log.filter(e=>e.date>=cutoff.toISOString().slice(0,10));
+function getPL(period){
+  const now=new Date(),cutoff=new Date(now);
+  if(period==='week')cutoff.setDate(cutoff.getDate()-7);
+  else if(period==='month')cutoff.setDate(cutoff.getDate()-30);
+  else if(period==='year')cutoff.setFullYear(cutoff.getFullYear()-1);
+  else return S.log;
+  return S.log.filter(e=>new Date(e.date+'T12:00:00')>=cutoff);
 }
 
-function renderSummary(){
-  const r=getPeriodLog();if(!r.length){document.getElementById('ins-summary').innerHTML='';return;}
-  const effs=r.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0));
-  const avg=Math.round(effs.reduce((s,v)=>s+v,0)/effs.length*10)/10;
-  const best=Math.max(...effs),worst=Math.min(...effs);
-  const onTime=r.filter(e=>bDef(e.bed)===0).length;
-  const debt=getDebt();
-  const avgQ=Math.round(r.reduce((s,e)=>s+(e.quality||3),0)/r.length*10)/10;
-  const cs=consistencyScore(r);
-  document.getElementById('ins-summary').innerHTML=`
-    <div class="mgrid mgrid-2"><div class="mbox"><div class="mv" style="color:${avg>=S.need?'var(--green)':'var(--red)'}">${avg}h</div><div class="ml">Avg effective</div></div>
-      <div class="mbox"><div class="mv" style="color:${debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)'}">${debt}h</div><div class="ml">Current debt</div></div></div>
-    <div class="mgrid"><div class="mbox"><div class="mv">${best}h</div><div class="ml">Best night</div></div>
-      <div class="mbox"><div class="mv">${worst}h</div><div class="ml">Worst night</div></div>
-      <div class="mbox"><div class="mv">${onTime}/${r.length}</div><div class="ml">On-time beds</div></div></div>
-    <div class="mgrid mgrid-2"><div class="mbox"><div class="mv">${avgQ}/5</div><div class="ml">Avg quality</div></div>
-      <div class="mbox"><div class="mv" style="color:${cs>=70?'var(--green)':cs>=40?'var(--amber)':'var(--red)'}">${cs}%</div><div class="ml">Consistency</div></div></div>`;
+function calcCons(logs){
+  if(logs.length<3)return 0;
+  const mins=logs.map(e=>{let[h,m]=e.bed.split(':').map(Number),v=h*60+m;if(v<720)v+=1440;return v;});
+  const mean=mins.reduce((s,v)=>s+v,0)/mins.length;
+  const std=Math.sqrt(mins.reduce((s,v)=>s+(v-mean)**2,0)/mins.length);
+  return Math.max(0,Math.round(100-std/.9));
 }
 
-function renderHeatmap(){
-  const el=document.getElementById('ins-heatmap');
-  if(S.log.length<5){el.innerHTML='';return;}
-  const logMap={};
-  S.log.forEach(e=>{logMap[e.date]=effHrs(e.hrs,e.quality||3,e.wakeups||0);});
-  const today2=new Date();
-  const start=new Date(today2);start.setDate(start.getDate()-363);
-  while(start.getDay()!==0)start.setDate(start.getDate()-1);
-  const cells=[];const monthLabels=[];let lastMonth=-1,colCount=0;
-  const cur=new Date(start);
-  while(cur<=today2){
-    if(cur.getDay()===0){
-      const mo=cur.getMonth();
-      if(mo!==lastMonth){monthLabels.push({col:colCount,label:cur.toLocaleDateString('en-IN',{month:'short'})});lastMonth=mo;}
-      colCount++;
+function buildHM(){
+  const container=document.getElementById('hm');if(!container)return;
+  const logMap={};S.log.forEach(e=>{logMap[e.date]=effHrs(e.hrs,e.quality||3,e.wakeups||0);});
+  const now=new Date(),start=new Date(now);
+  start.setDate(start.getDate()-111);start.setDate(start.getDate()-start.getDay());
+  const weeks=[];let cur=new Date(start);
+  while(cur<=now){const week=[];for(let d=0;d<7;d++){const ds=cur.toISOString().slice(0,10);week.push({date:ds,eff:logMap[ds]??null,fut:cur>now});cur.setDate(cur.getDate()+1);}weeks.push(week);}
+  function cc(eff){if(eff===null)return '#e8e8e4';const r=eff/S.need;return r>=1?'#16a34a':r>=.85?'#86efac':r>=.7?'#fcd34d':r>=.5?'#fca5a5':'#ef4444';}
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],days=['S','M','T','W','T','F','S'];
+  let mHTML='<div style="display:flex;margin-left:24px;margin-bottom:4px;gap:3px;">',lastM=-1;
+  weeks.forEach(w=>{const d=new Date(w[0].date+'T12:00:00');if(d.getMonth()!==lastM){mHTML+=`<div style="font-size:9px;color:var(--text3);font-weight:500;min-width:13px">${months[d.getMonth()]}</div>`;lastM=d.getMonth();}else{mHTML+='<div style="min-width:13px"></div>';}});
+  mHTML+='</div>';
+  let gHTML=`<div style="display:flex;gap:3px"><div style="display:flex;flex-direction:column;gap:3px;margin-right:4px">${days.map(d=>`<div style="font-size:9px;color:var(--text3);height:13px;display:flex;align-items:center">${d}</div>`).join('')}</div>`;
+  weeks.forEach(w=>{gHTML+='<div style="display:flex;flex-direction:column;gap:3px">';w.forEach(day=>{gHTML+=`<div style="width:13px;height:13px;border-radius:2px;background:${day.fut?'transparent':cc(day.eff)};flex-shrink:0" title="${day.eff!==null?`${day.date}: ${day.eff}h`:day.date}"></div>`;});gHTML+='</div>';});
+  gHTML+='</div>';
+  container.innerHTML=`<div style="overflow-x:auto">${mHTML}${gHTML}</div>`;
+}
+
+function buildDOW(){
+  const el=document.getElementById('dow');if(!el)return;
+  const dnames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],buckets=Array(7).fill(null).map(()=>[]);
+  S.log.forEach(e=>{const d=new Date(e.date+'T12:00:00').getDay();buckets[d].push(effHrs(e.hrs,e.quality||3,e.wakeups||0));});
+  const avgs=buckets.map(b=>b.length?Math.round(b.reduce((s,v)=>s+v,0)/b.length*10)/10:null);
+  const maxA=Math.max(...avgs.filter(v=>v!==null),S.need+1);
+  el.innerHTML=dnames.map((d,i)=>{
+    if(avgs[i]===null)return `<div class="dow-bar-wrap"><div class="dow-lbl">${d}</div><div class="dow-track"></div><div class="dow-val" style="color:var(--text3)">—</div></div>`;
+    const pct=Math.round(avgs[i]/maxA*100),c=avgs[i]>=S.need?'var(--green)':avgs[i]>=S.need*.85?'var(--amber)':'var(--red)';
+    return `<div class="dow-bar-wrap"><div class="dow-lbl">${d}</div><div class="dow-track"><div class="dow-fill" style="width:${pct}%;background:${c}"></div></div><div class="dow-val" style="color:${c}">${avgs[i]}h</div></div>`;
+  }).join('');
+}
+
+function buildTrend(logs){
+  const c=document.getElementById('tc');if(!c)return;
+  const sorted=[...S.log].sort((a,b)=>a.date.localeCompare(b.date));
+  if(sorted.length<2)return;
+  let net=S.startingDebt;const debtMap={};
+  sorted.forEach(e=>{const def=S.need-effHrs(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);if(def>0)net+=def;else net-=recov(-def);net=Math.max(0,net);debtMap[e.date]=Math.round(net*10)/10;});
+  const recent=sorted.slice(-30);
+  const labels=recent.map(e=>new Date(e.date+'T12:00:00').toLocaleDateString('en-IN',{month:'short',day:'numeric'}));
+  const data=recent.map(e=>debtMap[e.date]||0);
+  if(tChart)tChart.destroy();
+  tChart=new Chart(c,{type:'line',data:{labels,datasets:[{label:'Debt',data,borderColor:'#5b47e0',backgroundColor:'rgba(91,71,224,.06)',fill:true,tension:.3,pointRadius:2,borderWidth:2,pointBackgroundColor:'#5b47e0'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}h debt`}}},
+      scales:{x:{ticks:{color:'#ababA0',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6},grid:{display:false},border:{display:false}},y:{min:0,ticks:{color:'#ababA0',font:{size:10}},grid:{color:'rgba(0,0,0,.04)'},border:{display:false}}}}});
+}
+
+function genInsights(){
+  const ins=[];if(S.log.length<7)return ins;
+  const ae=S.log.map(e=>({...e,ef:effHrs(e.hrs,e.quality||3,e.wakeups||0)}));
+  const buckets=Array(7).fill(null).map(()=>[]);
+  ae.forEach(e=>{const d=new Date(e.date+'T12:00:00').getDay();buckets[d].push(e.ef);});
+  const avgs=buckets.map(b=>b.length>=2?b.reduce((s,v)=>s+v,0)/b.length:null);
+  const valid=avgs.map((v,i)=>({v,i})).filter(x=>x.v!==null);
+  const dnames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  if(valid.length>=3){
+    const worst=valid.reduce((a,b)=>a.v<b.v?a:b),best=valid.reduce((a,b)=>a.v>b.v?a:b);
+    if(worst.v<S.need-.5)ins.push({icon:'📉',title:`${dnames[worst.i]}s are your worst sleep nights`,body:`You average ${Math.round(worst.v*10)/10}h — ${Math.round((S.need-worst.v)*10)/10}h below your need.`,bg:'var(--red-l)',bc:'#fca5a5',tc:'var(--red)'});
+    if(best.v>=S.need-.3)ins.push({icon:'🏆',title:`${dnames[best.i]}s are your best sleep nights`,body:`You average ${Math.round(best.v*10)/10}h. Protect whatever you're doing that night.`,bg:'var(--green-l)',bc:'#86efac',tc:'var(--green)'});
+  }
+  const md=S.checkins&&S.checkins.length>=5?S.checkins:[];
+  if(md.length>=5){
+    const pairs=[];md.forEach(ci=>{const prev=S.log.find(e=>e.date===ci.date);if(prev)pairs.push({mood:ci.score,ef:effHrs(prev.hrs,prev.quality||3,prev.wakeups||0)});});
+    if(pairs.length>=5){
+      const hi=pairs.filter(p=>p.ef>=S.need-.5),lo=pairs.filter(p=>p.ef<S.need-1);
+      if(hi.length>=2&&lo.length>=2){
+        const hm=Math.round(hi.reduce((s,p)=>s+p.mood,0)/hi.length*10)/10,lm=Math.round(lo.reduce((s,p)=>s+p.mood,0)/lo.length*10)/10;
+        const mE=['','😵','😩','😐','🙂','⚡'];
+        if(hm>lm+.5)ins.push({icon:'🔗',title:'Your mood directly tracks your sleep',body:`Well-slept days: ${mE[Math.round(hm)]} (${hm}/5). Short nights: ${mE[Math.round(lm)]} (${lm}/5).`,bg:'var(--blue-l)',bc:'#93c5fd',tc:'var(--blue)'});
+      }
     }
-    const ds=cur.toISOString().slice(0,10);
-    const eff=logMap[ds];
-    let color;
-    if(eff===undefined)color='var(--surface2)';
-    else if(eff>=S.need)color='#16a34a';
-    else if(eff>=S.need-.5)color='#4ade80';
-    else if(eff>=S.need-1.5)color='#fbbf24';
-    else if(eff>=S.need-3)color='#f97316';
-    else color='#ef4444';
-    cells.push({ds,eff,color});
-    cur.setDate(cur.getDate()+1);
   }
-  const mlHTML=monthLabels.map((m,i)=>{const next=monthLabels[i+1];const w=next?(next.col-m.col)*16:60;return `<div style="width:${w}px;flex-shrink:0;font-size:10px;color:var(--text3);font-weight:500">${m.label}</div>`;}).join('');
-  el.innerHTML=`<div class="card">
-    <div class="card-label">Sleep calendar — 52 weeks</div>
-    <div class="heatmap-wrap">
-      <div style="display:flex;margin-left:28px;margin-bottom:4px;width:max-content">${mlHTML}</div>
-      <div style="display:flex">
-        <div class="hm-days"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
-        <div class="heatmap">${cells.map(c=>`<div class="hm-cell" style="background:${c.color}" title="${c.ds}${c.eff!==undefined?' · '+c.eff+'h':''}"></div>`).join('')}</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:6px;align-items:center;margin-top:10px;font-size:11px;color:var(--text3)">
-      <span>Less</span>${['var(--surface2)','#fbbf24','#f97316','#4ade80','#16a34a'].map(c=>`<div style="width:12px;height:12px;border-radius:2px;background:${c}"></div>`).join('')}<span>More</span>
-    </div>
-  </div>`;
-}
+  const we=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d===0||d===6;});
+  const wd=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d>0&&d<6;});
+  if(we.length>=3&&wd.length>=5){
+    const weA=Math.round(we.reduce((s,e)=>s+e.ef,0)/we.length*10)/10,wdA=Math.round(wd.reduce((s,e)=>s+e.ef,0)/wd.length*10)/10;
+    if(weA>wdA+.5)ins.push({icon:'📅',title:`You sleep ${Math.round((weA-wdA)*10)/10}h more on weekends`,body:`Weekdays: ${wdA}h. Weekends: ${weA}h. You're using weekends to recover — which helps but doesn't prevent weekday accumulation.`,bg:'var(--amber-l)',bc:'#fcd34d',tc:'var(--amber)'});
+  }
+  const cons=calcCons(S.log.slice(0,30));
+  if(cons<60)ins.push({icon:'⏰',title:'Inconsistent bedtimes are costing you',body:`Consistency score: ${cons}/100. Irregular timing disrupts circadian rhythm even when total hours look okay.`,bg:'var(--amber-l)',bc:'#fcd34d',tc:'var(--amber)'});
 
-function renderDOW(){
-  const r=getPeriodLog();if(r.length<5){document.getElementById('ins-dow').innerHTML='';return;}
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const dd=Array(7).fill(null).map(()=>({total:0,count:0}));
-  r.forEach(e=>{const d=new Date(e.date+'T12:00:00').getDay();const eff=effHrs(e.hrs,e.quality||3,e.wakeups||0);dd[d].total+=eff;dd[d].count++;});
-  const avgs=dd.map(d=>d.count?Math.round(d.total/d.count*10)/10:null);
-  const validAvgs=avgs.filter(Boolean);if(!validAvgs.length)return;
-  const maxA=Math.max(...validAvgs);
-  const barsHTML=days.map((day,i)=>{
-    const v=avgs[i];
-    if(!v)return `<div class="dow-col"><div class="dow-bar-wrap"><div class="dow-bar" style="height:3px;background:var(--surface2)"></div></div><div class="dow-lbl">${day.slice(0,2)}</div></div>`;
-    const pct=Math.round(v/maxA*100);
-    const c=v>=S.need?'var(--green)':v>=S.need-.5?'#4ade80':v>=S.need-1.5?'var(--amber)':'var(--red)';
-    return `<div class="dow-col"><div style="font-size:10px;font-weight:600;color:${c}">${v}h</div><div class="dow-bar-wrap"><div class="dow-bar" style="height:${pct}%;background:${c}"></div></div><div class="dow-lbl">${day.slice(0,2)}</div></div>`;
-  }).join('');
-  const bestDay=days[avgs.indexOf(Math.max(...validAvgs))];
-  const worstDay=days[avgs.indexOf(Math.min(...validAvgs))];
-  document.getElementById('ins-dow').innerHTML=`<div class="card">
-    <div class="card-label">Sleep by day of week</div>
-    <div class="dow-row">${barsHTML}</div>
-    <div style="font-size:12px;color:var(--text2);margin-top:8px;line-height:1.6">Best: <strong>${bestDay}</strong> · Worst: <strong>${worstDay}</strong></div>
-  </div>`;
-}
-
-function renderInsightCards(){
-  const r=S.log;if(r.length<5){document.getElementById('ins-insights').innerHTML='';return;}
-  const insights=[];
-  // Weekend vs weekday
-  const wdays=r.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d>0&&d<6;});
-  const wends=r.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d===0||d===6;});
-  if(wdays.length>=3&&wends.length>=1){
-    const wdA=wdays.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/wdays.length;
-    const weA=wends.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/wends.length;
-    const diff=Math.round((weA-wdA)*10)/10;
-    if(Math.abs(diff)>=0.4)insights.push({icon:diff>0?'🛌':'⚡',
-      title:diff>0?`You sleep ${diff}h more on weekends`:`Weekends surprisingly shorter`,
-      body:diff>0?`Weekday avg: ${Math.round(wdA*10)/10}h vs weekend: ${Math.round(weA*10)/10}h. You're using weekends to recover debt. This helps short-term but doesn't fully repair it.`
-        :`Unusual pattern. Weekend avg ${Math.round(weA*10)/10}h vs weekday ${Math.round(wdA*10)/10}h — social nights or activity?`});
-  }
-  // Consistency
-  const cs=consistencyScore(r.slice(0,14));
-  if(cs<50)insights.push({icon:'⏰',title:'Inconsistent bedtimes',body:`Your bedtime varies significantly. Consistency matters almost as much as duration — irregular sleep disrupts your circadian rhythm even if total hours are okay.`});
-  else if(cs>=80)insights.push({icon:'✅',title:'Great bedtime consistency',body:`Your bedtime is very regular (${cs}% score). This is one of the strongest predictors of sleep quality and daytime energy.`});
-  // Trend
-  if(r.length>=14){
-    const r7=r.slice(0,7).map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0));
-    const p7=r.slice(7,14).map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0));
-    const rA=r7.reduce((s,v)=>s+v,0)/r7.length,pA=p7.reduce((s,v)=>s+v,0)/p7.length;
-    const tr=Math.round((rA-pA)*10)/10;
-    if(Math.abs(tr)>=0.3)insights.push({icon:tr>0?'📈':'📉',
-      title:tr>0?`Sleep improving — +${tr}h this week`:`Sleep declining — ${tr}h this week`,
-      body:tr>0?`Last 7 nights: ${Math.round(rA*10)/10}h avg vs ${Math.round(pA*10)/10}h the week before. On the right track.`
-        :`Last 7 nights: ${Math.round(rA*10)/10}h avg vs ${Math.round(pA*10)/10}h the week before. Something changed in your schedule.`});
-  }
-  // Quality vs hours mismatch
-  const hiHrsLoQ=r.filter(e=>e.hrs>=S.need&&(e.quality||3)<=2);
-  if(hiHrsLoQ.length>=2)insights.push({icon:'🤔',title:'Long sleep, poor quality',body:`${hiHrsLoQ.length} nights with enough hours but poor quality. Possible causes: stress, alcohol, late eating, or room temperature.`});
-  // Wakeups
-  const hiWU=r.filter(e=>(e.wakeups||0)>=3);
-  if(hiWU.length>=3)insights.push({icon:'😤',title:'Frequent night wakeups',body:`${hiWU.length} nights with 3+ wakeups. Fragmented sleep is significantly less restorative. Common causes: caffeine too late, stress, room temp, sleep apnea.`});
-  // Bedtime correlation
-  const onT=r.filter(e=>bDef(e.bed)===0);const late=r.filter(e=>bDef(e.bed)>0.5);
-  if(onT.length>=3&&late.length>=3){
-    const oA=onT.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/onT.length;
-    const lA=late.map(e=>effHrs(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/late.length;
-    const diff=Math.round((oA-lA)*10)/10;
-    if(diff>0.3)insights.push({icon:'🎯',title:`On-time bedtime = +${diff}h sleep`,body:`When you hit your target bedtime you get ${diff}h more effective sleep on average. Bedtime discipline is your single biggest lever.`});
-  }
-  if(!insights.length)insights.push({icon:'💤',title:'Keep logging for insights',body:'After 14+ nights, Somnus detects your personal patterns and gives specific, data-driven observations.'});
-  document.getElementById('ins-insights').innerHTML=`<div style="padding:0 14px">
-    <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Your patterns</div>
-    ${insights.map(i=>`<div class="insight"><div class="insight-icon">${i.icon}</div><div><div class="insight-title">${i.title}</div><div class="insight-body">${i.body}</div></div></div>`).join('')}
-  </div>`;
-}
-
-function renderMoodCorr(){
-  const el=document.getElementById('ins-mood');
-  const paired=[];
-  S.log.forEach(e=>{
-    const ci=S.checkins&&S.checkins.find(c=>c.date===e.date);
-    if(ci)paired.push({eff:effHrs(e.hrs,e.quality||3,e.wakeups||0),mood:ci.score,emoji:ci.emoji});
+  // Tags insights
+  const tagCounts={};
+  ae.forEach(e=>{(e.tags||[]).forEach(t=>{if(!tagCounts[t])tagCounts[t]={count:0,effs:[]};tagCounts[t].count++;tagCounts[t].effs.push(e.ef);});});
+  const allAvg=Math.round(ae.reduce((s,e)=>s+e.ef,0)/ae.length*10)/10;
+  Object.entries(tagCounts).forEach(([tag,data])=>{
+    if(data.count>=3){
+      const tagAvg=Math.round(data.effs.reduce((s,v)=>s+v,0)/data.effs.length*10)/10;
+      if(tagAvg<allAvg-.5)ins.push({icon:'🏷️',title:`${tag} nights average ${tagAvg}h sleep`,body:`That's ${Math.round((allAvg-tagAvg)*10)/10}h less than your overall average. Worth knowing.`,bg:'#f5f3ff',bc:'#ddd6fe',tc:'var(--accent)'});
+    }
   });
-  if(paired.length<3){el.innerHTML='';return;}
-  const byMood={};
-  paired.forEach(p=>{if(!byMood[p.mood])byMood[p.mood]={total:0,count:0,emoji:p.emoji};byMood[p.mood].total+=p.eff;byMood[p.mood].count++;});
-  const maxAvg=Math.max(...Object.values(byMood).map(v=>v.total/v.count));
-  const rows=[5,4,3,2,1].filter(m=>byMood[m]).map(m=>{
-    const avg=Math.round(byMood[m].total/byMood[m].count*10)/10;
-    const pct=Math.round(avg/maxAvg*100);
-    return `<div class="corr-row"><div class="corr-emoji">${byMood[m].emoji}</div><div class="corr-bar-wrap"><div class="corr-bar" style="width:${pct}%"></div></div><div class="corr-val">${avg}h</div></div>`;
-  }).join('');
-  const scores=paired.map(p=>p.mood),effs=paired.map(p=>p.eff);
-  const aS=scores.reduce((s,v)=>s+v,0)/scores.length,aE=effs.reduce((s,v)=>s+v,0)/effs.length;
-  const corr=scores.reduce((s,v,i)=>s+(v-aS)*(effs[i]-aE),0)/(Math.sqrt(scores.reduce((s,v)=>s+(v-aS)**2,0))*Math.sqrt(effs.reduce((s,v)=>s+(v-aE)**2,0))||1);
-  el.innerHTML=`<div class="card">
-    <div class="card-label">Mood vs sleep (${paired.length} days)</div>
-    ${rows}
-    <div style="font-size:12px;color:var(--text2);margin-top:12px;line-height:1.5">
-      ${corr>0.3?`Your mood correlates with how much effective sleep you got the night before (r=${Math.round(corr*100)/100}). More sleep → better days.`
-        :`${paired.length<7?'Log your mood each morning (Today tab) to build this correlation.':'No strong pattern yet — keep logging.'}`}
-    </div>
-  </div>`;
+
+  return ins.slice(0,6);
 }
 
-// ── Settings ─
+// ── SETTINGS PAGE ─────────────────────────────────────────────
 function rSettings(){
   document.getElementById('page-settings').innerHTML=`
     <div class="card"><div class="card-label">Sleep need</div>
-      <div class="srow-s" style="margin-bottom:8px"><input type="range" min="6" max="11" step="0.5" value="${S.need}" oninput="lv('need',this.value,'nd','h')"><div class="sval" id="nd">${S.need}h</div></div>
-      <div class="snote">Your Rise-calculated need: 9.5h</div>
+      <div class="srow" style="margin-bottom:8px"><input type="range" min="6" max="11" step="0.5" value="${S.need}" oninput="lv('need',this.value,'nd','h')"><div class="sval" id="nd">${S.need}h</div></div>
+      <div class="snote">Rise-calculated need: 9.5h · Most adults: 7–9h</div>
     </div>
     <div class="card"><div class="card-label">Wake time</div>
-      <div class="field" style="margin-bottom:0"><input type="time" value="${S.wakeTime}" oninput="S.wakeTime=this.value;save()"></div>
+      <div class="field" style="margin-bottom:0"><input type="time" value="${S.wakeTime}" oninput="S.wakeTime=this.value;saveFS();"></div>
     </div>
     <div class="card"><div class="card-label">Starting debt</div>
-      <div class="srow-s" style="margin-bottom:8px"><input type="range" min="0" max="30" step="0.5" value="${S.startingDebt}" oninput="lv('startingDebt',this.value,'sd','h')"><div class="sval" id="sd">${S.startingDebt}h</div></div>
-      <div class="snote" style="margin-bottom:14px">Set from Rise. Yours: 12.5h.</div>
+      <div class="srow" style="margin-bottom:8px"><input type="range" min="0" max="30" step="0.5" value="${S.startingDebt}" oninput="lv('startingDebt',this.value,'sd','h')"><div class="sval" id="sd">${S.startingDebt}h</div></div>
+      <div class="snote" style="margin-bottom:14px">Your Rise baseline: 12.5h. Adjusts as you log nights.</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button class="btn-outline" onclick="S.startingDebt=0;save();rSettings()">Reset to 0</button>
-        <button class="btn-outline" onclick="S.startingDebt=12.5;save();rSettings()">Set to 12.5h</button>
+        <button class="btn-outline" onclick="S.startingDebt=0;saveFS();rSettings()">Reset to 0</button>
+        <button class="btn-outline" onclick="S.startingDebt=12.5;saveFS();rSettings()">Set to 12.5h</button>
       </div>
     </div>
+    <div class="card"><div class="card-label">Debt goal</div>
+      <div class="field"><label>Target debt (hours)</label>
+        <div class="srow" style="margin-bottom:6px"><input type="range" min="0" max="10" step="0.5" value="${S.goal?.targetDebt||5}" oninput="document.getElementById('gd').textContent=this.value+'h'"><div class="sval" id="gd">${S.goal?.targetDebt||5}h</div></div>
+        <div class="snote">Safe zone is under 5h. Below 2h is optimal.</div>
+      </div>
+      <div class="field"><label>Days to achieve it</label>
+        <div class="srow" style="margin-bottom:6px"><input type="range" min="7" max="180" step="7" value="${S.goal?.targetDays||60}" oninput="document.getElementById('gdays').textContent=this.value+' days'"><div class="sval" id="gdays" style="min-width:60px;font-size:13px">${S.goal?.targetDays||60} days</div></div>
+      </div>
+      <button class="btn" onclick="setGoal()">Set goal</button>
+      ${S.goal?.startDate?`<div style="font-size:12px;color:var(--text3);margin-top:8px;text-align:center">Goal started ${fmtDate(S.goal.startDate)}</div>`:''}
+    </div>
     <div class="card"><div class="card-label">Account</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px">Signed in as <strong>${CU?.email||''}</strong>.<br>Data syncs automatically to Firebase.</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px">Signed in as <strong>${CU?.email||''}</strong>.<br>Data syncs automatically across all devices.</div>
       <button class="btn-outline btn-red" onclick="doSignOut()">Sign out</button>
     </div>
     <div class="card"><div class="card-label">Danger zone</div>
-      <div class="snote" style="margin-bottom:14px">Permanently deletes all sleep logs from Firebase.</div>
+      <div class="snote" style="margin-bottom:14px">Permanently deletes all your sleep logs.</div>
       <button class="btn-outline btn-red" onclick="clearAll()">Delete all data</button>
     </div>`;
 }
-function lv(key,val,id,sfx){S[key]=parseFloat(val);document.getElementById(id).textContent=val+sfx;save();}
-async function clearAll(){if(!confirm('Permanently delete all Somnus data?'))return;S.log=[];S.naps=[];S.checkins=[];S.startingDebt=12.5;await save();rDebt();}
+
+function setGoal(){
+  const targetDebt=parseFloat(document.querySelector('#page-settings input[type=range]').value)||5;
+  const targetDays=parseInt(document.querySelectorAll('#page-settings input[type=range]')[2]?.value)||60;
+  const tD=parseFloat(document.getElementById('gd').textContent)||5;
+  const tDays=parseInt(document.getElementById('gdays').textContent)||60;
+  S.goal={targetDebt:tD,targetDays:tDays,startDate:today(),startDebt:getDebt()};
+  saveFS();showToast('Goal set ✓');rSettings();
+}
+
+function lv(key,val,id,sfx){S[key]=parseFloat(val);document.getElementById(id).textContent=val+sfx;saveFS();}
+async function clearAll(){if(!confirm('Permanently delete all Somnus data?'))return;S.log=[];S.naps=[];S.checkins=[];S.startingDebt=12.5;S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};await uDoc().set(S);rDebt();}
 function doExport(){
-  if(!S.log.length){alert('No data to export');return;}
-  const rows=['Date,Bedtime,Wake,Onset(min),Raw(h),Quality,Wakeups,Effective(h),Deficit(h)'];
-  S.log.forEach(e=>{const eff=effHrs(e.hrs,e.quality||3,e.wakeups||0);rows.push(`${e.date},${e.bed},${e.wake},${e.onset||15},${e.hrs},${e.quality||3},${e.wakeups||0},${eff},${Math.round((S.need-eff)*10)/10}`);});
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download='somnus-sleep-log.csv';a.click();
+  if(!S.log.length){alert('No data');return;}
+  const rows=['Date,Bedtime,Wake,Onset(min),Raw(h),Quality,Wakeups,Tags,Note,Effective(h),Deficit(h)'];
+  S.log.forEach(e=>{const ef=effHrs(e.hrs,e.quality||3,e.wakeups||0);rows.push(`${e.date},${e.bed},${e.wake},${e.onset||15},${e.hrs},${e.quality||3},${e.wakeups||0},"${(e.tags||[]).join(';')}","${e.note||''}",${ef},${Math.round((S.need-ef)*10)/10}`);});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download='somnus.csv';a.click();
 }
-</script>
 
-<script>
-// ── PWA: Service worker ────────────────────────────────────────
+// ── PWA ───────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw.js')
-      .then(r=>console.log('SW:',r.scope))
-      .catch(e=>console.warn('SW failed:',e));
-  });
+  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 }
-
-// ── PWA: Android install prompt ────────────────────────────────
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();
-  deferredPrompt=e;
-  setTimeout(()=>{
-    if(deferredPrompt&&document.getElementById('main-app').style.display!=='none')
-      showInstallBanner();
-  },30000);
+  e.preventDefault();deferredPrompt=e;
+  setTimeout(()=>{if(deferredPrompt&&CU)showInstallBanner();},30000);
 });
 function showInstallBanner(){
   if(document.getElementById('ibanner'))return;
-  const b=document.createElement('div');
-  b.id='ibanner';
-  b.style.cssText='position:fixed;bottom:80px;left:14px;right:14px;background:#1a1a18;color:#fff;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:150;font-family:"Plus Jakarta Sans",sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.2);animation:slideUp .3s ease;';
-  b.innerHTML='<div style="font-size:26px;flex-shrink:0;">🌙</div><div style="flex:1"><div style="font-size:13px;font-weight:700;margin-bottom:2px;">Add Somnus to home screen</div><div style="font-size:11px;color:rgba(255,255,255,.6);">Install for the full app experience</div></div><button onclick="doInstall()" style="background:#5b47e0;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Install</button><button onclick="this.closest(\'#ibanner\').remove()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;">✕</button>';
+  const b=document.createElement('div');b.id='ibanner';
+  b.style.cssText='position:fixed;bottom:80px;left:14px;right:14px;background:#1a1a18;color:#fff;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:150;font-family:"Plus Jakarta Sans",sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.2);animation:slideUp .3s ease';
+  b.innerHTML='<div style="font-size:26px;flex-shrink:0">🌙</div><div style="flex:1"><div style="font-size:13px;font-weight:700;margin-bottom:2px">Add Somnus to home screen</div><div style="font-size:11px;color:rgba(255,255,255,.6)">Install for the full app experience</div></div><button onclick="doInstall()" style="background:#5b47e0;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">Install</button><button onclick="this.closest(\'#ibanner\').remove()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0">✕</button>';
   document.body.appendChild(b);
 }
-function doInstall(){
-  if(!deferredPrompt)return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(()=>{deferredPrompt=null;const b=document.getElementById('ibanner');if(b)b.remove();});
-}
-
-// ── PWA: iOS Safari hint (shows once after 10s) ────────────────
+function doInstall(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;const b=document.getElementById('ibanner');if(b)b.remove();});}
 window.addEventListener('load',()=>{
-  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
-  const isStandalone=window.navigator.standalone;
-  if(isIOS&&!isStandalone&&!localStorage.getItem('ios-hint-shown')){
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent),isStandalone=window.navigator.standalone;
+  if(isIOS&&!isStandalone&&!localStorage.getItem('ios-hint')){
     setTimeout(()=>{
-      if(document.getElementById('main-app').style.display==='none')return;
+      if(!CU)return;
       const h=document.createElement('div');
-      h.style.cssText='position:fixed;bottom:80px;left:14px;right:14px;background:#1a1a18;color:#fff;border-radius:14px;padding:16px;z-index:150;font-family:"Plus Jakarta Sans",sans-serif;line-height:1.5;animation:slideUp .3s ease;';
-      h.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:13px;font-weight:700;">📲 Install Somnus</div><button onclick="this.closest(\'div[style]\').remove();localStorage.setItem(\'ios-hint-shown\',\'1\')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;line-height:1;">✕</button></div><div style="font-size:13px;color:rgba(255,255,255,.7);">Tap <strong style="color:#fff">Share ↑</strong> at the bottom of Safari, then <strong style="color:#fff">Add to Home Screen</strong>.</div>';
-      document.body.appendChild(h);
-      localStorage.setItem('ios-hint-shown','1');
+      h.style.cssText='position:fixed;bottom:80px;left:14px;right:14px;background:#1a1a18;color:#fff;border-radius:14px;padding:16px;z-index:150;font-family:"Plus Jakarta Sans",sans-serif;line-height:1.5;animation:slideUp .3s ease';
+      h.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:13px;font-weight:700">📲 Install Somnus</div><button onclick="this.closest(\'div\').remove();localStorage.setItem(\'ios-hint\',\'1\')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;line-height:1">✕</button></div><div style="font-size:13px;color:rgba(255,255,255,.7)">Tap <strong style="color:#fff">Share ↑</strong> in Safari, then <strong style="color:#fff">Add to Home Screen</strong>.</div>';
+      document.body.appendChild(h);localStorage.setItem('ios-hint','1');
     },10000);
   }
 });
 </script>
-<style>@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}</style>
 </body>
 </html>
