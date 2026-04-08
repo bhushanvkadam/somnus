@@ -2,1312 +2,1289 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IPL Match Simulator</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Somnus">
+<title>Somnus — Sleep Tracker</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f0e8;
-  --white: #ffffff;
-  --surface: #ffffff;
-  --surface2: #faf8f4;
-  --border: #e8e2d8;
-  --border2: #d8d0c4;
-  --text: #1a1208;
-  --text2: #4a3f2f;
-  --muted: #9a8f7f;
-  --orange: #f97316;
-  --orange2: #ea6000;
-  --blue: #1d4ed8;
-  --blue2: #1e40af;
-  --green: #16a34a;
-  --red: #dc2626;
-  --yellow: #ca8a04;
-  --purple: #7c3aed;
-  --shadow: 0 2px 12px rgba(26,18,8,0.08);
-  --shadow-lg: 0 8px 32px rgba(26,18,8,0.12);
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --surface2:#f2f2f7;
+  --grouped:#ffffff;
+  --border:rgba(60,60,67,0.12);
+  --border2:rgba(60,60,67,0.18);
+  --text:#000000;
+  --text2:rgba(60,60,67,0.6);
+  --text3:rgba(60,60,67,0.36);
+  --accent:#007aff;
+  --accent-l:rgba(0,122,255,0.1);
+  --green:#34c759;
+  --green-l:rgba(52,199,89,0.12);
+  --amber:#ff9500;
+  --amber-l:rgba(255,149,0,0.12);
+  --red:#ff3b30;
+  --red-l:rgba(255,59,48,0.1);
+  --purple:#5856d6;
+  --purple-l:rgba(88,86,214,0.1);
+  --teal:#32ade6;
+  --teal-l:rgba(50,173,230,0.1);
+  --r:10px;
+  --r-lg:16px;
+  --r-xl:20px;
 }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;}
+.app{max-width:430px;margin:0 auto;background:var(--bg);}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── Auth ── */
+#auth-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;text-align:center;}
+.auth-moon{font-size:64px;margin-bottom:20px;}
+.auth-title{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;}
+.auth-title span{color:var(--accent);}
+.auth-sub{font-size:15px;color:var(--text2);margin-bottom:36px;line-height:1.5;}
+.auth-group{width:100%;max-width:320px;background:var(--surface);border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;}
+.auth-input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);padding:14px 16px;font-size:16px;font-family:'Inter',sans-serif;color:var(--text);outline:none;}
+.auth-input:last-child{border-bottom:none;}
+.auth-input::placeholder{color:var(--text3);}
+#auth-error{font-size:13px;color:var(--red);margin-bottom:10px;max-width:320px;display:none;}
+.auth-btn-primary{width:100%;max-width:320px;background:var(--accent);color:#fff;border:none;border-radius:var(--r-lg);padding:15px;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;margin-bottom:10px;transition:opacity .15s;}
+.auth-btn-primary:active{opacity:.8;}
+.auth-btn-secondary{width:100%;max-width:320px;background:var(--surface);color:var(--accent);border:none;border-radius:var(--r-lg);padding:15px;font-size:16px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:opacity .15s;}
+.auth-btn-secondary:active{opacity:.8;}
+.auth-note{font-size:12px;color:var(--text3);margin-top:16px;line-height:1.5;max-width:280px;}
 
-body {
-  font-family: 'Source Sans 3', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  background-image:
-    radial-gradient(ellipse 60% 30% at 80% 0%, rgba(249,115,22,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 20% at 20% 100%, rgba(29,78,216,0.08) 0%, transparent 60%);
-}
+/* ── Loading ── */
+#loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px;}
+.spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── HEADER ── */
-.header {
-  background: var(--orange);
-  padding: 0 28px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 20px rgba(249,115,22,0.4);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.logo { display: flex; align-items: center; gap: 14px; }
-.logo-icon {
-  width: 42px; height: 42px;
-  background: white;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-.logo-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 28px;
-  letter-spacing: 3px;
-  color: white;
-  line-height: 1;
-}
-.logo-sub {
-  font-size: 11px;
-  color: rgba(255,255,255,0.75);
-  font-family: 'DM Mono', monospace;
-  margin-top: 2px;
-  letter-spacing: 0.5px;
-}
-.header-pill {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.35);
-  color: white;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  letter-spacing: 0.5px;
-}
+/* ── Main ── */
+#main-app{display:none;padding-bottom:84px;}
 
-/* ── LAYOUT ── */
-.container { max-width: 980px; margin: 0 auto; padding: 28px 20px 80px; }
+/* ── Header ── */
+.header{padding:12px 16px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.logo-wrap{}
+.logo{font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--text);}
+.logo-dot{color:var(--accent);}
+.hdr-date{font-size:13px;color:var(--text2);margin-top:1px;}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;}
+.streak-pill{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-l);border-radius:20px;padding:4px 10px;margin-top:4px;}
 
-/* ── SECTION HEADER ── */
-.sec-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.sec-icon {
-  width: 30px; height: 30px;
-  background: var(--orange);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.sec-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 18px;
-  letter-spacing: 1.5px;
-  color: var(--text);
-}
-.sec-sub { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; margin-left: auto; }
+/* ── Nav ── */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(242,242,247,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:6px 0 env(safe-area-inset-bottom,6px);z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;}
+.nav-icon{font-size:22px;color:var(--text3);line-height:1;transition:color .15s;}
+.nav-label{font-size:10px;color:var(--text3);font-weight:500;transition:color .15s;}
+.nav-item.active .nav-icon{color:var(--accent);}
+.nav-item.active .nav-label{color:var(--accent);}
 
-/* ── CARD ── */
-.card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-}
+/* ── Pages ── */
+.page{display:none;}.page.active{display:block;}
 
-/* ── TEAM SELECTOR ── */
-.team-row {
-  display: grid;
-  grid-template-columns: 1fr 56px 1fr;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.team-box {
-  background: var(--surface2);
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.team-box:focus-within {
-  border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
-}
-.team-box-top {
-  height: 5px;
-  transition: background 0.3s;
-}
-.team-select {
-  width: 100%;
-  background: transparent;
-  border: none;
-  padding: 11px 14px;
-  color: var(--text);
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  appearance: none;
-  cursor: pointer;
-}
-.team-select:focus { outline: none; }
-.vs-circle {
-  width: 44px; height: 44px;
-  background: var(--orange);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 16px;
-  color: white;
-  letter-spacing: 1px;
-  margin: 0 auto;
-  box-shadow: 0 4px 12px rgba(249,115,22,0.35);
-}
+/* ── Section style (Apple grouped) ── */
+.section{margin:0 16px 20px;}
+.section-header{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;padding:0 4px;}
+.section-body{background:var(--surface);border-radius:var(--r-lg);overflow:hidden;}
+.section-row{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.section-row:last-child{border-bottom:none;}
+.row-label{font-size:16px;color:var(--text);}
+.row-value{font-size:16px;color:var(--text2);font-weight:500;}
+.row-value.accent{color:var(--accent);}
+.row-value.green{color:var(--green);}
+.row-value.amber{color:var(--amber);}
+.row-value.red{color:var(--red);}
 
-/* ── PARAMS ── */
-.params-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.param-group { display: flex; flex-direction: column; gap: 5px; }
-.param-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-}
-.param-select {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 9px 12px;
-  color: var(--text);
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  appearance: none;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-.param-select:focus { outline: none; border-color: var(--orange); }
+/* ── Hero debt card ── */
+.debt-card{margin:0 16px 12px;background:var(--surface);border-radius:var(--r-xl);padding:20px;}
+.debt-top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.debt-label{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:4px;}
+.debt-number{font-size:60px;font-weight:200;line-height:1;letter-spacing:-3px;color:var(--red);}
+.debt-number.amber{color:var(--amber);}
+.debt-number.green{color:var(--green);}
+.debt-unit{font-size:15px;color:var(--text2);font-weight:400;margin-top:2px;}
+.arc-wrap{position:relative;width:70px;height:70px;flex-shrink:0;}
+.arc-wrap svg{transform:rotate(-90deg);}
+.arc-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.arc-pct{font-size:16px;font-weight:700;line-height:1;}
+.arc-sub{font-size:9px;color:var(--text3);font-weight:500;}
+.debt-bar-track{height:4px;background:rgba(0,0,0,.06);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+.debt-bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+.debt-meta-row{display:flex;justify-content:space-between;align-items:center;}
+.safe-badge{font-size:11px;font-weight:600;color:var(--green);background:var(--green-l);border-radius:20px;padding:3px 8px;}
+.debt-meta-text{font-size:11px;color:var(--text3);}
 
-/* ── PLAYING XI ── */
-.xi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.xi-box {
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--white);
-}
-.xi-header {
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
-}
-.xi-team { font-size: 12px; font-weight: 800; color: var(--orange); font-family: 'DM Mono', monospace; letter-spacing: 0.5px; }
-.xi-count { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); }
-.xi-selected { padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; min-height: 72px; }
-.player-chip {
-  background: #fff7ed;
-  border: 1.5px solid #fed7aa;
-  border-radius: 6px;
-  padding: 4px 9px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.15s;
-  user-select: none;
-}
-.player-chip:hover { background: #ffedd5; border-color: var(--orange); }
-.player-chip .rdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-.squad-pool { border-top: 1px solid var(--border); padding: 10px; background: var(--surface2); }
-.pool-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; margin-bottom: 7px; text-transform: uppercase; }
-.squad-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-.squad-chip {
-  background: white;
-  border: 1px solid var(--border2);
-  border-radius: 5px;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text2);
-  cursor: pointer;
-  display: flex; align-items: center; gap: 3px;
-  transition: all 0.15s;
-}
-.squad-chip:hover { border-color: var(--orange); color: var(--orange); background: #fff7ed; }
-.squad-chip.in-xi { opacity: 0.3; cursor: default; pointer-events: none; }
+/* ── Last night card ── */
+.ln-row{margin:0 16px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ln-card{background:var(--surface);border-radius:var(--r-lg);padding:16px;}
+.ln-card-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+.ln-main-num{font-size:34px;font-weight:300;letter-spacing:-1.5px;line-height:1;}
+.ln-sub{font-size:12px;color:var(--text2);margin-top:3px;}
+.ln-detail-card{margin:0 16px 12px;background:var(--surface);border-radius:var(--r-lg);overflow:hidden;}
+.ln-detail-row{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);}
+.ln-detail-row:last-child{border-bottom:none;}
+.ln-detail-label{font-size:14px;color:var(--text2);}
+.ln-detail-value{font-size:14px;font-weight:600;color:var(--text);}
+.bedtime-card{background:var(--surface);border-radius:var(--r-lg);padding:16px;}
+.bedtime-time{font-size:28px;font-weight:600;letter-spacing:-.5px;line-height:1;margin-bottom:4px;}
+.bedtime-pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;margin-top:6px;}
 
-/* ── XI ACTIONS ── */
-.xi-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-.xi-btn {
-  background: var(--surface2);
-  border: 1.5px solid var(--border2);
-  border-radius: 7px;
-  padding: 7px 14px;
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text2);
-  cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 0.3px;
-}
-.xi-btn:hover { border-color: var(--orange); color: var(--orange); background: #fff7ed; }
+/* ── Energy timeline ── */
+.energy-card{margin:0 16px 12px;background:var(--surface);border-radius:var(--r-lg);padding:16px;}
+.energy-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.energy-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;}
+.energy-now{font-size:13px;font-weight:600;}
+.energy-sub{font-size:12px;color:var(--text3);margin-bottom:10px;}
+.tl-strip{height:10px;display:flex;border-radius:5px;overflow:hidden;position:relative;margin-bottom:6px;}
+.tl-seg{height:100%;}
+.tl-marker{position:absolute;top:-3px;width:2px;height:16px;background:var(--text);border-radius:1px;opacity:.7;}
+.tl-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:10px;}
+.zone-pills{display:flex;flex-wrap:wrap;gap:6px;}
+.zpill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
 
-/* ── SIMULATE BUTTON ── */
-.sim-btn {
-  width: 100%;
-  background: var(--blue);
-  border: none;
-  border-radius: 14px;
-  padding: 18px;
-  color: white;
-  font-family: 'Oswald', sans-serif;
-  font-size: 22px;
-  letter-spacing: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.2s;
-  box-shadow: 0 6px 20px rgba(29,78,216,0.3);
-  position: relative;
-  overflow: hidden;
-}
-.sim-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
-}
-.sim-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(29,78,216,0.4); background: var(--blue2); }
-.sim-btn:active { transform: translateY(0); }
-.sim-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+/* ── Tip card ── */
+.tip-card{margin:0 16px 12px;background:var(--surface);border-radius:var(--r-lg);padding:16px;}
+.tip-headline{font-size:16px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:6px;}
+.tip-body{font-size:14px;color:var(--text2);line-height:1.5;}
+.tip-footer{display:flex;align-items:center;margin-top:12px;}
+.tip-dots{display:flex;gap:5px;}
+.tip-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);}
+.tip-dot.on{background:var(--accent);}
+.tip-next-btn{font-size:13px;font-weight:600;color:var(--accent);margin-left:auto;cursor:pointer;}
 
-/* ── LOADING ── */
-.loading-panel { display: none; }
-.loading-panel.active { display: block; }
-.loading-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
-.l-step {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--muted);
-  transition: all 0.3s;
-}
-.l-step.active { border-color: var(--orange); color: var(--orange); background: #fff7ed; }
-.l-step.done { border-color: var(--green); color: var(--green); background: #f0fdf4; }
-.l-spinner {
-  width: 16px; height: 16px;
-  border: 2.5px solid rgba(249,115,22,0.2);
-  border-top-color: var(--orange);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.l-note { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; text-align: center; }
+/* ── Goal card ── */
+.goal-card{margin:0 16px 12px;background:var(--surface);border-radius:var(--r-lg);padding:16px;}
+.goal-header{display:flex;justify-content:space-between;margin-bottom:10px;}
+.goal-title{font-size:15px;font-weight:600;}
+.goal-pct{font-size:13px;font-weight:600;color:var(--accent);}
+.goal-bar-track{height:4px;background:rgba(0,0,0,.06);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+.goal-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .5s;}
+.goal-footer{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);}
 
-/* ── RESULTS ── */
-.results { display: none; }
-.results.visible { display: block; animation: rise 0.4s ease; }
-@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+/* ── Alert banner ── */
+.alert-banner{margin:0 16px 12px;border-radius:var(--r-lg);padding:13px 16px;font-size:14px;font-weight:500;line-height:1.4;}
 
-/* WIN PROBABILITY */
-.win-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 14px;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.win-card {
-  border-radius: 14px;
-  padding: 20px;
-  text-align: center;
-  border: 2px solid var(--border);
-  background: var(--surface2);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s;
-}
-.win-card.winner {
-  border-color: var(--green);
-  background: #f0fdf4;
-}
-.win-card.winner::before {
-  content: '🏆 FAVOURITE';
-  position: absolute;
-  top: 8px; right: 10px;
-  font-size: 9px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 500;
-  color: var(--green);
-  letter-spacing: 0.5px;
-}
-.win-pct {
-  font-family: 'Oswald', sans-serif;
-  font-size: 52px;
-  letter-spacing: 2px;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.win-card:first-child .win-pct { color: var(--blue); }
-.win-card:last-child .win-pct { color: var(--orange); }
-.win-tname { font-size: 13px; font-weight: 700; color: var(--text2); }
+/* ── TODAY tab ── */
+.day-hero{margin:0 16px 12px;background:var(--surface);border-radius:var(--r-xl);padding:20px;}
+.day-badge{display:inline-block;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.day-type{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px;}
+.day-hrs{font-size:14px;color:var(--text2);margin-bottom:12px;}
+.day-summary{font-size:14px;color:var(--text2);line-height:1.6;}
+.vt-card{margin:0 16px 12px;background:var(--surface);border-radius:var(--r-lg);padding:16px;}
+.vt-strip{height:36px;display:flex;border-radius:10px;overflow:hidden;cursor:pointer;margin:10px 0 6px;}
+.vt-seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;letter-spacing:.03em;color:rgba(255,255,255,.85);}
+.vt-detail{background:var(--bg);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.5;margin-top:8px;min-height:48px;border-left:3px solid var(--border2);}
+.pills-row{margin:0 16px 12px;display:flex;gap:8px;}
+.pill-card{flex:1;background:var(--surface);border-radius:var(--r-lg);padding:14px 12px;text-align:center;}
+.pill-val{font-size:16px;font-weight:700;margin-bottom:3px;}
+.pill-lbl{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em;}
+.nap-row{margin:0 16px 12px;border-radius:var(--r-lg);padding:13px 16px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;}
+.mood-card{margin:0 16px 12px;background:linear-gradient(135deg,rgba(0,122,255,.06),rgba(88,86,214,.06));border-radius:var(--r-lg);padding:16px;}
+.mood-row{display:flex;gap:8px;margin-top:10px;}
+.mbtn{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 0;font-size:22px;cursor:pointer;text-align:center;transition:all .15s;}
+.mbtn.sel,.mbtn:active{border-color:var(--accent);background:var(--accent-l);}
 
-.verdict-box { text-align: center; }
-.verdict-tag {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-.verdict-tag.competitive { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-.verdict-tag.one-sided { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-.verdict-tag.coin-toss { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+/* ── LOG tab ── */
+.log-section{margin:0 16px 20px;}
+.log-section-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;padding:0 4px;}
+.log-body{background:var(--surface);border-radius:var(--r-lg);overflow:hidden;}
+.log-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);}
+.log-row:last-child{border-bottom:none;}
+.log-row-label{font-size:16px;color:var(--text);}
+.log-row-input{font-size:16px;color:var(--accent);font-weight:500;background:none;border:none;outline:none;font-family:'Inter',sans-serif;text-align:right;}
+.log-row-select{font-size:16px;color:var(--accent);font-weight:500;background:none;border:none;outline:none;font-family:'Inter',sans-serif;text-align:right;-webkit-appearance:none;}
+.qual-strip{display:flex;gap:6px;padding:12px 16px;}
+.qbtn{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:8px 2px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);line-height:1.4;}
+.qbtn .qi{font-size:17px;display:block;margin-bottom:2px;}
+.qbtn.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent);}
+.wu-strip{display:flex;gap:6px;padding:0 16px 14px;}
+.wbtn{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:9px 4px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);}
+.wbtn.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent);}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 14px;}
+.tag{padding:6px 12px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;}
+.tag.sel{border-color:var(--accent);background:var(--accent-l);color:var(--accent);}
+.log-note{width:100%;background:transparent;border:none;outline:none;font-size:15px;font-family:'Inter',sans-serif;color:var(--text);resize:none;height:64px;padding:13px 16px;border-top:1px solid var(--border);}
+.log-note::placeholder{color:var(--text3);}
+.preview-strip{margin:0 16px 12px;background:var(--accent-l);border-radius:var(--r-lg);padding:12px 14px;font-size:13px;color:var(--accent);font-weight:500;line-height:1.6;min-height:44px;}
+.primary-btn{display:block;width:calc(100% - 32px);margin:0 16px 10px;background:var(--accent);color:#fff;border:none;border-radius:var(--r-lg);padding:15px;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;text-align:center;}
+.primary-btn:active{opacity:.85;}
+.secondary-btn{display:block;width:calc(100% - 32px);margin:0 16px 10px;background:var(--surface);color:var(--accent);border:none;border-radius:var(--r-lg);padding:14px;font-size:16px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;text-align:center;}
+.destructive-btn{color:var(--red);}
+.advanced-toggle{font-size:14px;font-weight:500;color:var(--accent);cursor:pointer;padding:10px 0 2px;text-align:center;display:block;}
 
-/* CONFIDENCE */
-.conf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.conf-card {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-}
-.conf-lbl { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-.conf-track { background: var(--border); border-radius: 4px; height: 7px; overflow: hidden; margin-bottom: 7px; }
-.conf-fill { height: 100%; border-radius: 4px; }
-.conf-val { font-family: 'Oswald', sans-serif; font-size: 26px; letter-spacing: 1px; }
+/* History */
+.hist-entry{background:var(--surface);border-radius:var(--r-lg);margin-bottom:8px;overflow:hidden;}
+.hist-main{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;}
+.hist-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.hist-info{flex:1;}
+.hist-date{font-size:15px;font-weight:600;}
+.hist-times{font-size:12px;color:var(--text3);margin-top:1px;}
+.hist-right{text-align:right;}
+.hist-hrs{font-size:18px;font-weight:600;}
+.hist-raw{font-size:11px;color:var(--text3);}
+.hist-chevron{font-size:14px;color:var(--text3);margin-left:6px;}
+.hist-expanded{background:var(--bg);border-top:1px solid var(--border);display:none;}
+.hist-expanded.open{display:block;}
+.hist-exp-row{display:flex;justify-content:space-between;padding:9px 16px;border-bottom:1px solid var(--border);font-size:13px;}
+.hist-exp-row:last-child{border-bottom:none;}
+.hist-exp-label{color:var(--text2);}
+.hist-exp-value{font-weight:500;color:var(--text);}
+.hist-actions{display:flex;gap:0;border-top:1px solid var(--border);}
+.hist-action{flex:1;padding:12px;font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+.hist-action.edit{color:var(--accent);border-right:1px solid var(--border);}
+.hist-action.del{color:var(--red);}
 
-/* SUMMARY */
-.summary-box {
-  background: linear-gradient(135deg, #fff7ed, #fef9f0);
-  border: 1.5px solid #fed7aa;
-  border-radius: 10px;
-  padding: 14px 16px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
-  font-weight: 500;
-}
+/* ── INSIGHTS tab ── */
+.insight-preview{margin:0 16px 12px;background:var(--surface);border-radius:var(--r-lg);padding:16px;opacity:.5;}
+.insight-preview-title{font-size:14px;font-weight:600;margin-bottom:4px;}
+.insight-preview-body{font-size:12px;color:var(--text2);line-height:1.5;}
+.insight-preview-badge{font-size:10px;font-weight:600;color:var(--accent);background:var(--accent-l);border-radius:20px;padding:2px 8px;display:inline-block;margin-bottom:8px;}
+.insight-card{margin:0 16px 10px;background:var(--surface);border-radius:var(--r-lg);padding:16px;}
+.insight-icon{font-size:24px;margin-bottom:8px;}
+.insight-title{font-size:15px;font-weight:600;margin-bottom:4px;}
+.insight-body{font-size:13px;color:var(--text2);line-height:1.6;}
+.hm-wrap{overflow-x:auto;padding-bottom:4px;}
+.cons-row{display:flex;align-items:center;gap:16px;}
+.ring-wrap{position:relative;width:70px;height:70px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-num{font-size:18px;font-weight:700;line-height:1;}
+.ring-sub{font-size:9px;color:var(--text3);}
+.dow-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.dow-lbl{font-size:12px;font-weight:500;color:var(--text2);width:28px;}
+.dow-track{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.dow-fill{height:100%;border-radius:3px;}
+.dow-val{font-size:12px;font-weight:600;width:32px;text-align:right;}
+.ptabs{display:flex;gap:6px;padding:0 16px;margin-bottom:14px;}
+.ptab{flex:1;padding:7px;font-size:12px;font-weight:600;text-align:center;border:1px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text2);background:var(--surface);}
+.ptab.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 16px 12px;}
+.ps-card{background:var(--surface);border-radius:var(--r-lg);padding:14px;}
+.ps-val{font-size:22px;font-weight:600;line-height:1;}
+.ps-lbl{font-size:11px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.04em;}
+.trend-wrap{height:90px;position:relative;margin:8px 0 4px;}
 
-/* SCORES */
-.scores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.score-block {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-}
-.score-inn { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
-.score-team { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
-.score-runs { font-family: 'Oswald', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--orange); }
-.score-range { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+/* ── SETTINGS ── */
+.settings-section{margin:0 16px 20px;}
+.settings-header{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;padding:0 4px;}
+.settings-body{background:var(--surface);border-radius:var(--r-lg);overflow:hidden;}
+.settings-row{padding:13px 16px;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row-label{font-size:14px;color:var(--text2);margin-bottom:6px;}
+.settings-slider-row{display:flex;align-items:center;gap:10px;}
+.settings-slider-row input[type=range]{flex:1;accent-color:var(--accent);}
+.settings-slider-val{font-size:15px;font-weight:600;color:var(--accent);min-width:42px;text-align:right;}
+.settings-note{font-size:12px;color:var(--text3);margin-top:4px;line-height:1.4;}
+.settings-time{width:100%;background:transparent;border:none;outline:none;font-size:16px;font-family:'Inter',sans-serif;color:var(--accent);font-weight:500;}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.s-btn{padding:10px;font-size:13px;font-weight:500;background:var(--bg);border:none;border-radius:var(--r);cursor:pointer;font-family:'Inter',sans-serif;color:var(--text2);}
 
-/* PHASES */
-.phases-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-.phase-card {
-  border-radius: 10px;
-  padding: 14px;
-  border: 1.5px solid var(--border);
-  background: var(--surface2);
-}
-.phase-card.pp { border-top: 3px solid var(--orange); }
-.phase-card.mid { border-top: 3px solid var(--purple); }
-.phase-card.death { border-top: 3px solid var(--green); }
-.phase-lbl { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-.phase-score { font-family: 'Oswald', sans-serif; font-size: 24px; letter-spacing: 1px; margin-bottom: 4px; }
-.phase-card.pp .phase-score { color: var(--orange); }
-.phase-card.mid .phase-score { color: var(--purple); }
-.phase-card.death .phase-score { color: var(--green); }
-.phase-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+/* ── Modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:430px;max-height:80vh;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:16px;}
+.modal-body{background:var(--surface);border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;}
+.modal-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);}
+.modal-row:last-child{border-bottom:none;}
+.modal-input{background:none;border:none;outline:none;font-size:16px;font-family:'Inter',sans-serif;color:var(--accent);font-weight:500;text-align:right;}
+.modal-select{background:none;border:none;outline:none;font-size:15px;font-family:'Inter',sans-serif;color:var(--accent);text-align:right;-webkit-appearance:none;}
 
-/* OVER CHART */
-.over-chart-wrap { margin-bottom: 4px; }
-.over-bars { display: flex; gap: 3px; align-items: flex-end; height: 64px; }
-.over-bar {
-  flex: 1;
-  border-radius: 3px 3px 0 0;
-  min-height: 4px;
-  cursor: default;
-  transition: opacity 0.15s;
-  position: relative;
-}
-.over-bar:hover { opacity: 0.75; }
-.over-bar:hover::after {
-  content: attr(data-tip);
-  position: absolute;
-  bottom: calc(100% + 5px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--text);
-  color: white;
-  border-radius: 5px;
-  padding: 3px 7px;
-  font-size: 10px;
-  font-family: 'DM Mono', monospace;
-  white-space: nowrap;
-  z-index: 10;
-  pointer-events: none;
-}
-.over-labels { display: flex; gap: 3px; margin-top: 5px; }
-.over-lbl { flex: 1; text-align: center; font-size: 8px; color: var(--muted); font-family: 'DM Mono', monospace; }
-.phase-dividers { display: grid; grid-template-columns: 6fr 9fr 5fr; gap: 3px; margin-top: 8px; }
-.phase-div { text-align: center; font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; padding: 3px 0; border-top: 2px solid; }
-.phase-div.pp { border-color: var(--orange); color: var(--orange); }
-.phase-div.mid { border-color: var(--purple); color: var(--purple); }
-.phase-div.death { border-color: var(--green); color: var(--green); }
-
-/* PLAYERS */
-.players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.player-block {
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: border-color 0.2s;
-}
-.player-block:hover { border-color: var(--orange); }
-.p-avatar {
-  width: 42px; height: 42px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 17px;
-  letter-spacing: 1px;
-  flex-shrink: 0;
-}
-.p-name { font-size: 14px; font-weight: 800; color: var(--text); }
-.p-role { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
-.p-pred { font-size: 12px; font-weight: 700; color: var(--green); margin-top: 4px; }
-
-/* FACTORS */
-.factors-list { display: flex; flex-direction: column; gap: 8px; }
-.factor-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 11px 14px;
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--text);
-}
-.f-icon { color: var(--orange); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
-
-/* UPSET */
-.upset-box {
-  background: #faf5ff;
-  border: 1.5px solid #ddd6fe;
-  border-radius: 12px;
-  padding: 16px 18px;
-  margin-bottom: 16px;
-}
-.upset-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.upset-title { font-size: 13px; font-weight: 800; color: var(--purple); font-family: 'DM Mono', monospace; letter-spacing: 0.3px; }
-.upset-text { font-size: 13px; font-weight: 500; line-height: 1.7; color: var(--text2); }
-
-/* SCENARIOS */
-.scenario-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 11px 14px;
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-
-/* REASONING */
-.reasoning-text {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.85;
-  color: var(--text2);
-  white-space: pre-wrap;
-}
-
-/* RESEARCH BAR */
-.research-bar {
-  background: #eff6ff;
-  border: 1.5px solid #bfdbfe;
-  border-radius: 10px;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  font-family: 'DM Mono', monospace;
-  color: var(--blue);
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.r-dot { width: 7px; height: 7px; background: var(--blue); border-radius: 50%; flex-shrink: 0; }
-
-/* ERROR */
-.error-box {
-  background: #fef2f2;
-  border: 1.5px solid #fca5a5;
-  border-radius: 10px;
-  padding: 14px 16px;
-  color: var(--red);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.6;
-}
-
-/* DIVIDER */
-.divider { height: 1px; background: var(--border); margin: 16px 0; }
-
-@media (max-width: 600px) {
-  .params-grid { grid-template-columns: 1fr 1fr; }
-  .xi-grid, .players-grid, .scores-grid, .conf-row { grid-template-columns: 1fr; }
-  .team-row { grid-template-columns: 1fr 48px 1fr; }
-  .win-row { grid-template-columns: 1fr; }
-  .phases-strip { grid-template-columns: 1fr; }
-}
+/* ── Toast ── */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
 </style>
 </head>
 <body>
+<div class="app">
+  <div id="loading-screen"><div class="spinner"></div><div style="font-size:14px;color:var(--text2)">Loading…</div></div>
 
-<div class="header">
-  <div class="logo">
-    <div class="logo-icon">🏏</div>
-    <div>
-      <div class="logo-title">IPL SIMULATOR</div>
-      <div class="logo-sub">AI-powered · web search · deep mode</div>
+  <div id="auth-screen">
+    <div class="auth-moon">🌙</div>
+    <div class="auth-title">Somnus<span>.</span></div>
+    <div class="auth-sub">Your personal sleep debt tracker.<br>Science-backed. Beautifully simple.</div>
+    <div class="auth-group">
+      <input type="email" id="auth-email" class="auth-input" placeholder="Email" onkeydown="if(event.key==='Enter')document.getElementById('auth-pass').focus()">
+      <input type="password" id="auth-pass" class="auth-input" placeholder="Password" onkeydown="if(event.key==='Enter')doSignIn()">
+    </div>
+    <div id="auth-error"></div>
+    <button onclick="doSignIn()" class="auth-btn-primary">Sign in</button>
+    <button onclick="doRegister()" class="auth-btn-secondary">Create account</button>
+    <div class="auth-note">Stays signed in. Works on Safari and all browsers.</div>
+  </div>
+
+  <div id="main-app">
+    <div class="header">
+      <div class="logo-wrap">
+        <div class="logo">Somnus<span class="logo-dot">.</span></div>
+        <div class="hdr-date" id="hdr-date"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <div class="avatar" onclick="showUserMenu()">BK</div>
+        <div class="streak-pill" id="streak-pill"></div>
+      </div>
+    </div>
+
+    <div id="page-debt" class="page active"></div>
+    <div id="page-today" class="page"></div>
+    <div id="page-log" class="page"></div>
+    <div id="page-insights" class="page"></div>
+    <div id="page-settings" class="page"></div>
+
+    <div class="nav">
+      <div class="nav-item active" onclick="go('debt',this)"><div class="nav-icon">💤</div><div class="nav-label">Debt</div></div>
+      <div class="nav-item" onclick="go('today',this)"><div class="nav-icon">☀️</div><div class="nav-label">Today</div></div>
+      <div class="nav-item" onclick="go('log',this)"><div class="nav-icon">✏️</div><div class="nav-label">Log</div></div>
+      <div class="nav-item" onclick="go('insights',this)"><div class="nav-icon">📊</div><div class="nav-label">Insights</div></div>
+      <div class="nav-item" onclick="go('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
     </div>
   </div>
-  <div class="header-pill">IPL 2025 · v2.1</div>
 </div>
 
-<div class="container">
-
-  <!-- MATCH SETUP -->
-  <div class="card">
-    <div class="sec-head">
-      <div class="sec-icon">⚙️</div>
-      <div class="sec-title">Match Setup</div>
-    </div>
-    <div class="team-row">
-      <div class="team-box">
-        <div class="team-box-top" id="colorA"></div>
-        <select class="team-select" id="teamA" onchange="onTeamChange()"></select>
+<!-- Edit modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">Edit entry</div>
+    <input type="hidden" id="edit-date">
+    <div class="modal-body">
+      <div class="modal-row"><span style="font-size:16px">Bedtime</span><input type="time" id="edit-bed" class="modal-input"></div>
+      <div class="modal-row"><span style="font-size:16px">Wake time</span><input type="time" id="edit-wake" class="modal-input"></div>
+      <div class="modal-row"><span style="font-size:16px">Sleep onset</span>
+        <select id="edit-onset" class="modal-select"><option value="5">5 min</option><option value="15" selected>15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option></select>
       </div>
-      <div class="vs-circle">VS</div>
-      <div class="team-box">
-        <div class="team-box-top" id="colorB"></div>
-        <select class="team-select" id="teamB" onchange="onTeamChange()"></select>
+      <div class="modal-row"><span style="font-size:16px">Quality</span>
+        <select id="edit-quality" class="modal-select"><option value="1">😵 Terrible</option><option value="2">😩 Poor</option><option value="3" selected>😐 Okay</option><option value="4">🙂 Good</option><option value="5">⚡ Great</option></select>
       </div>
     </div>
-    <div class="params-grid">
-      <div class="param-group">
-        <label class="param-label">Venue</label>
-        <select class="param-select" id="venue">
-          <option>Wankhede Stadium, Mumbai</option>
-          <option>M.A. Chidambaram Stadium, Chennai</option>
-          <option>Eden Gardens, Kolkata</option>
-          <option>M. Chinnaswamy Stadium, Bengaluru</option>
-          <option>Arun Jaitley Stadium, Delhi</option>
-          <option>Narendra Modi Stadium, Ahmedabad</option>
-          <option>Rajiv Gandhi Intl. Stadium, Hyderabad</option>
-          <option>Sawai Mansingh Stadium, Jaipur</option>
-          <option>Ekana Cricket Stadium, Lucknow</option>
-          <option>HPCA Stadium, Dharamsala</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Pitch Type</label>
-        <select class="param-select" id="pitch">
-          <option value="flat batting track">Flat batting track</option>
-          <option value="spin-friendly turning surface">Spin-friendly turner</option>
-          <option value="pace-friendly with good bounce">Pace-friendly bouncer</option>
-          <option value="slow and low with variable bounce">Slow and low</option>
-          <option value="damp morning pitch">Damp morning pitch</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Toss & Decision</label>
-        <select class="param-select" id="toss">
-          <option value="no toss yet">Toss not yet done</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Weather</label>
-        <select class="param-select" id="weather">
-          <option value="clear skies">Clear skies</option>
-          <option value="hot and humid">Hot &amp; humid</option>
-          <option value="overcast and cloudy">Overcast / cloudy</option>
-          <option value="light evening breeze">Light evening breeze</option>
-          <option value="chance of rain interruption">Rain risk</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Match Context</label>
-        <select class="param-select" id="context">
-          <option value="regular league match">Regular league match</option>
-          <option value="must-win match for both teams">Must-win for both</option>
-          <option value="dead rubber with nothing at stake">Dead rubber</option>
-          <option value="playoff qualifier match">Playoff qualifier</option>
-          <option value="final">Final</option>
-        </select>
-      </div>
-      <div class="param-group">
-        <label class="param-label">Time of Match</label>
-        <select class="param-select" id="time">
-          <option value="day match (afternoon)">Day match</option>
-          <option value="day-night match (evening start)">Day-Night</option>
-          <option value="night match">Night match</option>
-        </select>
-      </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button class="secondary-btn" style="margin:0" onclick="closeEdit()">Cancel</button>
+      <button class="primary-btn" style="margin:0" onclick="saveEdit()">Save</button>
     </div>
   </div>
-
-  <!-- PLAYING XI -->
-  <div class="card">
-    <div class="sec-head">
-      <div class="sec-icon">👕</div>
-      <div class="sec-title">Playing XI</div>
-      <div class="sec-sub">Click squad players to add · max 11</div>
-    </div>
-    <div class="xi-grid">
-      <div class="xi-box">
-        <div class="xi-header">
-          <span class="xi-team" id="xiLabelA">TEAM A</span>
-          <span class="xi-count" id="xiCountA">0 / 11</span>
-        </div>
-        <div class="xi-selected" id="xiPlayersA"></div>
-        <div class="squad-pool">
-          <div class="pool-label">Full Squad</div>
-          <div class="squad-chips" id="squadA"></div>
-        </div>
-      </div>
-      <div class="xi-box">
-        <div class="xi-header">
-          <span class="xi-team" id="xiLabelB">TEAM B</span>
-          <span class="xi-count" id="xiCountB">0 / 11</span>
-        </div>
-        <div class="xi-selected" id="xiPlayersB"></div>
-        <div class="squad-pool">
-          <div class="pool-label">Full Squad</div>
-          <div class="squad-chips" id="squadB"></div>
-        </div>
-      </div>
-    </div>
-    <div class="xi-actions">
-      <button class="xi-btn" onclick="autoFillXI('A')">⚡ Auto-fill Team A</button>
-      <button class="xi-btn" onclick="autoFillXI('B')">⚡ Auto-fill Team B</button>
-      <button class="xi-btn" onclick="autoFillXI('A');autoFillXI('B')">⚡ Auto-fill Both</button>
-      <button class="xi-btn" onclick="clearXI('A');clearXI('B')">✕ Clear All</button>
-    </div>
-    <!-- IMPACT PLAYER -->
-    <div style="margin-top:14px;padding:14px;background:linear-gradient(135deg,#fffbeb,#fff7ed);border:1.5px solid #fcd34d;border-radius:8px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="background:#e85d04;color:white;font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;padding:3px 10px;border-radius:4px">IMPACT PLAYER RULE</span>
-        <span style="font-size:12px;color:#6b7280">IPL 2025 - 1 sub per team from remaining squad</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div style="display:flex;flex-direction:column;gap:5px">
-          <label style="font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;color:#b45309;text-transform:uppercase" id="impactLblA">Team A Impact Player</label>
-          <select id="impactA" style="background:white;border:1.5px solid #fcd34d;border-radius:6px;padding:8px 10px;color:#111827;font-size:13px;font-weight:700;appearance:none;cursor:pointer"><option value="">None / Not decided</option></select>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:5px">
-          <label style="font-family:Oswald,sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;color:#b45309;text-transform:uppercase" id="impactLblB">Team B Impact Player</label>
-          <select id="impactB" style="background:white;border:1.5px solid #fcd34d;border-radius:6px;padding:8px 10px;color:#111827;font-size:13px;font-weight:700;appearance:none;cursor:pointer"><option value="">None / Not decided</option></select>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SIMULATE -->
-  <button class="sim-btn" id="simBtn" onclick="runSimulation()">
-    🔮 &nbsp;SIMULATE MATCH
-  </button>
-
-  <!-- LOADING -->
-  <div class="card loading-panel" id="loadingPanel" style="margin-top:16px">
-    <div class="loading-steps">
-      <div class="l-step" id="step1">
-        <span>🔍</span>
-        <span id="step1text">Searching live match intelligence — form, H2H, injuries...</span>
-        <div class="l-spinner" id="sp1" style="display:none"></div>
-        <span id="ck1" style="display:none;margin-left:auto;color:var(--green);font-weight:800">✓ Done</span>
-      </div>
-      <div class="l-step" id="step2">
-        <span>🎯</span>
-        <span id="step2text">Running deep 3-scenario simulation...</span>
-        <div class="l-spinner" id="sp2" style="display:none"></div>
-        <span id="ck2" style="display:none;margin-left:auto;color:var(--green);font-weight:800">✓ Done</span>
-      </div>
-    </div>
-    <div class="l-note" id="lNote">Takes 15–25 seconds for accurate results</div>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="results" id="results" style="margin-top:4px"></div>
-
 </div>
 
+<!-- User modal -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div class="avatar" style="width:44px;height:44px;font-size:16px;font-weight:700;border-radius:50%;">BK</div>
+      <div><div style="font-size:16px;font-weight:600" id="um-name"></div><div style="font-size:13px;color:var(--text2)" id="um-email"></div></div>
+    </div>
+    <button class="secondary-btn" style="margin:0 0 8px;width:100%" onclick="closeUserMenu()">Cancel</button>
+    <button class="secondary-btn destructive-btn" style="margin:0;width:100%" onclick="doSignOut()">Sign out</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const SQUADS = {
-  "Mumbai Indians": {
-    color: "#005DA0",
-    players: [
-      {name:"Ryan Rickelton",role:"WK"},{name:"Quinton de Kock",role:"WK"},{name:"Robin Minz",role:"WK"},
-      {name:"Rohit Sharma",role:"BAT"},{name:"Suryakumar Yadav",role:"BAT"},{name:"Tilak Varma",role:"BAT"},
-      {name:"Sherfane Rutherford",role:"BAT"},{name:"Danish Malewar",role:"BAT"},
-      {name:"Hardik Pandya",role:"ALL"},{name:"Naman Dhir",role:"ALL"},{name:"Shardul Thakur",role:"ALL"},
-      {name:"Mitchell Santner",role:"ALL"},{name:"Will Jacks",role:"ALL"},{name:"Atharva Ankolekar",role:"ALL"},
-      {name:"Raj Angad Bawa",role:"ALL"},{name:"Mayank Rawat",role:"ALL"},{name:"Corbin Bosch",role:"ALL"},
-      {name:"Jasprit Bumrah",role:"BOWL"},{name:"Trent Boult",role:"BOWL"},{name:"Deepak Chahar",role:"BOWL"},
-      {name:"Ashwani Kumar",role:"BOWL"},{name:"Mayank Markande",role:"BOWL"},{name:"Raghu Sharma",role:"BOWL"},
-      {name:"Mohammad Izhar",role:"BOWL"},{name:"AM Ghazanfar",role:"BOWL"}
-    ]
-  },
-  "Chennai Super Kings": {
-    color: "#F9CD05",
-    players: [
-      {name:"Sanju Samson",role:"WK"},{name:"MS Dhoni",role:"WK"},{name:"Urvil Patel",role:"WK"},{name:"Kartik Sharma",role:"WK"},
-      {name:"Ruturaj Gaikwad",role:"BAT"},{name:"Ayush Mhatre",role:"BAT"},{name:"Sarfaraz Khan",role:"BAT"},
-      {name:"Shivam Dube",role:"ALL"},{name:"Dewald Brevis",role:"ALL"},{name:"Jamie Overton",role:"ALL"},
-      {name:"Prashant Veer",role:"ALL"},{name:"Zak Foulkes",role:"ALL"},{name:"Aman Khan",role:"ALL"},
-      {name:"Matthew Short",role:"ALL"},{name:"Shreyas Gopal",role:"ALL"},
-      {name:"Khaleel Ahmed",role:"BOWL"},{name:"Noor Ahmad",role:"BOWL"},{name:"Anshul Kamboj",role:"BOWL"},
-      {name:"Akeal Hosein",role:"BOWL"},{name:"Mukesh Choudhary",role:"BOWL"},{name:"Nathan Ellis",role:"BOWL"},
-      {name:"Matt Henry",role:"BOWL"},{name:"Ramakrishna Ghosh",role:"BOWL"},
-      {name:"Gurjapneet Singh",role:"BOWL"},{name:"Rahul Chahar",role:"BOWL"}
-    ]
-  },
-  "Royal Challengers Bengaluru": {
-    color: "#EC1C24",
-    players: [
-      {name:"Phil Salt",role:"WK"},{name:"Jitesh Sharma",role:"WK"},{name:"Jordan Cox",role:"WK"},
-      {name:"Virat Kohli",role:"BAT"},{name:"Tim David",role:"BAT"},{name:"Devdutt Padikkal",role:"BAT"},
-      {name:"Rajat Patidar",role:"BAT"},{name:"Jacob Bethell",role:"BAT"},
-      {name:"Venkatesh Iyer",role:"ALL"},{name:"Krunal Pandya",role:"ALL"},{name:"Romario Shepherd",role:"ALL"},
-      {name:"Satvik Deswal",role:"ALL"},{name:"Kanishk Chouhan",role:"ALL"},{name:"Vihaan Malhotra",role:"ALL"},
-      {name:"Swapnil Singh",role:"ALL"},{name:"Mangesh Yadav",role:"ALL"},
-      {name:"Josh Hazlewood",role:"BOWL"},{name:"Bhuvneshwar Kumar",role:"BOWL"},{name:"Yash Dayal",role:"BOWL"},
-      {name:"Suyash Sharma",role:"BOWL"},{name:"Nuwan Thushara",role:"BOWL"},{name:"Rasikh Dar",role:"BOWL"},
-      {name:"Vicky Ostwal",role:"BOWL"},{name:"Abhinandan Singh",role:"BOWL"},{name:"Jacob Duffy",role:"BOWL"}
-    ]
-  },
-  "Kolkata Knight Riders": {
-    color: "#3A225D",
-    players: [
-      {name:"Tim Seifert",role:"WK"},{name:"Tejasvi Singh",role:"WK"},{name:"Finn Allen",role:"WK"},
-      {name:"Rinku Singh",role:"BAT"},{name:"Angkrish Raghuvanshi",role:"BAT"},{name:"Ajinkya Rahane",role:"BAT"},
-      {name:"Manish Pandey",role:"BAT"},{name:"Rovman Powell",role:"BAT"},{name:"Rahul Tripathi",role:"BAT"},
-      {name:"Cameron Green",role:"BAT"},{name:"Ramandeep Singh",role:"BAT"},
-      {name:"Sunil Narine",role:"ALL"},{name:"Rachin Ravindra",role:"ALL"},{name:"Daksh Kamra",role:"ALL"},
-      {name:"Sarthak Ranjan",role:"ALL"},{name:"Anukul Roy",role:"ALL"},
-      {name:"Varun Chakravarthy",role:"BOWL"},{name:"Matheesha Pathirana",role:"BOWL"},
-      {name:"Vaibhav Arora",role:"BOWL"},{name:"Harshit Rana",role:"BOWL"},{name:"Umran Malik",role:"BOWL"},
-      {name:"Akash Deep",role:"BOWL"},{name:"Prashant Solanki",role:"BOWL"},
-      {name:"Kartik Tyagi",role:"BOWL"},{name:"Blessing Muzarabani",role:"BOWL"}
-    ]
-  },
-  "Delhi Capitals": {
-    color: "#0078BC",
-    players: [
-      {name:"KL Rahul",role:"WK"},{name:"Abishek Porel",role:"WK"},{name:"Ben Duckett",role:"WK"},
-      {name:"Ashutosh Sharma",role:"BAT"},{name:"David Miller",role:"BAT"},{name:"Tristan Stubbs",role:"BAT"},
-      {name:"Sameer Rizvi",role:"BAT"},{name:"Nitish Rana",role:"BAT"},{name:"Karun Nair",role:"BAT"},
-      {name:"Prithvi Shaw",role:"BAT"},{name:"Sahil Parakh",role:"BAT"},{name:"Pathum Nissanka",role:"BAT"},
-      {name:"Axar Patel",role:"ALL"},{name:"Vipraj Nigam",role:"ALL"},{name:"Ajay Mandal",role:"ALL"},
-      {name:"Tripurana Vijay",role:"ALL"},{name:"Madhav Tiwari",role:"ALL"},{name:"Auqib Dar",role:"ALL"},
-      {name:"Mitchell Starc",role:"BOWL"},{name:"Kuldeep Yadav",role:"BOWL"},{name:"Mukesh Kumar",role:"BOWL"},
-      {name:"Dushmantha Chameera",role:"BOWL"},{name:"Kyle Jamieson",role:"BOWL"},
-      {name:"Lungi Ngidi",role:"BOWL"},{name:"T Natarajan",role:"BOWL"}
-    ]
-  },
-  "Rajasthan Royals": {
-    color: "#EA1A85",
-    players: [
-      {name:"Dhruv Jurel",role:"WK"},{name:"Donovan Ferreira",role:"WK"},{name:"Ravi Singh",role:"WK"},
-      {name:"Lhuan-dre Pretorius",role:"WK"},
-      {name:"Yashasvi Jaiswal",role:"BAT"},{name:"Shimron Hetmyer",role:"BAT"},
-      {name:"Vaibhav Suryavanshi",role:"BAT"},{name:"Shubham Dubey",role:"BAT"},{name:"Aman Perala",role:"BAT"},
-      {name:"Ravindra Jadeja",role:"ALL"},{name:"Riyan Parag",role:"ALL"},{name:"Sam Curran",role:"ALL"},
-      {name:"Jofra Archer",role:"BOWL"},{name:"Tushar Deshpande",role:"BOWL"},{name:"Ravi Bishnoi",role:"BOWL"},
-      {name:"Vignesh Puthur",role:"BOWL"},{name:"Sandeep Sharma",role:"BOWL"},{name:"Yudhvir Singh",role:"BOWL"},
-      {name:"Kuldeep Sen",role:"BOWL"},{name:"Sushant Mishra",role:"BOWL"},{name:"Brijesh Sharma",role:"BOWL"},
-      {name:"Yash Punja",role:"BOWL"},{name:"Adam Milne",role:"BOWL"},
-      {name:"Kwena Maphaka",role:"BOWL"},{name:"Nandre Burger",role:"BOWL"}
-    ]
-  },
-  "Punjab Kings": {
-    color: "#ED1B24",
-    players: [
-      {name:"Prabhsimran Singh",role:"WK"},{name:"Vishnu Vinod",role:"WK"},
-      {name:"Shreyas Iyer",role:"BAT"},{name:"Nehal Wadhera",role:"BAT"},{name:"Priyansh Arya",role:"BAT"},
-      {name:"Shashank Singh",role:"BAT"},{name:"Harnoor Pannu",role:"BAT"},{name:"Pyla Avinash",role:"BAT"},
-      {name:"Marco Jansen",role:"ALL"},{name:"Azmatullah Omarzai",role:"ALL"},{name:"Marcus Stoinis",role:"ALL"},
-      {name:"Ben Dwarshuis",role:"ALL"},{name:"Suryansh Shedge",role:"ALL"},{name:"Musheer Khan",role:"ALL"},
-      {name:"Cooper Connolly",role:"ALL"},{name:"Mitchell Owen",role:"ALL"},
-      {name:"Arshdeep Singh",role:"BOWL"},{name:"Yuzvendra Chahal",role:"BOWL"},{name:"Harpreet Brar",role:"BOWL"},
-      {name:"Vijaykumar Vyshak",role:"BOWL"},{name:"Lockie Ferguson",role:"BOWL"},
-      {name:"Vishal Nishad",role:"BOWL"},{name:"Pravin Dubey",role:"BOWL"},
-      {name:"Xavier Bartlett",role:"BOWL"},{name:"Yash Thakur",role:"BOWL"}
-    ]
-  },
-  "Sunrisers Hyderabad": {
-    color: "#F26522",
-    players: [
-      {name:"Ishan Kishan",role:"WK"},{name:"Heinrich Klaasen",role:"WK"},{name:"Salil Arora",role:"WK"},
-      {name:"Travis Head",role:"BAT"},{name:"Smaran Ravichandran",role:"BAT"},
-      {name:"Abhishek Sharma",role:"ALL"},{name:"Aniket Verma",role:"ALL"},{name:"Liam Livingstone",role:"ALL"},
-      {name:"Nitish Kumar Reddy",role:"ALL"},{name:"Kamindu Mendis",role:"ALL"},{name:"Harsh Dubey",role:"ALL"},
-      {name:"Krains Fuletra",role:"ALL"},{name:"Jack Edwards",role:"ALL"},{name:"Shivang Kumar",role:"ALL"},
-      {name:"Pat Cummins",role:"BOWL"},{name:"Harshal Patel",role:"BOWL"},{name:"Eshan Malinga",role:"BOWL"},
-      {name:"Shivam Mavi",role:"BOWL"},{name:"Amit Kumar",role:"BOWL"},{name:"Praful Hinge",role:"BOWL"},
-      {name:"Onkar Tarmale",role:"BOWL"},{name:"Sakib Hussain",role:"BOWL"},{name:"Brydon Carse",role:"BOWL"},
-      {name:"Zeeshan Ansari",role:"BOWL"},{name:"Jaydev Unadkat",role:"BOWL"}
-    ]
-  },
-  "Lucknow Super Giants": {
-    color: "#A72056",
-    players: [
-      {name:"Nicholas Pooran",role:"WK"},{name:"Rishabh Pant",role:"WK"},{name:"Josh Inglis",role:"WK"},
-      {name:"Mukul Choudhary",role:"WK"},
-      {name:"Ayush Badoni",role:"BAT"},{name:"Abdul Samad",role:"BAT"},{name:"Matthew Breetzke",role:"BAT"},
-      {name:"Himmat Singh",role:"BAT"},{name:"Akshat Raghuwanshi",role:"BAT"},
-      {name:"Mitchell Marsh",role:"ALL"},{name:"Aiden Markram",role:"ALL"},{name:"Wanindu Hasaranga",role:"ALL"},
-      {name:"Arshin Kulkarni",role:"ALL"},{name:"Shahbaz Ahmed",role:"ALL"},
-      {name:"Digvesh Singh",role:"BOWL"},{name:"Mohammad Shami",role:"BOWL"},{name:"Akash Singh",role:"BOWL"},
-      {name:"Avesh Khan",role:"BOWL"},{name:"Manimaran Siddharth",role:"BOWL"},{name:"Mohsin Khan",role:"BOWL"},
-      {name:"Mayank Yadav",role:"BOWL"},{name:"Naman Tiwari",role:"BOWL"},{name:"Arjun Tendulkar",role:"BOWL"},
-      {name:"Prince Yadav",role:"BOWL"},{name:"Anrich Nortje",role:"BOWL"}
-    ]
-  },
-  "Gujarat Titans": {
-    color: "#1C4F9C",
-    players: [
-      {name:"Jos Buttler",role:"WK"},{name:"Kumar Kushagra",role:"WK"},{name:"Tom Banton",role:"WK"},
-      {name:"Anuj Rawat",role:"WK"},
-      {name:"Shubman Gill",role:"BAT"},{name:"Sai Sudharsan",role:"BAT"},{name:"Shahrukh Khan",role:"BAT"},
-      {name:"Rahul Tewatia",role:"ALL"},{name:"Washington Sundar",role:"ALL"},{name:"Jason Holder",role:"ALL"},
-      {name:"Glenn Phillips",role:"ALL"},{name:"Nishant Sindhu",role:"ALL"},
-      {name:"Sai Kishore",role:"BOWL"},{name:"Mohammed Siraj",role:"BOWL"},{name:"Rashid Khan",role:"BOWL"},
-      {name:"Prasidh Krishna",role:"BOWL"},{name:"Arshad Khan",role:"BOWL"},{name:"Ishant Sharma",role:"BOWL"},
-      {name:"Kagiso Rabada",role:"BOWL"},{name:"Gurnoor Brar",role:"BOWL"},{name:"Prithvi Raj Yarra",role:"BOWL"},
-      {name:"Manav Suthar",role:"BOWL"},{name:"Jayant Yadav",role:"BOWL"},
-      {name:"Luke Wood",role:"BOWL"},{name:"Ashok Sharma",role:"BOWL"}
-    ]
+firebase.initializeApp({
+  apiKey:"AIzaSyBN-35_PsP1gUIk3cthPzWtP3-xk-TfJt4",
+  authDomain:"somnus-4373f.firebaseapp.com",
+  projectId:"somnus-4373f",
+  storageBucket:"somnus-4373f.firebasestorage.app",
+  messagingSenderId:"853350236027",
+  appId:"1:853350236027:web:74812e033d376b93f847de"
+});
+const auth=firebase.auth();
+const db=firebase.firestore();
+
+let S={need:9.5,wakeTime:'07:00',log:[],naps:[],startingDebt:12.5,checkins:[],goal:{targetDebt:5,targetDays:60,startDate:null,startDebt:null}};
+let CU=null,tChart=null,lq=3,lwu=0,ltags=[],insPeriod='month',tipIdx=0,showAdv=false;
+const TAGS=['Alcohol','Stress','Travel','Illness','Cinema','Football','Late work','Exercise'];
+const TIPS=[
+  {h:'Avoid caffeine after {cutoff}',b:'Caffeine has a 6-hour half-life. Drinking it later delays sleep onset and reduces deep sleep.'},
+  {h:'Target bed: {bed} tonight',b:'Hitting {need}h gives your brain and body full recovery. Consistency matters as much as duration.'},
+  {h:'Sleep debt compounds quietly',b:'Every short night adds. Every good night chips away. Tonight is your next best opportunity.'},
+  {h:'Your peak focus window is {peak}',b:'Cortisol and body temperature peak here. Schedule your hardest work during this window.'},
+  {h:'A 20–30 min nap before 3pm helps',b:'A short nap offsets debt without disrupting night sleep pressure. Keep it under 30 min.'},
+];
+
+// ── Auth ──────────────────────────────────────────────────────
+auth.onAuthStateChanged(async user=>{
+  document.getElementById('loading-screen').style.display='none';
+  if(user){
+    CU=user;
+    document.getElementById('um-name').textContent=user.displayName||user.email||'';
+    document.getElementById('um-email').textContent=user.email||'';
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('main-app').style.display='block';
+    await loadFS();
+    go('debt',document.querySelector('.nav-item'));
+  } else {
+    CU=null;
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('main-app').style.display='none';
   }
-};
+});
 
-const ROLE_COLORS = { BAT:"#1d4ed8", BOWL:"#dc2626", ALL:"#16a34a", WK:"#ca8a04" };
-const ROLE_ICONS  = { BAT:"🏏", BOWL:"🎳", ALL:"⚡", WK:"🧤" };
-let xiA = [], xiB = [];
+function showAuthErr(m){const e=document.getElementById('auth-error');e.textContent=m;e.style.display='block';}
+async function doSignIn(){
+  const email=document.getElementById('auth-email').value.trim(),pass=document.getElementById('auth-pass').value;
+  if(!email||!pass){showAuthErr('Please enter email and password.');return;}
+  document.getElementById('auth-error').style.display='none';
+  try{await auth.signInWithEmailAndPassword(email,pass);}
+  catch(e){const m={'auth/user-not-found':'No account found. Create one.','auth/wrong-password':'Wrong password.','auth/invalid-credential':'Wrong email or password.','auth/invalid-email':'Invalid email.'};showAuthErr(m[e.code]||'Sign in failed.');}
+}
+async function doRegister(){
+  const email=document.getElementById('auth-email').value.trim(),pass=document.getElementById('auth-pass').value;
+  if(!email||!pass){showAuthErr('Please enter email and password.');return;}
+  if(pass.length<6){showAuthErr('Password must be 6+ characters.');return;}
+  document.getElementById('auth-error').style.display='none';
+  try{await auth.createUserWithEmailAndPassword(email,pass);}
+  catch(e){const m={'auth/email-already-in-use':'Account exists. Sign in.','auth/weak-password':'Password too weak.','auth/invalid-email':'Invalid email.'};showAuthErr(m[e.code]||'Could not create account.');}
+}
+async function doSignOut(){closeUserMenu();await auth.signOut();}
+function showUserMenu(){document.getElementById('user-modal').classList.add('open');}
+function closeUserMenu(){document.getElementById('user-modal').classList.remove('open');}
 
-function init() {
-  const teams = Object.keys(SQUADS);
-  const sA = document.getElementById('teamA');
-  const sB = document.getElementById('teamB');
-  teams.forEach((t,i) => {
-    sA.innerHTML += `<option value="${t}">${t}</option>`;
-    sB.innerHTML += `<option value="${t}"${i===1?' selected':''}>${t}</option>`;
-  });
-  updateToss(); renderSquads();
+// ── Firestore ──────────────────────────────────────────────────
+const uDoc=()=>db.collection('users').doc(CU.uid);
+async function loadFS(){
+  try{const d=await uDoc().get();if(d.exists){S={...S,...d.data()};if(!Array.isArray(S.log))S.log=[];if(!Array.isArray(S.naps))S.naps=[];if(!Array.isArray(S.checkins))S.checkins=[];if(!S.goal)S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};}}catch(e){console.error(e);}
+}
+let st;
+function saveFS(){clearTimeout(st);st=setTimeout(async()=>{if(!CU)return;showToast('Saving…');try{await uDoc().set(S,{merge:true});showToast('Saved ✓');}catch(e){showToast('Error saving');}},800);}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2000);}
+
+// ── Nav ───────────────────────────────────────────────────────
+function go(p,el){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+  ({debt:rDebt,today:rToday,log:rLog,insights:rInsights,settings:rSettings})[p]?.();
 }
 
-function onTeamChange() {
-  const a = document.getElementById('teamA').value;
-  const b = document.getElementById('teamB').value;
-  if (a === b) {
-    const other = Object.keys(SQUADS).find(t => t !== a);
-    document.getElementById('teamB').value = other;
+// ── Math ──────────────────────────────────────────────────────
+function calcHrs(bed,wake,onset=15){
+  let[bh,bm]=bed.split(':').map(Number),[wh,wm]=wake.split(':').map(Number);
+  let b=bh*60+bm+onset,w=wh*60+wm;
+  if(w<=bh*60+bm)w+=1440;
+  return Math.max(0,Math.round((w-b)/60*10)/10);
+}
+function eff(hrs,q=3,wu=0){return Math.round(Math.max(0,hrs*([0,.75,.85,1,1.05,1.1][q]||1)-wu*.15)*10)/10;}
+function targetBed(){
+  const[wh,wm]=S.wakeTime.split(':').map(Number);
+  const m=((wh*60+wm-S.need*60)%1440+1440)%1440;
+  return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(Math.round(m%60)).padStart(2,'0')}`;
+}
+function fmt(t){let[h,m]=t.split(':').map(Number);const ap=h<12?'am':'pm';if(h===0)h=12;else if(h>12)h-=12;return `${h}:${String(m).padStart(2,'0')}${ap}`;}
+function fmtH(h){return `${h===0?12:h>12?h-12:h}${h<12?'am':'pm'}`;}
+function fmtDate(d){return new Date(d+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});}
+function yday(){const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
+function tod(){return new Date().toISOString().slice(0,10);}
+function bedDef(bed){
+  const tb=targetBed(),[th,tm]=tb.split(':').map(Number);
+  let[ah,am]=bed.split(':').map(Number),tM=th*60+tm,aM=ah*60+am;
+  if(aM<720)aM+=1440;if(tM<720)tM+=1440;
+  return Math.max(0,Math.round((aM-tM)/60*10)/10);
+}
+function recov(x){return x<=0?0:Math.round(Math.log(1+x*2)*.8*10)/10;}
+function napCredit(date){return(S.naps||[]).filter(n=>n.date===date).reduce((s,n)=>s+n.mins/60*.55,0);}
+function getDebt(){
+  const r=S.log.slice(0,14);if(!r.length)return Math.round(S.startingDebt*10)/10;
+  let net=S.startingDebt;
+  r.forEach(e=>{const def=S.need-eff(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);if(def>0)net+=def;else net-=recov(-def);});
+  return Math.round(Math.max(0,net)*10)/10;
+}
+function getStreak(){let s=0;const t=new Date();for(let i=0;i<S.log.length;i++){if(Math.round((t-new Date(S.log[i].date+'T12:00:00'))/86400000)===i)s++;else break;}return s;}
+function eLevel(nowH,wH){
+  const e=(nowH-wH+24)%24,pi=Math.PI;let v;
+  if(e<1.5)v=.3+(e/1.5)*.4;else if(e<5)v=.7+Math.sin((e-1.5)/3.5*pi)*.3;
+  else if(e<7)v=1-(e-5)/2*.35;else if(e<9)v=.65+Math.sin((e-7)/2*pi)*.2;
+  else if(e<11)v=.85-(e-9)/2*.3;else if(e<14)v=.55-(e-11)/3*.25;
+  else v=Math.max(.1,.3-(e-14)*.03);
+  return Math.max(.05,Math.min(1,v*Math.max(.6,1-getDebt()/30*.35)));
+}
+function bedAlert(){
+  const tb=targetBed(),[th,tm]=tb.split(':').map(Number),n=new Date();
+  let tM=th*60+tm,nM=n.getHours()*60+n.getMinutes();
+  if(tM<720)tM+=1440;if(nM<720)nM+=1440;
+  const d=tM-nM;return(d>0&&d<=180)?d:null;
+}
+function cdown(m){if(m<60)return m+'min';return `${Math.floor(m/60)}h${m%60?` ${m%60}min`:''}`.trim();}
+
+// ── DEBT PAGE ─────────────────────────────────────────────────
+function rDebt(){
+  const debt=getDebt(),last=S.log[0]||null,streak=getStreak(),tb=targetBed();
+  const mins=bedAlert();
+  document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',month:'short',day:'numeric'});
+  document.getElementById('streak-pill').textContent=streak>0?`${streak} day streak`:'Start logging';
+
+  const dC=debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)';
+  const dPct=Math.min(100,Math.round(debt/20*100));
+  const arcLen=Math.round(dPct/100*175.9);
+  const lEff=last?eff(last.hrs,last.quality||3,last.wakeups||0):null;
+  const lDef=last?bedDef(last.bed):0;
+  const qC=last?(last.quality>=4?'var(--green)':last.quality<=2?'var(--red)':'var(--amber)'):'var(--border2)';
+  const qArc=last?Math.round((last.quality||3)/5*100):0;
+
+  // Bedtime countdown
+  const[th2,tm2]=tb.split(':').map(Number);
+  const n2=new Date();let tM2=th2*60+tm2,nM2=n2.getHours()*60+n2.getMinutes();
+  if(tM2<720)tM2+=1440;if(nM2<720)nM2+=1440;
+  const bLeft=tM2-nM2;
+  const bColor=bLeft<0?'var(--red)':bLeft<60?'var(--amber)':'var(--green)';
+  const bBg=bLeft<0?'var(--red-l)':bLeft<60?'var(--amber-l)':'var(--green-l)';
+
+  // Tip
+  const[wh]=S.wakeTime.split(':').map(Number);
+  const tip=TIPS[tipIdx%TIPS.length];
+  const tipH=tip.h.replace('{cutoff}',fmtH((wh+10)%24)).replace('{bed}',fmt(tb)).replace('{need}',S.need+'h').replace('{peak}',fmtH(wh+2)+'–'+fmtH(wh+5));
+  const tipB=tip.b;
+  const tipDots=TIPS.map((_,i)=>`<div class="tip-dot${i===tipIdx%TIPS.length?' on':''}"></div>`).join('');
+
+  // Goal
+  let goalH='';
+  if(S.goal&&S.goal.startDate){
+    const elapsed=Math.max(0,Math.round((new Date()-new Date(S.goal.startDate))/86400000));
+    const dLeft=Math.max(0,S.goal.targetDays-elapsed);
+    const reduced=Math.max(0,S.goal.startDebt-debt);
+    const targetR=S.goal.startDebt-S.goal.targetDebt;
+    const pct=Math.min(100,targetR>0?Math.round(reduced/targetR*100):0);
+    goalH=`<div class="goal-card">
+      <div class="goal-header"><div class="goal-title">Debt goal</div><div class="goal-pct">${pct}%</div></div>
+      <div class="goal-bar-track"><div class="goal-bar-fill" style="width:${pct}%"></div></div>
+      <div class="goal-footer">
+        <span>Get below ${S.goal.targetDebt}h · ${dLeft} days left</span>
+        <span>${debt>S.goal.targetDebt?`Need +${Math.round((debt-S.goal.targetDebt)/Math.max(1,dLeft)*10)/10}h/night`:'🎉 Done!'}</span>
+      </div>
+    </div>`;
   }
-  updateToss(); xiA=[]; xiB=[]; renderSquads();
+
+  document.getElementById('page-debt').innerHTML=
+    (mins?`<div class="alert-banner" style="background:var(--accent-l);color:var(--accent)">🌙 Bedtime in ${cdown(mins)} — target ${fmt(tb)}</div>`:'')
+    +`<div class="debt-card">
+      <div class="debt-top-row">
+        <div>
+          <div class="debt-label">Total sleep debt</div>
+          <div class="debt-number${debt<5?' green':debt<10?' amber':''}">${debt}</div>
+          <div class="debt-unit">hours owed</div>
+          <div class="safe-badge" style="margin-top:8px">Safe zone: under 5h</div>
+        </div>
+        <div class="arc-wrap">
+          <svg width="70" height="70" viewBox="0 0 70 70">
+            <circle cx="35" cy="35" r="28" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="7"/>
+            <circle cx="35" cy="35" r="28" fill="none" stroke="${debt<5?'#34c759':debt<10?'#ff9500':'#ff3b30'}" stroke-width="7"
+              stroke-dasharray="${arcLen} 175.9" stroke-linecap="round"/>
+          </svg>
+          <div class="arc-inner"><div class="arc-pct" style="color:${dC}">${dPct}%</div><div class="arc-sub">of max</div></div>
+        </div>
+      </div>
+      <div class="debt-bar-track"><div class="debt-bar-fill" style="width:${Math.min(100,debt/20*100)}%;background:${dC}"></div></div>
+      <div class="debt-meta-row">
+        <div class="debt-meta-text">${S.need}h need · ${debt<5?'In safe zone':`${(debt-5).toFixed(1)}h above safe zone`}</div>
+      </div>
+    </div>
+
+    <div class="ln-row">
+      <div class="ln-card">
+        <div class="ln-card-label">Last night</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg width="44" height="44" viewBox="0 0 44 44" style="flex-shrink:0">
+            <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="4"/>
+            ${last?`<circle cx="22" cy="22" r="18" fill="none" stroke="${last.quality>=4?'#34c759':last.quality<=2?'#ff3b30':'#ff9500'}" stroke-width="4" stroke-dasharray="${Math.round((last.quality||3)/5*113.1)} 113.1" stroke-linecap="round" transform="rotate(-90 22 22)"/>`:''}
+          </svg>
+          <div>
+            <div class="ln-main-num" style="color:${last&&lEff>=S.need?'var(--green)':last&&lEff>=S.need*.8?'var(--amber)':'var(--red)'}">${last?lEff+'h':'—'}</div>
+            <div class="ln-sub">${last?last.hrs+'h raw / '+S.need+'h need':''}</div>
+          </div>
+        </div>
+      </div>
+      <div class="bedtime-card">
+        <div class="ln-card-label">Target bed</div>
+        <div class="bedtime-time">${fmt(tb)}</div>
+        <div class="bedtime-pill" style="background:${bBg};color:${bColor}">${bLeft>0?cdown(bLeft)+' away':bLeft===0?'Now':'Passed'}</div>
+      </div>
+    </div>
+
+    ${last?`<div class="ln-detail-card">
+      <div class="ln-detail-row"><span class="ln-detail-label">Slept at</span><span class="ln-detail-value">${fmt(last.bed)}</span></div>
+      <div class="ln-detail-row"><span class="ln-detail-label">Woke at</span><span class="ln-detail-value">${fmt(last.wake)}</span></div>
+      <div class="ln-detail-row"><span class="ln-detail-label">Bedtime</span><span class="ln-detail-value" style="color:${lDef>0?'var(--amber)':'var(--green)'}">${lDef>0?lDef+'h past target':'On time ✓'}</span></div>
+      <div class="ln-detail-row"><span class="ln-detail-label">vs need</span><span class="ln-detail-value" style="color:${lEff>=S.need?'var(--green)':'var(--red)'}">${lEff>=S.need?'+':''}${Math.round((lEff-S.need)*10)/10}h ${lEff>=S.need?'surplus':'deficit'}</span></div>
+      <div class="ln-detail-row"><span class="ln-detail-label">Quality</span><span class="ln-detail-value">${['','😵 Terrible','😩 Poor','😐 Okay','🙂 Good','⚡ Great'][last.quality||3]}</span></div>
+      ${last.wakeups?`<div class="ln-detail-row"><span class="ln-detail-label">Woke up</span><span class="ln-detail-value">${last.wakeups}x</span></div>`:''}
+      ${last.tags&&last.tags.length?`<div class="ln-detail-row"><span class="ln-detail-label">Tags</span><span class="ln-detail-value" style="color:var(--accent)">${last.tags.join(', ')}</span></div>`:''}
+      ${last.note?`<div class="ln-detail-row"><span class="ln-detail-label">Note</span><span class="ln-detail-value" style="color:var(--text2);font-weight:400">"${last.note}"</span></div>`:''}
+    </div>`:''}
+
+    ${buildTimeline()}
+
+    <div class="tip-card">
+      <div class="tip-headline">${tipH}</div>
+      <div class="tip-body">${tipB}</div>
+      <div class="tip-footer">
+        <div class="tip-dots">${tipDots}</div>
+        <span class="tip-next-btn" onclick="tipIdx++;rDebt()">Next →</span>
+      </div>
+    </div>
+
+    ${goalH}`;
 }
 
-function updateToss() {
-  const a = document.getElementById('teamA').value;
-  const b = document.getElementById('teamB').value;
-  document.getElementById('toss').innerHTML = `
-    <option value="no toss yet">Toss not yet done</option>
-    <option value="${a} won toss, elected to bat">${a} — Bat first</option>
-    <option value="${a} won toss, elected to field">${a} — Field first</option>
-    <option value="${b} won toss, elected to bat">${b} — Bat first</option>
-    <option value="${b} won toss, elected to field">${b} — Field first</option>`;
-  document.getElementById('colorA').style.background = SQUADS[a]?.color || '#f97316';
-  document.getElementById('colorB').style.background = SQUADS[b]?.color || '#f97316';
-  document.getElementById('xiLabelA').textContent = a.replace('Indians','MI').replace('Super Kings','CSK').replace('Challengers Bengaluru','RCB').replace('Knight Riders','KKR').replace('Capitals','DC').replace('Royals','RR').replace('Kings','PBKS').replace('Sunrisers Hyderabad','SRH').replace('Super Giants','LSG').replace('Titans','GT');
-  document.getElementById('xiLabelB').textContent = document.getElementById('teamB').value.replace('Indians','MI').replace('Super Kings','CSK').replace('Challengers Bengaluru','RCB').replace('Knight Riders','KKR').replace('Capitals','DC').replace('Royals','RR').replace('Kings','PBKS').replace('Sunrisers Hyderabad','SRH').replace('Super Giants','LSG').replace('Titans','GT');
+function buildTimeline(){
+  const[wh]=S.wakeTime.split(':').map(Number);
+  const n=new Date(),nowH=n.getHours()+n.getMinutes()/60;
+  const zones=[
+    {label:'Rise',h:0,len:1.5,color:'#c7b8f5'},
+    {label:'Focus',h:1.5,len:3.5,color:'#86efac'},
+    {label:'Dip',h:5,len:2,color:'#fde68a'},
+    {label:'Wind',h:7,len:2,color:'#93c5fd'},
+    {label:'Peak',h:9,len:2,color:'#6ee7b7'},
+    {label:'Down',h:11,len:5,color:'#fca5a5'},
+  ];
+  const elapsed=(nowH-wh+24)%24;
+  const markerPct=Math.min(100,Math.max(0,elapsed/16*100));
+  let curZone=zones[zones.length-1];
+  for(const z of zones)if(elapsed>=z.h&&elapsed<z.h+z.len)curZone=z;
+  const pills=zones.map(z=>`<div class="zpill" style="background:${z.color}20;color:${z.color.replace('86ef','16a3').replace('fde6','92400').replace('93c5','1e40').replace('6ee7','059669').replace('fca5','991b').replace('c7b8','5856d6')}">${fmtH((wh+z.h)%24)} ${z.label}</div>`).join('');
+
+  return `<div class="energy-card">
+    <div class="energy-header">
+      <div class="energy-title">Energy today</div>
+      <div class="energy-now" style="color:#5856d6">${curZone.label} now</div>
+    </div>
+    <div class="energy-sub">${fmtH(wh)} wake → ${fmtH((wh+16)%24)} wind-down</div>
+    <div class="tl-strip">
+      ${zones.map(z=>`<div class="tl-seg" style="flex:${z.len};background:${z.color}"></div>`).join('')}
+      <div class="tl-marker" style="left:${markerPct}%"></div>
+    </div>
+    <div class="tl-labels">
+      <span>${fmtH(wh)}</span><span>${fmtH((wh+4)%24)}</span><span>${fmtH((wh+8)%24)}</span><span>${fmtH((wh+12)%24)}</span><span>${fmtH((wh+16)%24)}</span>
+    </div>
+    <div class="zone-pills">${pills}</div>
+  </div>`;
 }
 
-function renderSquads() {
-  const a = document.getElementById('teamA').value;
-  const b = document.getElementById('teamB').value;
-  renderSquad('A', SQUADS[a]?.players || []);
-  renderSquad('B', SQUADS[b]?.players || []);
-  if(typeof updateImpactDropdowns === 'function') updateImpactDropdowns();
-}
+// ── TODAY PAGE ────────────────────────────────────────────────
+function rToday(){
+  const last=S.log[0]||null,[wh]=S.wakeTime.split(':').map(Number);
+  const td=tod(),ci=S.checkins?.find(c=>c.date===td);
+  const now=new Date(),isMorn=now.getHours()>=6&&now.getHours()<=11;
 
-function renderSquad(side, players) {
-  const xi = side==='A'?xiA:xiB;
-  const xiDiv = document.getElementById(`xiPlayers${side}`);
-  const sqDiv = document.getElementById(`squad${side}`);
-  const cntEl = document.getElementById(`xiCount${side}`);
-  xiDiv.innerHTML = xi.map(p =>
-    `<div class="player-chip" onclick="removeFromXI('${side}','${p.name}')">
-      <span class="rdot" style="background:${ROLE_COLORS[p.role]}"></span>${p.name}
-      <span style="font-size:10px;opacity:0.5;margin-left:2px">✕</span>
-    </div>`).join('');
-  sqDiv.innerHTML = players.map(p =>
-    `<div class="squad-chip${xi.some(x=>x.name===p.name)?' in-xi':''}" onclick="addToXI('${side}','${p.name}','${p.role}')">
-      <span style="color:${ROLE_COLORS[p.role]};font-size:9px">${ROLE_ICONS[p.role]}</span>${p.name}
-    </div>`).join('');
-  cntEl.textContent = `${xi.length} / 11`;
-  cntEl.style.color = xi.length===11 ? 'var(--green)' : xi.length>11 ? 'var(--red)' : 'var(--muted)';
-}
+  let ciH='';
+  if(isMorn&&!ci){
+    ciH=`<div class="mood-card">
+      <div style="font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Morning check-in</div>
+      <div style="font-size:14px;color:var(--text2)">How are you feeling today?</div>
+      <div class="mood-row">${['😵','😩','😐','🙂','⚡'].map((e,i)=>`<button class="mbtn" onclick="logMood(${i+1},'${e}')">${e}</button>`).join('')}</div>
+    </div>`;
+  }else if(ci){
+    ciH=`<div class="mood-card"><div style="font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Today's mood</div><div style="font-size:28px">${ci.emoji}</div></div>`;
+  }
 
-function addToXI(side, name, role) {
-  const xi = side==='A'?xiA:xiB;
-  if (xi.length>=11||xi.some(p=>p.name===name)) return;
-  xi.push({name,role}); renderSquads();
-}
-function removeFromXI(side, name) {
-  if (side==='A') xiA=xiA.filter(p=>p.name!==name);
-  else xiB=xiB.filter(p=>p.name!==name);
-  renderSquads();
-}
-function autoFillXI(side) {
-  const team = document.getElementById(`team${side}`).value;
-  if (side==='A') xiA = (SQUADS[team]?.players||[]).slice(0,11).map(p=>({...p}));
-  else xiB = (SQUADS[team]?.players||[]).slice(0,11).map(p=>({...p}));
-  renderSquads();
-}
-function clearXI(side) {
-  if (side==='A') xiA=[]; else xiB=[];
-  renderSquads();
-}
-
-// ── SIMULATION ────────────────────────────────────────────────────────────────
-async function runSimulation() {
-  const teamA = document.getElementById('teamA').value;
-  const teamB = document.getElementById('teamB').value;
-  const venue = document.getElementById('venue').value;
-  const pitch = document.getElementById('pitch').value;
-  const impactA = (document.getElementById('impactA')?.value) || 'Not decided';
-  const impactB = (document.getElementById('impactB')?.value) || 'Not decided';
-  const toss  = document.getElementById('toss').value;
-  const weather = document.getElementById('weather').value;
-  const context = document.getElementById('context').value;
-  const time  = document.getElementById('time').value;
-
-  if (xiA.length<11||xiB.length<11) {
-    const msgs = [];
-    if (xiA.length<11) msgs.push(`${teamA}: ${11-xiA.length} more players needed`);
-    if (xiB.length<11) msgs.push(`${teamB}: ${11-xiB.length} more players needed`);
-    alert('Please complete Playing XI:\n\n' + msgs.join('\n') + '\n\nTip: Use "Auto-fill" buttons for quick setup.');
+  if(!last){
+    document.getElementById('page-today').innerHTML=ciH+`<div style="margin:0 16px;background:var(--surface);border-radius:var(--r-xl);padding:32px 20px;text-align:center">
+      <div style="font-size:44px;margin-bottom:14px">🌙</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">Log last night first</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.6">Your day plan appears here after logging sleep.</div>
+      <button class="primary-btn" style="width:auto;padding:12px 24px" onclick="go('log',document.querySelectorAll('.nav-item')[2])">Log sleep →</button>
+    </div>`;
     return;
   }
 
-  const btn = document.getElementById('simBtn');
-  const loading = document.getElementById('loadingPanel');
-  const results = document.getElementById('results');
-  btn.disabled = true; btn.innerHTML = '⏳ &nbsp;SIMULATING...';
-  loading.classList.add('active');
-  results.classList.remove('visible'); results.innerHTML = '';
+  const ef=eff(last.hrs,last.quality||3,last.wakeups||0),need=S.need,def=need-ef;
+  let dtype,dc,dbg,dsum;
+  if(def<=0){dtype='Well rested';dc='var(--green)';dbg='var(--green-l)';dsum=`${ef}h effective — at your need. Sharp, focused day ahead.`;}
+  else if(def<1.5){dtype='Mildly short';dc='var(--amber)';dbg='var(--amber-l)';dsum=`${def.toFixed(1)}h short. Mostly fine, dip expected around ${fmtH((wh+7)%24)}.`;}
+  else if(def<3){dtype='Underslept';dc='var(--amber)';dbg='var(--amber-l)';dsum=`${def.toFixed(1)}h short. Expect some fog and slower reactions.`;}
+  else{dtype='Significantly short';dc='var(--red)';dbg='var(--red-l)';dsum=`${def.toFixed(1)}h short. Protect your schedule today.`;}
 
-  setStep(1,'active');
+  const zones=[
+    {start:wh+2,end:wh+5,color:def<1.5?'#86efac':'#fde68a',tc:def<1.5?'#065f46':'#78350f',label:'Focus',desc:def<1.5?'Best focus window. Deep work, hard decisions, creative tasks.':'Energy reduced. Do your most important task early before it drops further.'},
+    {start:wh+6,end:wh+8,color:def>=1.5?'#fca5a5':'#ddd6fe',tc:def>=1.5?'#7f1d1d':'#3b0764',label:'Dip',desc:def>=1.5?'Post-lunch crash is harder today. Avoid critical decisions.':'Natural dip. Emails, admin, routine tasks.'},
+    {start:wh+8,end:wh+10,color:def<3?'#93c5fd':'#fde68a',tc:def<3?'#1e3a5f':'#78350f',label:'Second wind',desc:def<3?'Second wind. Meetings, calls, collaborative work.':'Second wind blunted. Light tasks only.'},
+    {start:wh+11,end:wh+14,color:'#ddd6fe',tc:'#3b0764',label:'Wind-down',desc:'Energy dropping. Begin winding down. Dim screens.'},
+  ];
 
-  try {
-    const research = await callResearch(teamA, teamB, venue);
-    setStep(1,'done'); setStep(2,'active');
+  const napRec=def>=3?{icon:'💤',text:`Nap recommended — ${fmtH((wh+6)%24)} to ${fmtH((wh+8)%24)}`,bg:'var(--red-l)',bc:'var(--red)'}
+    :def>=1.5?{icon:'💤',text:`Optional nap before ${fmtH((wh+8)%24)}`,bg:'var(--amber-l)',bc:'var(--amber)'}
+    :{icon:'✓',text:'No nap needed — good to go',bg:'var(--green-l)',bc:'var(--green)'};
 
-    const xiAStr = xiA.map(p=>`${p.name}(${p.role})`).join(', ');
-    const xiBStr = xiB.map(p=>`${p.name}(${p.role})`).join(', ');
-    const sim = await callDeepSim(teamA,teamB,venue,pitch,toss,weather,context,time,xiAStr,xiBStr,research);
-    setStep(2,'done');
+  const tb=targetBed();
+  const[th,tm]=tb.split(':').map(Number);
+  const nw=new Date();let tM=th*60+tm,nM=nw.getHours()*60+nw.getMinutes();
+  if(tM<720)tM+=1440;if(nM<720)nM+=1440;
+  const mLeft=tM-nM;
 
-    loading.classList.remove('active');
-    renderResults(sim, teamA, teamB, research);
-  } catch(err) {
-    loading.classList.remove('active');
-    results.innerHTML = `<div class="card"><div class="error-box">⚠️ Simulation failed: ${err.message}<br><br>Check your API connection and try again.</div></div>`;
-    results.classList.add('visible');
+  window._zones=zones;
+
+  document.getElementById('page-today').innerHTML=ciH+`
+    <div class="day-hero">
+      <div class="day-badge" style="background:${dbg};color:${dc}">${dtype}</div>
+      <div class="day-type" style="color:${dc}">${ef}h <span style="font-size:16px;font-weight:400;color:var(--text2)">/ ${need}h</span></div>
+      <div class="day-hrs">${def<=0?'At your sleep need':def.toFixed(1)+'h below your need'}</div>
+      <div class="day-summary">${dsum}</div>
+    </div>
+
+    <div class="vt-card">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em">Your day — tap a zone</div>
+      <div class="vt-strip" id="vt">
+        ${zones.map((z,i)=>`<div class="vt-seg" style="flex:${z.end-z.start};background:${z.color};color:${z.tc}" onclick="showZone(${i})">${z.label}</div>`).join('')}
+      </div>
+      <div class="vt-detail" id="vtd">Tap a zone to see what to focus on during that time.</div>
+    </div>
+
+    <div class="pills-row">
+      <div class="pill-card"><div class="pill-val">${fmtH((wh+10)%24)}</div><div class="pill-lbl">Last coffee</div></div>
+      <div class="pill-card"><div class="pill-val">${fmt(tb)}</div><div class="pill-lbl">Target bed</div></div>
+      <div class="pill-card"><div class="pill-val" style="color:${mLeft>0?'var(--text)':'var(--red)'}">${mLeft>0?cdown(mLeft):'Now'}</div><div class="pill-lbl">Bed in</div></div>
+    </div>
+
+    <div class="nap-row" style="background:${napRec.bg};color:${napRec.bc}">
+      <span style="font-size:18px">${napRec.icon}</span>
+      <span style="font-size:14px;font-weight:500">${napRec.text}</span>
+    </div>
+
+    <div style="margin:0 16px 12px;background:var(--surface);border-radius:var(--r-lg);padding:14px 16px;">
+      <div style="font-size:13px;color:var(--text2);line-height:1.7">
+        Tonight: <strong>${fmt(tb)}</strong> for your full ${need}h.
+        ${def>=2?' Short night today — prioritise hitting this.':' Keep the rhythm.'}
+        ${mLeft>0&&mLeft<90?`<br><span style="color:var(--accent);font-weight:500">That's ${cdown(mLeft)} away. Start winding down soon.</span>`:''}
+      </div>
+    </div>`;
+}
+
+function showZone(i){
+  const z=window._zones[i];
+  const d=document.getElementById('vtd');
+  if(d){
+    d.innerHTML=`<strong style="color:${z.tc}">${fmtH(z.start%24)} – ${fmtH(z.end%24)} · ${z.label}</strong><br>${z.desc}`;
+    d.style.borderLeftColor=z.color;
   }
-  btn.disabled=false; btn.innerHTML='🔮 &nbsp;SIMULATE AGAIN';
 }
 
-function setStep(n, state) {
-  const el=document.getElementById(`step${n}`);
-  const sp=document.getElementById(`sp${n}`);
-  const ck=document.getElementById(`ck${n}`);
-  el.className='l-step '+(state==='active'?'active':state==='done'?'done':'');
-  sp.style.display=state==='active'?'block':'none';
-  ck.style.display=state==='done'?'inline':'none';
+function logMood(score,emoji){
+  const td=tod();if(!S.checkins)S.checkins=[];
+  S.checkins=S.checkins.filter(c=>c.date!==td);
+  S.checkins.push({date:td,score,emoji});
+  saveFS();rToday();
 }
 
-async function callResearch(teamA, teamB, venue) {
-  const resp = await fetch('/api/anthropic', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      model:'claude-sonnet-4-20250514', max_tokens:1000,
-      use_web_search: true,
-      messages:[{role:'user', content:`You are an IPL cricket research analyst. Using web search, find the latest IPL 2025 information about this match and return ONLY valid JSON with no markdown.
+// ── LOG PAGE ─────────────────────────────────────────────────
+function rLog(){
+  lq=3;lwu=0;ltags=[];showAdv=false;
+  const yd=yday();
 
-Teams: ${teamA} vs ${teamB} | Venue: ${venue}
+  document.getElementById('page-log').innerHTML=`
+    <div class="log-section">
+      <div class="log-section-title">Night details</div>
+      <div class="log-body">
+        <div class="log-row">
+          <span class="log-row-label">Date</span>
+          <input type="date" id="log-date" class="log-row-input" value="${yd}" max="${tod()}" oninput="updPrev()">
+        </div>
+        <div class="log-row">
+          <span class="log-row-label">Bedtime</span>
+          <input type="time" id="lb" class="log-row-input" value="01:00" oninput="updPrev()">
+        </div>
+        <div class="log-row">
+          <span class="log-row-label">Wake time</span>
+          <input type="time" id="lw" class="log-row-input" value="07:00" oninput="updPrev()">
+        </div>
+      </div>
+    </div>
 
-Search for: recent form of both teams (last 3-5 matches), head-to-head record, injury news, venue pitch notes, points table positions.
+    <div class="preview-strip" id="prev">Enter your sleep times above</div>
 
-Return ONLY this JSON:
-{"team_a_form":"<W/L results>","team_b_form":"<W/L results>","team_a_position":"<e.g. 3rd, 8pts>","team_b_position":"<e.g. 5th, 6pts>","h2h_recent":"<last few encounters>","injuries_a":"<injuries or None>","injuries_b":"<injuries or None>","venue_notes":"<pitch behavior>","key_intel":"<any other intel>"}`}]
-    })
-  });
-  const data = await resp.json();
-  const text = data.content?.map(b=>b.text||'').join('')||'{}';
-  try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
-  catch { return {key_intel: text.slice(0,300)}; }
+    <div class="log-section">
+      <div class="log-section-title">How was it?</div>
+      <div class="log-body">
+        <div style="padding:12px 16px 6px;border-bottom:1px solid var(--border);">
+          <div style="font-size:14px;color:var(--text2);margin-bottom:8px">Sleep quality</div>
+          <div class="qual-strip" style="padding:0 0 4px">
+            ${[['😵','Terrible',1],['😩','Poor',2],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic,lb,v])=>
+              `<button class="qbtn${v===3?' sel':''}" onclick="setQ(${v},this)"><span class="qi">${ic}</span>${lb}</button>`).join('')}
+          </div>
+        </div>
+        <div style="padding:12px 16px 6px">
+          <div style="font-size:14px;color:var(--text2);margin-bottom:8px">Times woken up</div>
+          <div class="wu-strip" style="padding:0 0 6px">
+            ${[0,1,2,3,'4+'].map((v,i)=>`<button class="wbtn${i===0?' sel':''}" onclick="setWU(${i===4?4:v},this)">${v}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-section">
+      <div class="log-section-title">What was different?</div>
+      <div class="log-body">
+        <div class="tags-wrap" style="padding:12px 16px 12px">
+          ${TAGS.map(t=>`<div class="tag" onclick="toggleTag('${t}',this)">${t}</div>`).join('')}
+        </div>
+        <textarea id="log-note" class="log-note" placeholder="Any notes about this night…"></textarea>
+      </div>
+    </div>
+
+    <span class="advanced-toggle" onclick="toggleAdv()">⚙ Advanced options</span>
+    <div id="adv-section" style="display:none">
+      <div class="log-section">
+        <div class="log-section-title">Advanced</div>
+        <div class="log-body">
+          <div class="log-row">
+            <span class="log-row-label">Sleep onset</span>
+            <select id="lo" class="log-row-select" oninput="updPrev()">
+              <option value="5">5 min</option><option value="15" selected>15 min</option>
+              <option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="primary-btn" onclick="doLog()">Save sleep</button>
+
+    <div class="log-section" style="margin-top:10px">
+      <div class="log-section-title">Log a nap <span style="font-size:11px;font-weight:400;color:var(--text3)">(optional)</span></div>
+      <div id="nap-section" style="display:none">
+        <div class="log-body">
+          <div class="log-row">
+            <span class="log-row-label">Date</span>
+            <input type="date" id="nap-date" class="log-row-input" value="${yd}" max="${tod()}">
+          </div>
+          <div class="log-row">
+            <span class="log-row-label">Nap start</span>
+            <input type="time" id="ns" class="log-row-input" value="13:00">
+          </div>
+          <div class="log-row">
+            <span class="log-row-label">Duration</span>
+            <select id="nd" class="log-row-select">
+              <option value="20">20 min</option><option value="30">30 min</option>
+              <option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option>
+            </select>
+          </div>
+        </div>
+        <button class="secondary-btn" style="margin-top:8px" onclick="doNap()">Save nap</button>
+      </div>
+      <button class="secondary-btn" id="nap-toggle" onclick="toggleNap()">+ Log a nap</button>
+    </div>
+
+    <div class="log-section">
+      <div class="log-section-title">History</div>
+      <div id="hist"></div>
+    </div>`;
+
+  updPrev();rHist();
 }
 
-async function callDeepSim(teamA,teamB,venue,pitch,toss,weather,context,time,xiA,xiB,r,impactA,impactB) {
-  const resp = await fetch('/api/anthropic', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      model:'claude-sonnet-4-20250514', max_tokens:2000,
-      messages:[{role:'user', content:`You are an elite IPL match simulator. Simulate this match with maximum accuracy using all available data.
-
-MATCH: ${teamA} vs ${teamB} | ${venue} | ${pitch} | ${toss} | ${weather} | ${context} | ${time}
-${teamA} XI: ${xiA}
-${teamB} XI: ${xiB}
-Impact Player ${teamA}: ${impactA||"Not decided"}
-Impact Player ${teamB}: ${impactB||"Not decided"}
-
-NOTE: Factor in the Impact Player rule — these substitutes can be introduced mid-match and may significantly shift match dynamics.
-
-LIVE RESEARCH:
-${teamA} form: ${r.team_a_form||'unknown'} | standing: ${r.team_a_position||'unknown'}
-${teamB} form: ${r.team_b_form||'unknown'} | standing: ${r.team_b_position||'unknown'}
-H2H: ${r.h2h_recent||'unknown'}
-Injuries ${teamA}: ${r.injuries_a||'none'} | ${teamB}: ${r.injuries_b||'none'}
-Venue: ${r.venue_notes||'standard'} | Intel: ${r.key_intel||''}
-
-SIMULATE 3 INTERNAL SCENARIOS then weight-average:
-1. LIKELY (50% weight): Most probable outcome
-2. OPTIMISTIC_A (25%): ${teamA} performs above expectation  
-3. OPTIMISTIC_B (25%): ${teamB} performs above expectation
-
-Return ONLY valid JSON no markdown:
-{"win_probability_A":<0-100>,"win_probability_B":<0-100>,"confidence_score":<50-95>,"upset_probability":<0-40>,"match_type":"<one-sided|competitive|coin-toss>","batting_first_team":"<team or TBD>","predicted_score_1st":"<e.g. 178-192>","predicted_score_2nd":"<e.g. 162-175>","match_result_summary":"<2 sentences>","innings_phases":{"powerplay":{"score":"<e.g.54-1>","description":"<brief>"},"middle_overs":{"score":"<e.g.72-3>","description":"<brief>"},"death_overs":{"score":"<e.g.66-2>","description":"<brief>"}},"over_by_over":[<20 cumulative scores>],"wickets_by_over":[<20 cumulative wickets>],"key_players":[{"name":"<n>","team":"<t>","role":"<BAT|BOWL|ALL|WK>","prediction":"<specific>"},{"name":"<n>","team":"<t>","role":"<r>","prediction":"<p>"},{"name":"<n>","team":"<t>","role":"<r>","prediction":"<p>"},{"name":"<n>","team":"<t>","role":"<r>","prediction":"<p>"}],"key_factors":["<f1>","<f2>","<f3>","<f4>"],"upset_scenario":"<2-3 sentences on how underdog wins>","detailed_reasoning":"<4 paragraphs: pitch/conditions, batting matchups, bowling strategies, winning scenario>","scenario_summary":{"likely":"<1 line>","optimistic_a":"<1 line for ${teamA}>","optimistic_b":"<1 line for ${teamB}>"}}`}]
-    })
-  });
-  const data = await resp.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  const text = data.content?.map(b=>b.text||'').join('')||'';
-  return JSON.parse(text.replace(/```json|```/g,'').trim());
+function toggleAdv(){
+  showAdv=!showAdv;
+  document.getElementById('adv-section').style.display=showAdv?'block':'none';
+  document.querySelector('.advanced-toggle').textContent=showAdv?'⚙ Hide advanced':'⚙ Advanced options';
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function renderResults(r, teamA, teamB, research) {
-  const winnerA = r.win_probability_A > r.win_probability_B;
-  const av = ['#1d4ed8','#f97316','#7c3aed','#16a34a'];
-  const mtClass = r.match_type==='one-sided'?'one-sided':r.match_type==='coin-toss'?'coin-toss':'competitive';
+function toggleNap(){
+  const s=document.getElementById('nap-section'),b=document.getElementById('nap-toggle');
+  const open=s.style.display==='block';
+  s.style.display=open?'none':'block';
+  b.style.display=open?'block':'none';
+}
 
-  const obo = r.over_by_over||Array.from({length:20},(_,i)=>Math.round((i+1)*8.7));
-  const wbo = r.wickets_by_over||Array.from({length:20},()=>0);
-  const barsHtml = obo.map((s,i)=>{
-    const prev=i>0?obo[i-1]:0;
-    const runs=s-prev;
-    const h=Math.max(6,Math.round((runs/20)*64));
-    const col=i<6?'#f97316':i<15?'#7c3aed':'#16a34a';
-    const wi=wbo[i]-(i>0?wbo[i-1]:0);
-    return `<div class="over-bar" style="background:${col};height:${h}px" data-tip="Ov${i+1}: ${runs}r${wi?` ${wi}w`:''}"></div>`;
-  }).join('');
-  const lblsHtml = obo.map((_,i)=>
-    `<div class="over-lbl">${(i===0||i===5||i===9||i===14||i===19)?i+1:''}</div>`
-  ).join('');
+function setQ(v,el){lq=v;document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
+function setWU(v,el){lwu=v;document.querySelectorAll('.wbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
+function toggleTag(t,el){if(ltags.includes(t)){ltags=ltags.filter(x=>x!==t);el.classList.remove('sel');}else{ltags.push(t);el.classList.add('sel');}}
 
-  const playersHtml = (r.key_players||[]).slice(0,4).map((p,i)=>{
-    const init=p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    return `<div class="player-block">
-      <div class="p-avatar" style="background:${av[i]}18;color:${av[i]}">${init}</div>
-      <div>
-        <div class="p-name">${ROLE_ICONS[p.role]||'🏏'} ${p.name}</div>
-        <div class="p-role">${p.role} · ${p.team}</div>
-        <div class="p-pred">${p.prediction}</div>
+function updPrev(){
+  const bed=document.getElementById('lb')?.value,wake=document.getElementById('lw')?.value;
+  const onset=parseInt(document.getElementById('lo')?.value||15),date=document.getElementById('log-date')?.value;
+  if(!bed||!wake)return;
+  const raw=calcHrs(bed,wake,onset),ef2=eff(raw,lq,lwu),bd=bedDef(bed),tb=targetBed();
+  const ex=S.log.find(e=>e.date===date);
+  const el=document.getElementById('prev');
+  if(el)el.innerHTML=`${raw.toFixed(1)}h raw · <strong>${ef2.toFixed(1)}h effective</strong> &nbsp;·&nbsp; <span style="color:${bd>0?'var(--amber)':'var(--green)'}">${bd>0?`${bd}h past target ${fmt(tb)}`:'Bedtime on target ✓'}</span>${ex?` &nbsp;·&nbsp; <span style="color:var(--accent)">Updates ${fmtDate(date)}</span>`:''}`;
+}
+
+function doLog(){
+  const bed=document.getElementById('lb').value,wake=document.getElementById('lw').value;
+  const onset=parseInt(document.getElementById('lo')?.value||15),date=document.getElementById('log-date').value;
+  const note=document.getElementById('log-note').value.trim();
+  const hrs=calcHrs(bed,wake,onset);
+  if(hrs<1||hrs>16){alert('Check your times');return;}
+  S.log=S.log.filter(e=>e.date!==date);
+  S.log.push({date,bed,wake,hrs,onset,quality:lq,wakeups:lwu,tags:[...ltags],note});
+  S.log.sort((a,b)=>b.date.localeCompare(a.date));
+  if(S.log.length>365)S.log=S.log.slice(0,365);
+  saveFS();go('today',document.querySelectorAll('.nav-item')[1]);
+}
+
+function doNap(){
+  const start=document.getElementById('ns').value,mins=parseInt(document.getElementById('nd').value),date=document.getElementById('nap-date').value;
+  if(!S.naps)S.naps=[];
+  S.naps.push({date,start,mins});
+  saveFS();showToast('Nap saved ✓');toggleNap();
+}
+
+function rHist(){
+  const el=document.getElementById('hist');if(!el)return;
+  if(!S.log.length){el.innerHTML='<div style="font-size:14px;color:var(--text3);padding:20px;text-align:center">No entries yet</div>';return;}
+  const qI=['','😵','😩','😐','🙂','⚡'];
+  el.innerHTML=S.log.slice(0,30).map((e,i)=>{
+    const ef2=eff(e.hrs,e.quality||3,e.wakeups||0),good=ef2>=S.need-.5,c=good?'var(--green)':'var(--red)';
+    const lDef2=bedDef(e.bed);
+    return `<div class="hist-entry">
+      <div class="hist-main" onclick="toggleHist(${i})">
+        <div class="hist-dot" style="background:${c}"></div>
+        <div class="hist-info">
+          <div class="hist-date">${fmtDate(e.date)}</div>
+          <div class="hist-times">${e.bed} → ${e.wake} · ${qI[e.quality||3]}</div>
+        </div>
+        <div class="hist-right">
+          <div class="hist-hrs" style="color:${c}">${ef2}h</div>
+          ${ef2!==e.hrs?`<div class="hist-raw">${e.hrs}h raw</div>`:''}
+        </div>
+        <span class="hist-chevron" id="chev-${i}">›</span>
+      </div>
+      <div class="hist-expanded" id="hexp-${i}">
+        <div class="hist-exp-row"><span class="hist-exp-label">Slept at</span><span class="hist-exp-value">${fmt(e.bed)}</span></div>
+        <div class="hist-exp-row"><span class="hist-exp-label">Woke at</span><span class="hist-exp-value">${fmt(e.wake)}</span></div>
+        <div class="hist-exp-row"><span class="hist-exp-label">Effective sleep</span><span class="hist-exp-value" style="color:${c}">${ef2}h (${e.hrs}h raw)</span></div>
+        <div class="hist-exp-row"><span class="hist-exp-label">Bedtime</span><span class="hist-exp-value" style="color:${lDef2>0?'var(--amber)':'var(--green)'}">${lDef2>0?lDef2+'h late':'On time'}</span></div>
+        <div class="hist-exp-row"><span class="hist-exp-label">vs need</span><span class="hist-exp-value" style="color:${ef2>=S.need?'var(--green)':'var(--red)'}">${ef2>=S.need?'+':''}${Math.round((ef2-S.need)*10)/10}h</span></div>
+        <div class="hist-exp-row"><span class="hist-exp-label">Quality</span><span class="hist-exp-value">${['','😵 Terrible','😩 Poor','😐 Okay','🙂 Good','⚡ Great'][e.quality||3]}</span></div>
+        ${e.wakeups?`<div class="hist-exp-row"><span class="hist-exp-label">Woke up</span><span class="hist-exp-value">${e.wakeups}x during night</span></div>`:''}
+        ${e.tags&&e.tags.length?`<div class="hist-exp-row"><span class="hist-exp-label">Tags</span><span class="hist-exp-value" style="color:var(--accent)">${e.tags.join(', ')}</span></div>`:''}
+        ${e.note?`<div class="hist-exp-row"><span class="hist-exp-label">Note</span><span class="hist-exp-value" style="color:var(--text2);font-weight:400">"${e.note}"</span></div>`:''}
+        <div class="hist-actions">
+          <button class="hist-action edit" onclick="openEdit('${e.date}')">Edit</button>
+          <button class="hist-action del" onclick="delEntry('${e.date}')">Delete</button>
+        </div>
       </div>
     </div>`;
   }).join('');
-
-  const factorsHtml = (r.key_factors||[]).map(f=>
-    `<div class="factor-item"><span class="f-icon">▸</span>${f}</div>`
-  ).join('');
-
-  const researchBar = (research&&Object.keys(research).length>1) ?
-    `<div class="research-bar"><span class="r-dot"></span>LIVE DATA · ${teamA}: ${research.team_a_form||'—'} · ${teamB}: ${research.team_b_form||'—'}${research.injuries_a&&research.injuries_a!=='None'&&research.injuries_a!=='None reported'?` · ⚠️ ${teamA} injury: ${research.injuries_a}`:''}${research.injuries_b&&research.injuries_b!=='None'&&research.injuries_b!=='None reported'?` · ⚠️ ${teamB} injury: ${research.injuries_b}`:''}</div>` : '';
-
-  document.getElementById('results').innerHTML = `
-    ${researchBar}
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">📊</div><div class="sec-title">Win Probability</div></div>
-      <div class="win-row">
-        <div class="win-card${winnerA?' winner':''}">
-          <div class="win-pct">${r.win_probability_A}%</div>
-          <div class="win-tname">${teamA}</div>
-        </div>
-        <div class="verdict-box">
-          <div class="verdict-tag ${mtClass}">${(r.match_type||'competitive').replace('-',' ').toUpperCase()}</div>
-        </div>
-        <div class="win-card${!winnerA?' winner':''}">
-          <div class="win-pct">${r.win_probability_B}%</div>
-          <div class="win-tname">${teamB}</div>
-        </div>
-      </div>
-      <div class="conf-row">
-        <div class="conf-card">
-          <div class="conf-lbl">Prediction Confidence</div>
-          <div class="conf-track"><div class="conf-fill" style="width:${r.confidence_score||70}%;background:var(--green)"></div></div>
-          <div class="conf-val" style="color:var(--green)">${r.confidence_score||70}%</div>
-        </div>
-        <div class="conf-card">
-          <div class="conf-lbl">Upset Probability</div>
-          <div class="conf-track"><div class="conf-fill" style="width:${r.upset_probability||20}%;background:var(--purple)"></div></div>
-          <div class="conf-val" style="color:var(--purple)">${r.upset_probability||20}%</div>
-        </div>
-      </div>
-      <div class="summary-box">${r.match_result_summary||''}</div>
-    </div>
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">🏏</div><div class="sec-title">Predicted Scores</div></div>
-      <div class="scores-grid">
-        <div class="score-block">
-          <div class="score-inn">1ST INNINGS</div>
-          <div class="score-team">${r.batting_first_team||'Batting first'}</div>
-          <div class="score-runs">${r.predicted_score_1st||'—'}</div>
-          <div class="score-range">projected range</div>
-        </div>
-        <div class="score-block">
-          <div class="score-inn">2ND INNINGS</div>
-          <div class="score-team">Chasing team</div>
-          <div class="score-runs">${r.predicted_score_2nd||'—'}</div>
-          <div class="score-range">projected range</div>
-        </div>
-      </div>
-      <div class="sec-head" style="margin-bottom:12px"><div class="sec-icon">📈</div><div class="sec-title">Phase Breakdown</div></div>
-      <div class="phases-strip">
-        <div class="phase-card pp">
-          <div class="phase-lbl">POWERPLAY (1–6)</div>
-          <div class="phase-score">${r.innings_phases?.powerplay?.score||'—'}</div>
-          <div class="phase-desc">${r.innings_phases?.powerplay?.description||''}</div>
-        </div>
-        <div class="phase-card mid">
-          <div class="phase-lbl">MIDDLE OVERS (7–15)</div>
-          <div class="phase-score">${r.innings_phases?.middle_overs?.score||'—'}</div>
-          <div class="phase-desc">${r.innings_phases?.middle_overs?.description||''}</div>
-        </div>
-        <div class="phase-card death">
-          <div class="phase-lbl">DEATH OVERS (16–20)</div>
-          <div class="phase-score">${r.innings_phases?.death_overs?.score||'—'}</div>
-          <div class="phase-desc">${r.innings_phases?.death_overs?.description||''}</div>
-        </div>
-      </div>
-      <div class="sec-head" style="margin-bottom:10px"><div class="sec-icon">📉</div><div class="sec-title">Over-by-Over Run Flow</div></div>
-      <div class="over-chart-wrap">
-        <div class="over-bars">${barsHtml}</div>
-        <div class="over-labels">${lblsHtml}</div>
-        <div class="phase-dividers">
-          <div class="phase-div pp">POWERPLAY</div>
-          <div class="phase-div mid">MIDDLE OVERS</div>
-          <div class="phase-div death">DEATH</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">⭐</div><div class="sec-title">Key Players to Watch</div></div>
-      <div class="players-grid">${playersHtml}</div>
-    </div>
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">🔑</div><div class="sec-title">Key Factors</div></div>
-      <div class="factors-list">${factorsHtml}</div>
-    </div>
-
-    ${r.upset_scenario?`
-    <div class="upset-box">
-      <div class="upset-head"><span style="font-size:18px">⚡</span><span class="upset-title">UPSET SCENARIO — How the underdog wins</span></div>
-      <div class="upset-text">${r.upset_scenario}</div>
-    </div>`:''}
-
-    ${r.scenario_summary?`
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">🎲</div><div class="sec-title">3-Scenario Model</div></div>
-      <div class="scenario-item"><span style="color:var(--blue);font-weight:800;min-width:80px">LIKELY</span>${r.scenario_summary.likely||''}</div>
-      <div class="scenario-item"><span style="color:var(--blue);font-weight:800;min-width:80px">${teamA.split(' ').pop()}</span>${r.scenario_summary.optimistic_a||''}</div>
-      <div class="scenario-item"><span style="color:var(--orange);font-weight:800;min-width:80px">${teamB.split(' ').pop()}</span>${r.scenario_summary.optimistic_b||''}</div>
-    </div>`:''}
-
-    <div class="card">
-      <div class="sec-head"><div class="sec-icon">📝</div><div class="sec-title">Detailed Match Preview</div></div>
-      <div class="reasoning-text">${r.detailed_reasoning||''}</div>
-    </div>
-  `;
-  document.getElementById('results').classList.add('visible');
-  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-
-function updateImpactDropdowns() {
-  const a = document.getElementById('teamA').value;
-  const b = document.getElementById('teamB').value;
-  const fillImpact = (selId, team, xi) => {
-    const sel = document.getElementById(selId);
-    const cur = sel.value;
-    const bench = (SQUADS[team]?.players || []).filter(p => !xi.some(x => x.name === p.name));
-    sel.innerHTML = '<option value="">None / Not decided</option>' +
-      bench.map(p => `<option value="${p.name} (${p.role})">${ROLE_ICONS[p.role]||''} ${p.name} (${p.role})</option>`).join('');
-    if (cur) sel.value = cur;
-  };
-  fillImpact('impactA', a, xiA);
-  fillImpact('impactB', b, xiB);
-  document.getElementById('impactLblA').textContent = a + ' Impact Player';
-  document.getElementById('impactLblB').textContent = b + ' Impact Player';
+function toggleHist(i){
+  const exp=document.getElementById('hexp-'+i),chev=document.getElementById('chev-'+i);
+  const open=exp.classList.contains('open');
+  exp.classList.toggle('open');
+  if(chev)chev.textContent=open?'›':'‹';
 }
-init();
+
+function delEntry(date){if(!confirm(`Delete entry for ${fmtDate(date)}?`))return;S.log=S.log.filter(e=>e.date!==date);saveFS();rLog();}
+function openEdit(date){
+  const e=S.log.find(e=>e.date===date);if(!e)return;
+  document.getElementById('edit-date').value=date;document.getElementById('edit-bed').value=e.bed;
+  document.getElementById('edit-wake').value=e.wake;document.getElementById('edit-onset').value=e.onset||15;
+  document.getElementById('edit-quality').value=e.quality||3;
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeEdit(){document.getElementById('edit-modal').classList.remove('open');}
+function saveEdit(){
+  const date=document.getElementById('edit-date').value,bed=document.getElementById('edit-bed').value;
+  const wake=document.getElementById('edit-wake').value,onset=parseInt(document.getElementById('edit-onset').value);
+  const quality=parseInt(document.getElementById('edit-quality').value),hrs=calcHrs(bed,wake,onset);
+  S.log=S.log.map(e=>e.date===date?{...e,bed,wake,hrs,onset,quality}:e);
+  saveFS();closeEdit();rLog();
+}
+
+// ── INSIGHTS PAGE ─────────────────────────────────────────────
+function rInsights(){
+  const pl=getPL(insPeriod),effs=pl.map(e=>eff(e.hrs,e.quality||3,e.wakeups||0));
+  const hasData=S.log.length>=3;
+  const avg=effs.length?Math.round(effs.reduce((s,v)=>s+v,0)/effs.length*10)/10:0;
+  const best=effs.length?Math.max(...effs):0,worst=effs.length?Math.min(...effs):0;
+  const cons=calcCons(S.log.slice(0,30));
+  const ins=hasData?genInsights():[];
+
+  const previews=[
+    {icon:'📅',title:'Best & worst sleep days',body:'Discover which days of the week you consistently sleep best and worst.',needs:7},
+    {icon:'🔗',title:'Mood vs sleep correlation',body:'See how your morning mood scores track with your effective sleep hours.',needs:14},
+    {icon:'🏷️',title:'Tag impact analysis',body:'Find out how alcohol, stress, cinema and other tags affect your sleep.',needs:10},
+    {icon:'⏰',title:'Bedtime consistency score',body:'Track how consistent your bedtimes are over time.',needs:5},
+  ];
+
+  document.getElementById('page-insights').innerHTML=`
+    <div class="ptabs">${['week','month','year','all'].map(p=>`<div class="ptab${insPeriod===p?' on':''}" onclick="setP('${p}')">${p==='all'?'All':p.charAt(0).toUpperCase()+p.slice(1)}</div>`).join('')}</div>
+
+    ${hasData?`<div class="ps-grid">
+      <div class="ps-card"><div class="ps-val" style="color:${avg>=S.need?'var(--green)':'var(--red)'}">${avg}h</div><div class="ps-lbl">Avg effective</div></div>
+      <div class="ps-card"><div class="ps-val">${pl.length}</div><div class="ps-lbl">Nights logged</div></div>
+      <div class="ps-card"><div class="ps-val" style="color:var(--green)">${best}h</div><div class="ps-lbl">Best night</div></div>
+      <div class="ps-card"><div class="ps-val" style="color:var(--red)">${worst}h</div><div class="ps-lbl">Worst night</div></div>
+    </div>`:``}
+
+    <div class="insight-card">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Sleep heatmap</div>
+      <div id="hm"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--text3);flex-wrap:wrap">
+        <span>Less</span>${['#e5e7eb','#fca5a5','#fde68a','#86efac','#34c759'].map(c=>`<div style="width:11px;height:11px;border-radius:2px;background:${c}"></div>`).join('')}<span>More</span><span style="margin-left:4px;color:var(--text3)">vs ${S.need}h need</span>
+      </div>
+    </div>
+
+    <div class="insight-card">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Bedtime consistency</div>
+      <div class="cons-row">
+        <div class="ring-wrap">
+          <svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="28" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="6"/><circle cx="35" cy="35" r="28" fill="none" stroke="${cons>=80?'#34c759':cons>=60?'#ff9500':'#ff3b30'}" stroke-width="6" stroke-dasharray="${Math.round(cons/100*175.9)} 175.9" stroke-linecap="round"/></svg>
+          <div class="ring-inner"><div class="ring-num" style="color:${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}">${cons}</div><div class="ring-sub">/ 100</div></div>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:4px">${cons>=80?'Very consistent':cons>=60?'Fairly consistent':'Inconsistent'}</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.5">Consistent bedtimes improve sleep quality even when total hours stay the same.</div>
+        </div>
+      </div>
+    </div>
+
+    ${hasData?`<div class="insight-card">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Sleep by day of week</div>
+      <div id="dow"></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px">avg effective · need: ${S.need}h</div>
+    </div>
+    <div class="insight-card">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Debt trend</div>
+      <div class="trend-wrap"><canvas id="tc"></canvas></div>
+    </div>`:''}
+
+    ${ins.length?ins.map(i=>`<div class="insight-card">
+      <div class="insight-icon">${i.icon}</div>
+      <div class="insight-title">${i.title}</div>
+      <div class="insight-body">${i.body}</div>
+    </div>`).join(''):''}
+
+    ${!hasData||ins.length<previews.length?`<div class="insight-card" style="margin-top:4px">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Unlocking soon</div>
+      ${previews.filter(p=>S.log.length<p.needs).map(p=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:20px;flex-shrink:0;opacity:.4">${p.icon}</span>
+        <div style="opacity:.5">
+          <div style="font-size:14px;font-weight:600;margin-bottom:3px">${p.title}</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5">${p.body}</div>
+          <div style="font-size:11px;color:var(--accent);margin-top:4px;font-weight:600">Needs ${p.needs} nights · you have ${S.log.length}</div>
+        </div>
+      </div>`).join('')}
+    </div>`:''}
+
+    <div class="insight-card">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Projection</div>
+      <div id="proj"></div>
+    </div>
+
+    <button class="secondary-btn" onclick="doExport()" style="margin-bottom:20px">Export data as CSV</button>`;
+
+  buildHM();
+  if(hasData){buildDOW();buildTrend(pl);}
+  buildProj();
+}
+
+function setP(p){insPeriod=p;rInsights();}
+
+function getPL(period){
+  const now=new Date(),c=new Date(now);
+  if(period==='week')c.setDate(c.getDate()-7);
+  else if(period==='month')c.setDate(c.getDate()-30);
+  else if(period==='year')c.setFullYear(c.getFullYear()-1);
+  else return S.log;
+  return S.log.filter(e=>new Date(e.date+'T12:00:00')>=c);
+}
+
+function calcCons(logs){
+  if(logs.length<3)return 0;
+  const mins=logs.map(e=>{let[h,m]=e.bed.split(':').map(Number),v=h*60+m;if(v<720)v+=1440;return v;});
+  const mean=mins.reduce((s,v)=>s+v,0)/mins.length;
+  const std=Math.sqrt(mins.reduce((s,v)=>s+(v-mean)**2,0)/mins.length);
+  return Math.max(0,Math.round(100-std/.9));
+}
+
+function buildHM(){
+  const c=document.getElementById('hm');if(!c)return;
+  const lm={};S.log.forEach(e=>{lm[e.date]=eff(e.hrs,e.quality||3,e.wakeups||0);});
+  const now=new Date(),start=new Date(now);
+  start.setDate(start.getDate()-111);start.setDate(start.getDate()-start.getDay());
+  const weeks=[];let cur=new Date(start);
+  while(cur<=now){const w=[];for(let d=0;d<7;d++){const ds=cur.toISOString().slice(0,10);w.push({date:ds,ef:lm[ds]??null});cur.setDate(cur.getDate()+1);}weeks.push(w);}
+  function cc(ef2){if(ef2===null)return '#e5e7eb';const r=ef2/S.need;return r>=1?'#34c759':r>=.85?'#86efac':r>=.7?'#fde68a':r>=.5?'#fca5a5':'#ef4444';}
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],days=['S','M','T','W','T','F','S'];
+  let mH='<div style="display:flex;margin-left:22px;margin-bottom:3px;gap:3px">',lastM=-1;
+  weeks.forEach(w=>{const d=new Date(w[0].date+'T12:00:00');if(d.getMonth()!==lastM){mH+=`<div style="font-size:9px;color:var(--text3);font-weight:500;min-width:13px">${months[d.getMonth()]}</div>`;lastM=d.getMonth();}else{mH+='<div style="min-width:13px"></div>';}});
+  mH+='</div>';
+  let gH=`<div style="display:flex;gap:3px;overflow-x:auto"><div style="display:flex;flex-direction:column;gap:3px;margin-right:3px">${days.map(d=>`<div style="font-size:9px;color:var(--text3);height:13px;display:flex;align-items:center">${d}</div>`).join('')}</div>`;
+  weeks.forEach(w=>{gH+='<div style="display:flex;flex-direction:column;gap:3px">';w.forEach(day=>{gH+=`<div style="width:13px;height:13px;border-radius:2px;background:${cc(day.ef)};flex-shrink:0" title="${day.ef!==null?day.date+': '+day.ef+'h':day.date}"></div>`;});gH+='</div>';});
+  gH+='</div>';
+  c.innerHTML=mH+gH;
+}
+
+function buildDOW(){
+  const el=document.getElementById('dow');if(!el)return;
+  const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],b=Array(7).fill(null).map(()=>[]);
+  S.log.forEach(e=>{b[new Date(e.date+'T12:00:00').getDay()].push(eff(e.hrs,e.quality||3,e.wakeups||0));});
+  const avgs=b.map(x=>x.length?Math.round(x.reduce((s,v)=>s+v,0)/x.length*10)/10:null);
+  const maxA=Math.max(...avgs.filter(v=>v!==null),S.need+1);
+  el.innerHTML=dn.map((d,i)=>{
+    if(avgs[i]===null)return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"></div><div class="dow-val" style="color:var(--text3)">—</div></div>`;
+    const pct=Math.round(avgs[i]/maxA*100),c=avgs[i]>=S.need?'#34c759':avgs[i]>=S.need*.85?'#ff9500':'#ff3b30';
+    return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"><div class="dow-fill" style="width:${pct}%;background:${c}"></div></div><div class="dow-val" style="color:${c}">${avgs[i]}h</div></div>`;
+  }).join('');
+}
+
+function buildTrend(logs){
+  const c=document.getElementById('tc');if(!c)return;
+  const sorted=[...S.log].sort((a,b)=>a.date.localeCompare(b.date));
+  if(sorted.length<2)return;
+  let net=S.startingDebt;const dm={};
+  sorted.forEach(e=>{const def=S.need-eff(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);if(def>0)net+=def;else net-=recov(-def);net=Math.max(0,net);dm[e.date]=Math.round(net*10)/10;});
+  const recent=sorted.slice(-30);
+  if(tChart)tChart.destroy();
+  tChart=new Chart(c,{type:'line',data:{labels:recent.map(e=>new Date(e.date+'T12:00:00').toLocaleDateString('en-IN',{month:'short',day:'numeric'})),datasets:[{data:recent.map(e=>dm[e.date]||0),borderColor:'#007aff',backgroundColor:'rgba(0,122,255,.06)',fill:true,tension:.3,pointRadius:2,borderWidth:2,pointBackgroundColor:'#007aff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}h debt`}}},
+      scales:{x:{ticks:{color:'rgba(60,60,67,.36)',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6},grid:{display:false},border:{display:false}},y:{min:0,ticks:{color:'rgba(60,60,67,.36)',font:{size:10}},grid:{color:'rgba(60,60,67,.08)'},border:{display:false}}}}});
+}
+
+function buildProj(){
+  const el=document.getElementById('proj');if(!el)return;
+  const debt=getDebt();
+  const recent=S.log.slice(0,7);
+  const avg2=recent.length?Math.round(recent.map(e=>eff(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/recent.length*10)/10:S.need-2;
+  const nightly=avg2-S.need;
+  let running=debt;
+  el.innerHTML=['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{
+    running=Math.max(0,running+nightly*(i<3?7:28));
+    const rv=Math.round(running*10)/10,c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';
+    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text2)">${w}</span><span style="font-weight:600;color:${c}">${rv}h debt</span></div>`;
+  }).join('')+'<div style="font-size:12px;color:var(--text3);margin-top:8px">Based on your recent average of ${avg2}h/night</div>'.replace('${avg2}',avg2);
+}
+
+function genInsights(){
+  const ins=[];if(S.log.length<7)return ins;
+  const ae=S.log.map(e=>({...e,ef:eff(e.hrs,e.quality||3,e.wakeups||0)}));
+  const bkts=Array(7).fill(null).map(()=>[]);
+  ae.forEach(e=>{bkts[new Date(e.date+'T12:00:00').getDay()].push(e.ef);});
+  const avgs=bkts.map(b=>b.length>=2?b.reduce((s,v)=>s+v,0)/b.length:null);
+  const valid=avgs.map((v,i)=>({v,i})).filter(x=>x.v!==null);
+  const dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  if(valid.length>=3){
+    const worst=valid.reduce((a,b)=>a.v<b.v?a:b),best=valid.reduce((a,b)=>a.v>b.v?a:b);
+    if(worst.v<S.need-.5)ins.push({icon:'📉',title:`${dn[worst.i]}s — your worst nights`,body:`You average ${Math.round(worst.v*10)/10}h, which is ${Math.round((S.need-worst.v)*10)/10}h below your need. Consider what's different about that night.`});
+    if(best.v>=S.need-.3)ins.push({icon:'🏆',title:`${dn[best.i]}s — your best nights`,body:`You average ${Math.round(best.v*10)/10}h. Whatever you do differently that night is worth protecting.`});
+  }
+  const md=S.checkins?.length>=5?S.checkins:[];
+  if(md.length>=5){
+    const pairs=[];md.forEach(ci=>{const prev=S.log.find(e=>e.date===ci.date);if(prev)pairs.push({mood:ci.score,ef:eff(prev.hrs,prev.quality||3,prev.wakeups||0)});});
+    if(pairs.length>=5){
+      const hi=pairs.filter(p=>p.ef>=S.need-.5),lo=pairs.filter(p=>p.ef<S.need-1);
+      if(hi.length>=2&&lo.length>=2){
+        const hm=Math.round(hi.reduce((s,p)=>s+p.mood,0)/hi.length*10)/10,lm=Math.round(lo.reduce((s,p)=>s+p.mood,0)/lo.length*10)/10;
+        const mE=['','😵','😩','😐','🙂','⚡'];
+        if(hm>lm+.5)ins.push({icon:'🔗',title:'Your mood tracks your sleep',body:`Well-slept days you feel ${mE[Math.round(hm)]} (${hm}/5). After short nights it drops to ${mE[Math.round(lm)]} (${lm}/5). The correlation is real.`});
+      }
+    }
+  }
+  const we=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d===0||d===6;});
+  const wd=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d>0&&d<6;});
+  if(we.length>=3&&wd.length>=5){
+    const weA=Math.round(we.reduce((s,e)=>s+e.ef,0)/we.length*10)/10,wdA=Math.round(wd.reduce((s,e)=>s+e.ef,0)/wd.length*10)/10;
+    if(weA>wdA+.5)ins.push({icon:'📅',title:`${Math.round((weA-wdA)*10)/10}h more sleep on weekends`,body:`Weekdays: ${wdA}h avg. Weekends: ${weA}h avg. You're recovering on weekends — which helps, but consistent weekday sleep prevents the debt from building.`});
+  }
+  const tc=calcCons(S.log.slice(0,30));
+  if(tc<60)ins.push({icon:'⏰',title:'Inconsistent bedtimes',body:`Consistency score: ${tc}/100. Irregular timing disrupts your circadian rhythm even when total hours look fine.`});
+  const tagC={};ae.forEach(e=>{(e.tags||[]).forEach(t=>{if(!tagC[t])tagC[t]={count:0,effs:[]};tagC[t].count++;tagC[t].effs.push(e.ef);});});
+  const allA=Math.round(ae.reduce((s,e)=>s+e.ef,0)/ae.length*10)/10;
+  Object.entries(tagC).forEach(([tag,data])=>{if(data.count>=3){const tA=Math.round(data.effs.reduce((s,v)=>s+v,0)/data.effs.length*10)/10;if(tA<allA-.5)ins.push({icon:'🏷️',title:`${tag} nights average ${tA}h`,body:`That's ${Math.round((allA-tA)*10)/10}h less than your overall average of ${allA}h. Worth being aware of.`});}});
+  return ins.slice(0,6);
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────
+function rSettings(){
+  document.getElementById('page-settings').innerHTML=`
+    <div class="settings-section">
+      <div class="settings-header">Sleep profile</div>
+      <div class="settings-body">
+        <div class="settings-row">
+          <div class="settings-row-label">Sleep need</div>
+          <div class="settings-slider-row"><input type="range" min="6" max="11" step="0.5" value="${S.need}" oninput="lv('need',this.value,'nd','h')"><div class="settings-slider-val" id="nd">${S.need}h</div></div>
+          <div class="settings-note">Your Rise-calculated need: 9.5h</div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-label">Wake time</div>
+          <input type="time" value="${S.wakeTime}" class="settings-time" oninput="S.wakeTime=this.value;saveFS();">
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">Starting debt</div>
+      <div class="settings-body">
+        <div class="settings-row">
+          <div class="settings-row-label">Baseline debt</div>
+          <div class="settings-slider-row"><input type="range" min="0" max="30" step="0.5" value="${S.startingDebt}" oninput="lv('startingDebt',this.value,'sd','h')"><div class="settings-slider-val" id="sd">${S.startingDebt}h</div></div>
+          <div class="settings-note">From Rise: 12.5h. Adjusts as you log nights.</div>
+          <div class="btn-row">
+            <button class="s-btn" onclick="S.startingDebt=0;saveFS();rSettings()">Reset to 0</button>
+            <button class="s-btn" onclick="S.startingDebt=12.5;saveFS();rSettings()">Set to 12.5h</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">Debt goal</div>
+      <div class="settings-body">
+        <div class="settings-row">
+          <div class="settings-row-label">Target debt</div>
+          <div class="settings-slider-row"><input type="range" min="0" max="10" step="0.5" value="${S.goal?.targetDebt||5}" oninput="document.getElementById('gd').textContent=this.value+'h'"><div class="settings-slider-val" id="gd">${S.goal?.targetDebt||5}h</div></div>
+          <div class="settings-note">Safe zone is under 5h. Under 2h is optimal.</div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-label">Timeframe</div>
+          <div class="settings-slider-row"><input type="range" min="7" max="180" step="7" value="${S.goal?.targetDays||60}" oninput="document.getElementById('gdays').textContent=this.value+' days'"><div class="settings-slider-val" id="gdays" style="font-size:13px;min-width:60px">${S.goal?.targetDays||60} days</div></div>
+        </div>
+      </div>
+      <button class="primary-btn" style="margin-top:8px" onclick="setGoal()">Set goal</button>
+      ${S.goal?.startDate?`<div style="font-size:12px;color:var(--text3);text-align:center;margin-top:6px">Goal started ${fmtDate(S.goal.startDate)}</div>`:''}
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">Account</div>
+      <div class="settings-body">
+        <div class="settings-row">
+          <div style="font-size:15px">${CU?.email||''}</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:4px">Signed in · data syncs across devices</div>
+        </div>
+      </div>
+      <button class="secondary-btn destructive-btn" style="margin-top:8px" onclick="doSignOut()">Sign out</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-header">Data</div>
+      <div class="settings-body">
+        <div class="settings-row">
+          <div style="font-size:15px;color:var(--red);cursor:pointer" onclick="clearAll()">Delete all data</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:4px">Permanently removes all sleep logs</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function setGoal(){
+  const tD=parseFloat(document.getElementById('gd').textContent)||5;
+  const tDays=parseInt(document.getElementById('gdays').textContent)||60;
+  S.goal={targetDebt:tD,targetDays:tDays,startDate:tod(),startDebt:getDebt()};
+  saveFS();showToast('Goal set ✓');rSettings();
+}
+function lv(key,val,id,sfx){S[key]=parseFloat(val);document.getElementById(id).textContent=val+sfx;saveFS();}
+async function clearAll(){if(!confirm('Permanently delete all Somnus data?'))return;S.log=[];S.naps=[];S.checkins=[];S.startingDebt=12.5;S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};await uDoc().set(S);rDebt();}
+function doExport(){
+  if(!S.log.length){alert('No data');return;}
+  const rows=['Date,Bedtime,Wake,Onset,Raw(h),Quality,Wakeups,Tags,Note,Effective(h),Deficit(h)'];
+  S.log.forEach(e=>{const ef2=eff(e.hrs,e.quality||3,e.wakeups||0);rows.push(`${e.date},${e.bed},${e.wake},${e.onset||15},${e.hrs},${e.quality||3},${e.wakeups||0},"${(e.tags||[]).join(';')}","${e.note||''}",${ef2},${Math.round((S.need-ef2)*10)/10}`);});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download='somnus.csv';a.click();
+}
+
+// ── PWA ───────────────────────────────────────────────────────
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 </script>
 </body>
 </html>
