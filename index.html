@@ -26,12 +26,12 @@
   --text3:rgba(60,60,67,0.36);
   --accent:#007aff;
   --accent-l:rgba(0,122,255,0.1);
-  --green:#34c759;
-  --green-l:rgba(52,199,89,0.12);
-  --amber:#ff9500;
-  --amber-l:rgba(255,149,0,0.12);
-  --red:#ff3b30;
-  --red-l:rgba(255,59,48,0.1);
+  --green:#1a9e45;
+  --green-l:rgba(26,158,69,0.08);
+  --amber:#c47b00;
+  --amber-l:rgba(196,123,0,0.08);
+  --red:#d63230;
+  --red-l:rgba(214,50,48,0.08);
   --purple:#5856d6;
   --purple-l:rgba(88,86,214,0.1);
   --teal:#32ade6;
@@ -560,8 +560,8 @@ function rDebt(){
       <div class="goal-header"><div class="goal-title">Debt goal</div><div class="goal-pct">${pct}%</div></div>
       <div class="goal-bar-track"><div class="goal-bar-fill" style="width:${pct}%"></div></div>
       <div class="goal-footer">
-        <span>Get below ${S.goal.targetDebt}h · ${dLeft} days left</span>
-        <span>${debt>S.goal.targetDebt?`Need +${Math.round((debt-S.goal.targetDebt)/Math.max(1,dLeft)*10)/10}h/night`:'🎉 Done!'}</span>
+        <span>${S.goal.targetDebt}h target · ${dLeft} days left</span>
+        <span style="color:var(--text2)">${debt>S.goal.targetDebt?`${debt}h → ${S.goal.targetDebt}h`:'🎉 Goal reached!'}</span>
       </div>
     </div>`;
   }
@@ -579,7 +579,7 @@ function rDebt(){
         <div class="arc-wrap">
           <svg width="70" height="70" viewBox="0 0 70 70">
             <circle cx="35" cy="35" r="28" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="7"/>
-            <circle cx="35" cy="35" r="28" fill="none" stroke="${debt<5?'#34c759':debt<10?'#ff9500':'#ff3b30'}" stroke-width="7"
+            <circle cx="35" cy="35" r="28" fill="none" stroke="${debt<5?'#1a9e45':debt<10?'#c47b00':'#d63230'}" stroke-width="7"
               stroke-dasharray="${arcLen} 175.9" stroke-linecap="round"/>
           </svg>
           <div class="arc-inner"><div class="arc-pct" style="color:${dC}">${dPct}%</div><div class="arc-sub">of max</div></div>
@@ -597,7 +597,7 @@ function rDebt(){
         <div style="display:flex;align-items:center;gap:10px">
           <svg width="44" height="44" viewBox="0 0 44 44" style="flex-shrink:0">
             <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="4"/>
-            ${last?`<circle cx="22" cy="22" r="18" fill="none" stroke="${last.quality>=4?'#34c759':last.quality<=2?'#ff3b30':'#ff9500'}" stroke-width="4" stroke-dasharray="${Math.round((last.quality||3)/5*113.1)} 113.1" stroke-linecap="round" transform="rotate(-90 22 22)"/>`:''}
+            ${last?`<circle cx="22" cy="22" r="18" fill="none" stroke="${last.quality>=4?'#1a9e45':last.quality<=2?'#d63230':'#c47b00'}" stroke-width="4" stroke-dasharray="${Math.round((last.quality||3)/5*113.1)} 113.1" stroke-linecap="round" transform="rotate(-90 22 22)"/>`:''}
           </svg>
           <div>
             <div class="ln-main-num" style="color:${last&&lEff>=S.need?'var(--green)':last&&lEff>=S.need*.8?'var(--amber)':'var(--red)'}">${last?lEff+'h':'—'}</div>
@@ -1022,7 +1022,7 @@ function rInsights(){
       <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Sleep heatmap</div>
       <div id="hm"></div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--text3);flex-wrap:wrap">
-        <span>Less</span>${['#e5e7eb','#fca5a5','#fde68a','#86efac','#34c759'].map(c=>`<div style="width:11px;height:11px;border-radius:2px;background:${c}"></div>`).join('')}<span>More</span><span style="margin-left:4px;color:var(--text3)">vs ${S.need}h need</span>
+        <span>Less</span>${['#e5e7eb','#fca5a5','#fde68a','#86efac','#1a9e45'].map(c=>`<div style="width:11px;height:11px;border-radius:2px;background:${c}"></div>`).join('')}<span>More</span><span style="margin-left:4px;color:var(--text3)">vs ${S.need}h need</span>
       </div>
     </div>
 
@@ -1030,7 +1030,7 @@ function rInsights(){
       <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Bedtime consistency</div>
       <div class="cons-row">
         <div class="ring-wrap">
-          <svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="28" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="6"/><circle cx="35" cy="35" r="28" fill="none" stroke="${cons>=80?'#34c759':cons>=60?'#ff9500':'#ff3b30'}" stroke-width="6" stroke-dasharray="${Math.round(cons/100*175.9)} 175.9" stroke-linecap="round"/></svg>
+          <svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="28" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="6"/><circle cx="35" cy="35" r="28" fill="none" stroke="${cons>=80?'#1a9e45':cons>=60?'#c47b00':'#d63230'}" stroke-width="6" stroke-dasharray="${Math.round(cons/100*175.9)} 175.9" stroke-linecap="round"/></svg>
           <div class="ring-inner"><div class="ring-num" style="color:${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}">${cons}</div><div class="ring-sub">/ 100</div></div>
         </div>
         <div>
@@ -1106,7 +1106,7 @@ function buildHM(){
   start.setDate(start.getDate()-111);start.setDate(start.getDate()-start.getDay());
   const weeks=[];let cur=new Date(start);
   while(cur<=now){const w=[];for(let d=0;d<7;d++){const ds=cur.toISOString().slice(0,10);w.push({date:ds,ef:lm[ds]??null});cur.setDate(cur.getDate()+1);}weeks.push(w);}
-  function cc(ef2){if(ef2===null)return '#e5e7eb';const r=ef2/S.need;return r>=1?'#34c759':r>=.85?'#86efac':r>=.7?'#fde68a':r>=.5?'#fca5a5':'#ef4444';}
+  function cc(ef2){if(ef2===null)return '#e5e7eb';const r=ef2/S.need;return r>=1?'#1a9e45':r>=.85?'#86efac':r>=.7?'#fde68a':r>=.5?'#fca5a5':'#ef4444';}
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],days=['S','M','T','W','T','F','S'];
   let mH='<div style="display:flex;margin-left:22px;margin-bottom:3px;gap:3px">',lastM=-1;
   weeks.forEach(w=>{const d=new Date(w[0].date+'T12:00:00');if(d.getMonth()!==lastM){mH+=`<div style="font-size:9px;color:var(--text3);font-weight:500;min-width:13px">${months[d.getMonth()]}</div>`;lastM=d.getMonth();}else{mH+='<div style="min-width:13px"></div>';}});
@@ -1125,7 +1125,7 @@ function buildDOW(){
   const maxA=Math.max(...avgs.filter(v=>v!==null),S.need+1);
   el.innerHTML=dn.map((d,i)=>{
     if(avgs[i]===null)return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"></div><div class="dow-val" style="color:var(--text3)">—</div></div>`;
-    const pct=Math.round(avgs[i]/maxA*100),c=avgs[i]>=S.need?'#34c759':avgs[i]>=S.need*.85?'#ff9500':'#ff3b30';
+    const pct=Math.round(avgs[i]/maxA*100),c=avgs[i]>=S.need?'#1a9e45':avgs[i]>=S.need*.85?'#c47b00':'#d63230';
     return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"><div class="dow-fill" style="width:${pct}%;background:${c}"></div></div><div class="dow-val" style="color:${c}">${avgs[i]}h</div></div>`;
   }).join('');
 }
@@ -1147,13 +1147,19 @@ function buildProj(){
   const el=document.getElementById('proj');if(!el)return;
   const debt=getDebt();
   const recent=S.log.slice(0,7);
-  const avg2=recent.length?Math.round(recent.map(e=>eff(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/recent.length*10)/10:S.need-2;
-  const nightly=avg2-S.need;
+  // Calculate actual average effective sleep from recent logs
+  const avgEff=recent.length?recent.map(e=>eff(e.hrs,e.quality||3,e.wakeups||0)).reduce((s,v)=>s+v,0)/recent.length:S.need-2;
+  // Nightly delta: positive = recovering, negative = building debt
+  const nightly=Math.round((avgEff-S.need)*10)/10;
   let running=debt;
-  el.innerHTML=['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{
-    running=Math.max(0,running+nightly*(i<3?7:28));
-    const rv=Math.round(running*10)/10,c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';
-    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text2)">${w}</span><span style="font-weight:600;color:${c}">${rv}h debt</span></div>`;
+  const note=nightly>=0?`Recovering ${nightly}h/night avg`:`Adding ${Math.abs(nightly)}h debt/night avg`;
+  el.innerHTML=`<div style="font-size:12px;color:var(--text2);margin-bottom:10px">${note}</div>`+
+  ['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{
+    // Don't clamp to 0 — show actual trajectory
+    const delta=nightly*(i<3?7:28);
+    running=Math.max(0,running+delta);
+    const rv=Math.round(running*10)/10,clr=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';
+    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text2)">${w}</span><span style="font-weight:600;color:${clr}">${rv}h debt</span></div>`;
   }).join('')+'<div style="font-size:12px;color:var(--text3);margin-top:8px">Based on your recent average of ${avg2}h/night</div>'.replace('${avg2}',avg2);
 }
 
@@ -1274,7 +1280,7 @@ function setGoal(){
   S.goal={targetDebt:tD,targetDays:tDays,startDate:tod(),startDebt:getDebt()};
   saveFS();showToast('Goal set ✓');rSettings();
 }
-function lv(key,val,id,sfx){S[key]=parseFloat(val);document.getElementById(id).textContent=val+sfx;saveFS();}
+function lv(key,val,id,sfx){S[key]=parseFloat(val);const el=document.getElementById(id);if(el)el.textContent=parseFloat(val).toFixed(1).replace('.0','')+sfx;saveFS();}
 async function clearAll(){if(!confirm('Permanently delete all Somnus data?'))return;S.log=[];S.naps=[];S.checkins=[];S.startingDebt=12.5;S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};await uDoc().set(S);rDebt();}
 function doExport(){
   if(!S.log.length){alert('No data');return;}
