@@ -8,39 +8,40 @@
 <meta name="apple-mobile-web-app-title" content="Somnus">
 <title>Somnus — Sleep Tracker</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f0f0f">
+<meta name="theme-color" content="#000000">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f0f0f;
-  --bg2: #1a1a1a;
-  --bg3: #242424;
-  --surface: rgba(255,255,255,0.05);
-  --surface2: rgba(255,255,255,0.08);
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.12);
+  --bg: #000000;
+  --bg2: #111111;
+  --bg3: #1c1c1e;
+  --bg4: #2c2c2e;
+  --surface: rgba(255,255,255,0.06);
+  --surface2: rgba(255,255,255,0.10);
+  --border: rgba(255,255,255,0.10);
+  --border2: rgba(255,255,255,0.16);
   --text: #ffffff;
   --text2: rgba(255,255,255,0.55);
-  --text3: rgba(255,255,255,0.3);
+  --text3: rgba(255,255,255,0.30);
   --green: #30d158;
-  --green-l: rgba(48,209,88,0.12);
+  --green-l: rgba(48,209,88,0.15);
   --amber: #ff9f0a;
-  --amber-l: rgba(255,159,10,0.12);
+  --amber-l: rgba(255,159,10,0.15);
   --red: #ff453a;
-  --red-l: rgba(255,69,58,0.12);
-  --accent: #ffffff;
+  --red-l: rgba(255,69,58,0.15);
+  --blue: #0a84ff;
+  --purple: #bf5af2;
+  --safe-top: env(safe-area-inset-top, 44px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 html, body {
   height: 100%;
-  background: var(--bg);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: var(--text);
+  background: #000;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  color: #fff;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -50,388 +51,342 @@ html, body {
   margin: 0 auto;
   min-height: 100vh;
   min-height: 100dvh;
-  background: var(--bg);
+  background: #000;
   position: relative;
+  overflow-x: hidden;
+}
+
+/* Gradient background */
+.gradient-bg {
+  position: fixed;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 430px;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  transition: background 1.2s ease;
+}
+.content-layer {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--safe-top);
+  padding-bottom: calc(100px + var(--safe-bottom));
 }
 
 /* ── Loading ── */
 #loading-screen {
+  position: fixed; inset: 0; z-index: 100;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  min-height: 100vh; min-height: 100dvh; gap: 16px; background: var(--bg);
+  gap: 14px; background: #000;
 }
 .spinner {
-  width: 28px; height: 28px;
-  border: 2px solid rgba(255,255,255,0.15);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  width: 26px; height: 26px;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin .65s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Auth ── */
 #auth-screen {
   display: none; flex-direction: column; align-items: center; justify-content: center;
-  min-height: 100vh; min-height: 100dvh; padding: 40px 24px; text-align: center;
-  background: var(--bg);
+  min-height: 100vh; padding: 40px 24px; text-align: center;
+  padding-top: calc(40px + var(--safe-top));
 }
-.auth-logo { font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 6px; color: #fff; }
+.auth-moon { font-size: 60px; margin-bottom: 20px; }
+.auth-logo { font-size: 34px; font-weight: 700; letter-spacing: -1px; margin-bottom: 6px; }
 .auth-logo span { color: var(--green); }
-.auth-tag { font-size: 15px; color: var(--text2); margin-bottom: 40px; line-height: 1.6; }
+.auth-tag { font-size: 15px; color: var(--text2); margin-bottom: 36px; line-height: 1.6; }
 .auth-field {
-  width: 100%; max-width: 320px;
-  background: var(--bg2); border: 1px solid var(--border2);
-  border-radius: 12px; padding: 14px 16px;
-  font-size: 15px; font-family: inherit; color: #fff;
-  outline: none; margin-bottom: 10px; transition: border .15s;
+  width: 100%; max-width: 320px; background: var(--bg3);
+  border: 1px solid var(--border2); border-radius: 14px;
+  padding: 14px 16px; font-size: 16px;
+  font-family: inherit; color: #fff; outline: none; margin-bottom: 10px;
+  transition: border .15s;
 }
 .auth-field:focus { border-color: rgba(255,255,255,0.4); }
 .auth-field::placeholder { color: var(--text3); }
-#auth-error { font-size: 12px; color: var(--red); margin-bottom: 8px; max-width: 320px; display: none; }
+#auth-error { font-size: 13px; color: var(--red); margin-bottom: 10px; max-width: 320px; display: none; }
 .auth-btn-p {
   width: 100%; max-width: 320px; background: #fff; color: #000;
-  border: none; border-radius: 12px; padding: 14px;
-  font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; margin-bottom: 10px;
+  border: none; border-radius: 14px; padding: 15px;
+  font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; margin-bottom: 10px;
+  transition: opacity .15s;
 }
+.auth-btn-p:active { opacity: .8; }
 .auth-btn-s {
   width: 100%; max-width: 320px; background: transparent; color: #fff;
-  border: 1px solid var(--border2); border-radius: 12px; padding: 13px;
-  font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+  border: 1px solid var(--border2); border-radius: 14px; padding: 14px;
+  font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer;
 }
-.auth-note { font-size: 12px; color: var(--text3); margin-top: 14px; line-height: 1.5; max-width: 280px; }
-
-/* ── Main ── */
-#main-app { display: none; padding-bottom: 100px; }
+.auth-note { font-size: 12px; color: var(--text3); margin-top: 16px; line-height: 1.5; max-width: 280px; }
 
 /* ── Header ── */
 .header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 20px 12px;
+  padding: 10px 20px 8px;
 }
-.logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: #fff; }
+.logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
 .logo-dot { color: var(--green); }
-.header-right { display: flex; align-items: center; gap: 10px; }
+.header-right { display: flex; align-items: center; gap: 8px; }
 .streak-pill {
   font-size: 11px; font-weight: 600; color: var(--green);
   background: var(--green-l); border-radius: 20px; padding: 4px 10px;
-  border: 1px solid rgba(48,209,88,0.2);
+  border: 1px solid rgba(48,209,88,0.25);
 }
-.avatar-btn {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: var(--bg3); border: 1px solid var(--border2);
+.icon-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.08); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: #fff; cursor: pointer;
+  font-size: 14px; cursor: pointer; color: var(--text2);
+  transition: background .15s;
 }
-.settings-btn {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: var(--bg3); border: 1px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; cursor: pointer; color: var(--text2);
+.icon-btn:active { background: rgba(255,255,255,0.15); }
+
+/* ── Quick log pills ── */
+.ql-bar {
+  padding: 0 20px 12px;
+  display: flex; gap: 8px;
+}
+.ql-pill {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 14px; border-radius: 22px; border: 1px solid;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all .15s; white-space: nowrap;
+}
+.ql-pill:active { transform: scale(.97); }
+.ql-pill-bed {
+  background: rgba(191,90,242,0.12); border-color: rgba(191,90,242,0.25); color: var(--purple);
+}
+.ql-pill-wake {
+  background: rgba(255,214,10,0.10); border-color: rgba(255,214,10,0.25); color: #ffd60a;
+}
+.ql-pill-done {
+  background: rgba(48,209,88,0.10); border-color: rgba(48,209,88,0.25); color: var(--green);
+}
+.ql-pill-edit {
+  font-size: 11px; opacity: .8;
 }
 
 /* ── Floating pill nav ── */
 .nav {
-  position: fixed; bottom: env(safe-area-inset-bottom, 12px);
+  position: fixed;
+  bottom: calc(12px + var(--safe-bottom));
   left: 50%; transform: translateX(-50%);
   width: calc(100% - 40px); max-width: 390px;
-  background: rgba(28,28,30,0.95);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border2);
-  border-radius: 32px;
-  display: flex; padding: 8px; z-index: 100;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  background: rgba(20,20,20,0.92);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 36px; display: flex; padding: 6px; z-index: 100;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.05);
 }
 .nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center;
-  gap: 3px; cursor: pointer; padding: 8px 4px;
-  border-radius: 24px; transition: background 0.2s;
+  gap: 2px; cursor: pointer; padding: 8px 4px;
+  border-radius: 28px; transition: background .2s;
 }
-.nav-item.active { background: rgba(255,255,255,0.1); }
-.nav-icon { font-size: 17px; color: var(--text3); line-height: 1; transition: color 0.15s; }
-.nav-label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.02em; transition: color 0.15s; }
-.nav-item.active .nav-icon { color: #fff; }
-.nav-item.active .nav-label { color: #fff; }
+.nav-item.active { background: rgba(255,255,255,0.12); }
+.nav-icon { font-size: 18px; color: var(--text3); line-height: 1; transition: color .15s; }
+.nav-label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: .02em; transition: color .15s; }
+.nav-item.active .nav-icon, .nav-item.active .nav-label { color: #fff; }
 
 /* ── Pages ── */
 .page { display: none; }
 .page.active { display: block; }
 
-/* ── Section spacing ── */
-.section { margin-bottom: 28px; }
-.section-label {
-  font-size: 11px; font-weight: 600; color: var(--text3);
-  text-transform: uppercase; letter-spacing: 0.08em;
+/* ── Section ── */
+.sec { margin-bottom: 28px; }
+.sec-label {
+  font-size: 13px; font-weight: 600; color: var(--text3);
   padding: 0 20px; margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: .06em;
 }
 
-/* ── Hero debt block ── */
-.debt-hero { padding: 12px 20px 24px; }
-.debt-status-label {
-  font-size: 11px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.1em; margin-bottom: 6px;
-}
-.debt-big {
-  font-size: 96px; font-weight: 900; line-height: 0.95;
-  letter-spacing: -0.04em; margin-bottom: 4px;
-}
-.debt-sub { font-size: 15px; color: var(--text2); font-weight: 400; margin-bottom: 16px; }
-.debt-bar { height: 3px; background: rgba(255,255,255,0.1); border-radius: 0; margin-bottom: 10px; }
-.debt-bar-fill { height: 100%; border-radius: 0; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
-.debt-meta { font-size: 12px; color: var(--text3); display: flex; gap: 10px; flex-wrap: wrap; }
-.debt-meta span { display: flex; align-items: center; gap: 4px; }
+/* ── Hero debt ── */
+.debt-hero { padding: 8px 20px 24px; }
+.debt-status { font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
+.debt-num { font-size: 100px; font-weight: 700; line-height: .9; letter-spacing: -5px; }
+.debt-unit { font-size: 17px; font-weight: 400; color: var(--text2); margin-top: 6px; margin-bottom: 18px; }
+.debt-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
+.debt-bar-fill { height: 100%; border-radius: 2px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+.debt-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.debt-meta-item { font-size: 13px; color: var(--text2); }
 .safe-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; font-weight: 600;
-  background: rgba(48,209,88,0.15); color: var(--green);
-  border: 1px solid rgba(48,209,88,0.25);
-  border-radius: 20px; padding: 3px 9px;
+  font-size: 11px; font-weight: 600; color: var(--green);
+  background: var(--green-l); border: 1px solid rgba(48,209,88,0.2);
+  border-radius: 20px; padding: 3px 10px;
 }
 
-/* ── Last night row ── */
-.ln-row {
-  display: flex; gap: 0;
-  padding: 0 20px; margin-bottom: 28px;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+/* ── 2-col strip ── */
+.strip {
+  margin: 0 20px 20px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
 }
-.ln-col {
-  flex: 1; padding: 14px 0;
-  border-right: 1px solid var(--border);
+.strip-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border); border-radius: 16px; padding: 14px;
 }
-.ln-col:last-child { border-right: none; padding-left: 14px; }
-.ln-col:first-child { padding-right: 14px; }
-.ln-col-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
-.ln-col-val { font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
-.ln-col-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.strip-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.strip-val { font-size: 28px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.strip-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
 
 /* ── Detail rows ── */
-.detail-rows { padding: 0 20px; }
-.d-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 0; border-bottom: 1px solid var(--border);
-}
+.d-rows { margin: 0 20px 20px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.d-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
 .d-row:last-child { border-bottom: none; }
 .d-label { font-size: 14px; color: var(--text2); }
-.d-val { font-size: 14px; font-weight: 600; color: #fff; }
+.d-val { font-size: 14px; font-weight: 600; }
 
 /* ── Energy timeline ── */
-.energy-wrap { padding: 0 20px; margin-bottom: 28px; }
-.tl-strip {
-  height: 8px; display: flex; border-radius: 4px;
-  overflow: hidden; position: relative; margin: 10px 0 8px;
-}
-.tl-marker {
-  position: absolute; top: -3px; bottom: -3px;
-  width: 2px; background: #fff; border-radius: 1px;
-}
-.zone-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-.zone-pill {
-  font-size: 11px; font-weight: 600; padding: 4px 10px;
-  border-radius: 20px; border: 1px solid;
-  opacity: 0.85;
-}
-.zone-now { opacity: 1; }
+.energy-wrap { margin: 0 20px 20px; }
+.tl-row { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; position: relative; margin: 8px 0; }
+.tl-seg { height: 100%; }
+.tl-now { position: absolute; top: -2px; bottom: -2px; width: 2px; background: #fff; border-radius: 1px; box-shadow: 0 0 6px rgba(255,255,255,.6); }
+.zone-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.zone-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid; }
 
 /* ── Tip card ── */
-.tip-wrap { padding: 0 20px; margin-bottom: 28px; }
-.tip-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 16px; padding: 16px;
-}
-.tip-main { font-size: 15px; font-weight: 600; color: #fff; line-height: 1.4; margin-bottom: 5px; }
-.tip-body { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.tip-wrap { margin: 0 20px 20px; }
+.tip-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+.tip-head { font-size: 15px; font-weight: 600; line-height: 1.4; margin-bottom: 5px; }
+.tip-body { font-size: 13px; color: var(--text2); line-height: 1.55; }
 .tip-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
 .tip-dots { display: flex; gap: 4px; }
-.tip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border2); }
+.tip-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.15); }
 .tip-dot.on { background: #fff; }
-.tip-next { font-size: 12px; color: var(--text2); cursor: pointer; font-weight: 500; }
+.tip-next { font-size: 12px; color: var(--text3); cursor: pointer; font-weight: 500; }
 
 /* ── Goal card ── */
-.goal-wrap { padding: 0 20px; margin-bottom: 28px; }
-.goal-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-.goal-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-.goal-title { font-size: 13px; font-weight: 600; color: #fff; }
-.goal-pct { font-size: 13px; font-weight: 600; color: var(--text2); }
-.goal-bar { height: 3px; background: rgba(255,255,255,0.1); border-radius: 0; overflow: hidden; margin-bottom: 8px; }
-.goal-bar-fill { height: 100%; background: var(--green); border-radius: 0; transition: width 0.5s; }
-.goal-footer { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); }
+.goal-wrap { margin: 0 20px 20px; }
+.goal-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+.goal-top { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+.goal-arc-wrap { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+.goal-arc-wrap svg { transform: rotate(-90deg); }
+.goal-arc-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.goal-arc-pct { font-size: 16px; font-weight: 700; line-height: 1; }
+.goal-arc-sub { font-size: 9px; color: var(--text3); margin-top: 1px; }
+.goal-info { flex: 1; }
+.goal-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.goal-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.goal-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); padding-top: 10px; border-top: 1px solid var(--border); }
 
 /* ── Alert ── */
-.alert-wrap { padding: 0 20px; margin-bottom: 16px; }
-.alert-pill {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px 14px;
-  font-size: 13px; font-weight: 500; color: var(--text2);
-}
+.alert-bar { margin: 0 20px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 10px; }
 
-/* ── TODAY PLAN ── */
-.plan-hero { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-.plan-type { font-size: 28px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 4px; }
-.plan-sub { font-size: 13px; color: var(--text2); line-height: 1.5; }
+/* ── TODAY TAB ── */
+.plan-hero { padding: 0 20px 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.plan-type { font-size: 32px; font-weight: 700; letter-spacing: -.03em; margin-bottom: 4px; }
+.plan-sub { font-size: 14px; color: var(--text2); line-height: 1.6; }
 
-.vt-wrap { padding: 0 20px; margin-bottom: 24px; }
-.vt-strip {
-  height: 36px; display: flex; border-radius: 10px;
-  overflow: hidden; cursor: pointer; margin: 10px 0 8px;
-}
-.vt-seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: rgba(0,0,0,0.6); }
-.vt-detail {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px; font-size: 13px;
-  color: var(--text2); line-height: 1.5; min-height: 44px;
-}
+.vt-wrap { margin: 0 20px 20px; }
+.vt-strip { height: 40px; display: flex; border-radius: 12px; overflow: hidden; cursor: pointer; margin: 10px 0 8px; }
+.vt-seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+.vt-detail { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.5; min-height: 48px; }
 
-.pills-row { display: flex; gap: 8px; padding: 0 20px; margin-bottom: 24px; }
-.pill-box {
-  flex: 1; background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 14px; padding: 14px 10px; text-align: center;
-}
-.pill-val { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 3px; }
-.pill-lbl { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.pills-row { display: flex; gap: 8px; margin: 0 20px 20px; }
+.pill-box { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; padding: 14px 8px; text-align: center; }
+.pill-val { font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+.pill-lbl { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 
-.nap-banner {
-  margin: 0 20px 24px;
-  border-radius: 12px; padding: 13px 16px;
-  display: flex; align-items: center; gap: 10px;
-  font-size: 13px; font-weight: 600; border: 1px solid;
-}
+.nap-row { margin: 0 20px 20px; border-radius: 14px; padding: 13px 16px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; border: 1px solid; }
 
-/* ── Mood ── */
-.mood-wrap { padding: 0 20px; margin-bottom: 24px; }
-.mood-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-.mood-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.mood-wrap { margin: 0 20px 20px; }
+.mood-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+.mood-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
 .mood-sub { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
 .mood-row { display: flex; gap: 6px; }
-.mbtn {
-  flex: 1; background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px 0; font-size: 20px;
-  cursor: pointer; text-align: center; transition: all 0.15s;
-}
-.mbtn.sel { border-color: rgba(255,255,255,0.4); background: var(--surface2); }
+.mbtn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 10px 0; font-size: 20px; cursor: pointer; text-align: center; transition: all .15s; }
+.mbtn.sel { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); }
 
 /* ── LOG TAB ── */
-.log-section { padding: 0 20px; margin-bottom: 24px; }
-.log-section-title {
-  font-size: 11px; font-weight: 600; color: var(--text3);
-  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;
-}
-.log-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-.log-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 13px 16px; border-bottom: 1px solid var(--border);
-}
+.log-sec { margin: 0 20px 20px; }
+.log-sec-title { font-size: 13px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+.log-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.log-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); min-height: 52px; }
 .log-row:last-child { border-bottom: none; }
-.log-row-label { font-size: 15px; color: var(--text); }
-.log-row-input {
+.log-lbl { font-size: 16px; color: #fff; }
+.log-inp {
   background: transparent; border: none; color: #fff;
-  font-size: 15px; font-family: inherit; font-weight: 500;
-  text-align: right; outline: none; max-width: 140px;
-  -webkit-appearance: none; appearance: none;
+  font-size: 16px; font-family: inherit; font-weight: 500;
+  text-align: right; outline: none; max-width: 150px;
+  -webkit-appearance: none;
 }
-.log-row-input option { background: #1a1a1a; }
+.log-inp option { background: #1c1c1e; }
+.log-inp::placeholder { color: var(--text3); }
 
-/* Tags */
-.tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 16px; }
-.tag {
-  padding: 6px 12px; border-radius: 20px;
-  font-size: 12px; font-weight: 500;
-  border: 1px solid var(--border2); background: var(--bg3);
-  color: var(--text2); cursor: pointer; transition: all 0.15s;
+/* More details toggle */
+.more-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; cursor: pointer;
+  background: rgba(255,255,255,0.03); border-top: 1px solid var(--border);
 }
-.tag.sel { border-color: rgba(255,255,255,0.4); background: var(--surface2); color: #fff; }
+.more-toggle-lbl { font-size: 14px; color: var(--text2); font-weight: 500; }
+.more-toggle-icon { font-size: 13px; color: var(--text3); transition: transform .2s; }
+.more-toggle-icon.open { transform: rotate(180deg); }
+.more-details { display: none; }
+.more-details.open { display: block; }
 
 /* Quality */
 .qual-row { display: flex; gap: 5px; padding: 10px 16px; }
-.qbtn {
-  flex: 1; background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 10px; padding: 8px 2px;
-  font-size: 10px; font-weight: 600; cursor: pointer;
-  text-align: center; color: var(--text2); line-height: 1.4;
-}
+.qbtn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 8px 2px; font-size: 10px; font-weight: 600; cursor: pointer; text-align: center; color: var(--text2); line-height: 1.4; transition: all .15s; }
 .qbtn .qi { font-size: 16px; display: block; margin-bottom: 2px; }
-.qbtn.sel { border-color: rgba(255,255,255,0.4); background: var(--surface2); color: #fff; }
-
+.qbtn.sel { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; }
 .wakeup-row { display: flex; gap: 6px; padding: 10px 16px; }
-.wbtn {
-  flex: 1; background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 10px; padding: 9px 4px;
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  text-align: center; color: var(--text2);
-}
-.wbtn.sel { border-color: rgba(255,255,255,0.4); background: var(--surface2); color: #fff; }
-
-.notes-area {
-  width: 100%; background: transparent; border: none;
-  color: #fff; font-size: 14px; font-family: inherit;
-  padding: 12px 16px; resize: none; height: 72px; outline: none;
-}
+.wbtn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 9px 4px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; color: var(--text2); transition: all .15s; }
+.wbtn.sel { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; }
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; padding: 10px 16px; }
+.tag { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text2); cursor: pointer; transition: all .15s; }
+.tag.sel { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; }
+.notes-area { width: 100%; background: transparent; border: none; color: #fff; font-size: 15px; font-family: inherit; padding: 12px 16px; resize: none; height: 72px; outline: none; }
 .notes-area::placeholder { color: var(--text3); }
 
-.preview-strip {
-  margin: 0 20px 16px; background: var(--bg2);
-  border: 1px solid var(--border); border-radius: 12px;
-  padding: 12px 14px; font-size: 13px; color: var(--text2);
-  font-weight: 500; line-height: 1.6; min-height: 44px;
-}
+.preview-box { margin: 0 20px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.6; min-height: 44px; }
+
+.primary-btn { display: block; width: 100%; background: #fff; color: #000; border: none; border-radius: 14px; padding: 15px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; text-align: center; transition: opacity .15s; }
+.primary-btn:active { opacity: .85; }
+.secondary-btn { display: block; width: 100%; background: rgba(255,255,255,0.06); color: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; text-align: center; }
 
 /* History */
+.hist-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
 .hist-entry { border-bottom: 1px solid var(--border); }
 .hist-entry:last-child { border-bottom: none; }
-.hist-main {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 16px; cursor: pointer;
-}
+.hist-main { display: flex; align-items: center; gap: 12px; padding: 13px 16px; cursor: pointer; }
 .hist-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .hist-info { flex: 1; min-width: 0; }
-.hist-date { font-size: 14px; font-weight: 600; color: #fff; }
+.hist-date { font-size: 14px; font-weight: 600; }
 .hist-times { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.hist-tags { font-size: 10px; color: rgba(48,209,88,0.8); margin-top: 2px; }
+.hist-tags { font-size: 10px; color: var(--green); margin-top: 2px; opacity: .8; }
 .hist-hrs { font-size: 16px; font-weight: 700; flex-shrink: 0; }
-.hist-arrow { font-size: 11px; color: var(--text3); flex-shrink: 0; }
-.hist-expanded { display: none; background: var(--bg3); border-top: 1px solid var(--border); }
-.hist-exp-row {
-  display: flex; justify-content: space-between;
-  padding: 9px 16px; border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
+.hist-expanded { display: none; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border); }
+.hist-exp-row { display: flex; justify-content: space-between; padding: 9px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
 .hist-exp-row:last-child { border-bottom: none; }
-.hist-exp-label { color: var(--text2); }
-.hist-exp-val { font-weight: 600; color: #fff; }
+.hist-exp-lbl { color: var(--text2); }
+.hist-exp-val { font-weight: 600; }
 .hist-actions { display: flex; border-top: 1px solid var(--border); }
-.hist-action {
-  flex: 1; padding: 11px; font-size: 13px; font-weight: 600;
-  background: none; border: none; cursor: pointer; font-family: inherit;
-}
-.hist-action.edit { color: rgba(255,255,255,0.6); border-right: 1px solid var(--border); }
+.hist-action { flex: 1; padding: 12px; font-size: 14px; font-weight: 600; background: none; border: none; cursor: pointer; font-family: inherit; }
+.hist-action.edit { color: var(--text2); border-right: 1px solid var(--border); }
 .hist-action.del { color: var(--red); }
 
 /* ── INSIGHTS TAB ── */
-.ins-section { padding: 0 20px; margin-bottom: 24px; }
-.ptabs { display: flex; gap: 6px; padding: 0 20px; margin-bottom: 20px; }
-.ptab {
-  flex: 1; padding: 8px; font-size: 12px; font-weight: 600;
-  text-align: center; border: 1px solid var(--border);
-  border-radius: 20px; cursor: pointer; color: var(--text3); background: transparent;
-}
-.ptab.on { background: var(--surface2); color: #fff; border-color: var(--border2); }
+.ptabs { display: flex; gap: 6px; margin: 0 20px 20px; }
+.ptab { flex: 1; padding: 9px; font-size: 12px; font-weight: 600; text-align: center; border: 1px solid var(--border); border-radius: 22px; cursor: pointer; color: var(--text3); background: transparent; transition: all .15s; }
+.ptab.on { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.2); }
 
-.ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 20px; margin-bottom: 20px; }
-.ps-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
-.ps-val { font-size: 22px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
-.ps-lbl { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 20px 20px; }
+.ps-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.ps-val { font-size: 24px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.ps-lbl { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 
-.insight-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 14px; padding: 14px; margin-bottom: 8px;
-}
-.insight-icon { font-size: 18px; margin-bottom: 6px; }
-.insight-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-.insight-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.ins-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 8px; }
+.ins-icon { font-size: 18px; margin-bottom: 6px; }
+.ins-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.ins-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
 
 .cons-ring { display: flex; align-items: center; gap: 16px; }
 .ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
 .ring-wrap svg { transform: rotate(-90deg); }
-.ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .ring-num { font-size: 18px; font-weight: 700; line-height: 1; }
 .ring-sub { font-size: 9px; color: var(--text3); font-weight: 500; }
 
@@ -441,178 +396,161 @@ html, body {
 .dow-fill { height: 100%; border-radius: 3px; }
 .dow-val { font-size: 11px; font-weight: 600; width: 32px; text-align: right; }
 
-.trend-wrap { height: 100px; position: relative; margin: 8px 0 4px; }
+.trend-wrap { height: 100px; position: relative; margin: 8px 0; }
 
-.proj-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;
-}
+.proj-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .proj-row:last-child { border-bottom: none; }
 
-/* ── SETTINGS sheet ── */
-.settings-sheet {
-  position: fixed; inset: 0; z-index: 300;
-  display: none; align-items: flex-end; justify-content: center;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-}
-.settings-sheet.open { display: flex; }
-.settings-inner {
-  background: #1c1c1e; border-radius: 20px 20px 0 0;
-  width: 100%; max-width: 430px; max-height: 88vh;
-  overflow-y: auto; padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
-}
-.sheet-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px; }
-.sheet-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
-.s-section { margin-bottom: 24px; }
-.s-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
-.s-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-.s-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 14px; border-bottom: 1px solid var(--border); }
+/* ── Settings sheet ── */
+.s-sheet { position: fixed; inset: 0; z-index: 300; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,0.65); backdrop-filter: blur(6px); }
+.s-sheet.open { display: flex; }
+.s-inner { background: #1c1c1e; border-radius: 22px 22px 0 0; width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto; padding-bottom: calc(20px + var(--safe-bottom)); }
+.s-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 12px auto 16px; }
+.s-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 16px; border-bottom: 1px solid var(--border); }
+.s-title { font-size: 18px; font-weight: 700; }
+.s-done { font-size: 16px; font-weight: 600; color: var(--green); cursor: pointer; }
+.s-section { padding: 20px 20px 0; }
+.s-sec-title { font-size: 13px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+.s-card { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
+.s-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid var(--border); min-height: 50px; }
 .s-row:last-child { border-bottom: none; }
-.s-row-label { font-size: 15px; color: #fff; }
-.s-row-val { font-size: 15px; color: var(--text2); font-weight: 500; }
-.s-input {
-  background: transparent; border: none; color: #fff;
-  font-size: 15px; font-family: inherit; font-weight: 600;
-  text-align: right; outline: none; width: 80px;
-  -webkit-appearance: none; appearance: none;
-}
-.s-input[type=number]::-webkit-inner-spin-button { opacity: 1; }
-.s-slider { width: 100%; accent-color: #fff; margin-top: 6px; }
-.s-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-.s-btn {
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 600;
-  font-family: inherit; cursor: pointer; color: #fff; text-align: center;
-}
-.s-btn-danger { background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.2); color: var(--red); }
-.s-btn-full { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; color: #fff; margin-top: 6px; }
+.s-row-lbl { font-size: 16px; color: #fff; }
+.s-row-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.s-input { background: transparent; border: none; color: #fff; font-size: 16px; font-family: inherit; font-weight: 600; text-align: right; outline: none; max-width: 100px; -webkit-appearance: none; }
+.s-input[type=number] { -moz-appearance: textfield; }
+.s-input[type=number]::-webkit-outer-spin-button,
+.s-input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+.s-input::placeholder { color: var(--text3); }
+.s-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.s-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; color: #fff; text-align: center; }
+.s-btn-full { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; color: #fff; margin-bottom: 8px; }
+.s-btn-danger { color: var(--red); background: rgba(255,69,58,0.08); border-color: rgba(255,69,58,0.2); }
+.s-note { font-size: 12px; color: var(--text3); padding: 8px 16px 4px; line-height: 1.5; }
 
 /* ── Modal ── */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: flex-end; justify-content: center; }
-.modal-overlay.open { display: flex; }
-.modal { background: #1c1c1e; border-radius: 20px 20px 0 0; padding: 20px; width: 100%; max-width: 430px; max-height: 80vh; overflow-y: auto; padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
-.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.modal-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 400; align-items: flex-end; justify-content: center; }
+.modal-ov.open { display: flex; }
+.modal { background: #1c1c1e; border-radius: 22px 22px 0 0; padding: 20px; width: 100%; max-width: 430px; max-height: 80vh; overflow-y: auto; padding-bottom: calc(20px + var(--safe-bottom)); }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
 .modal-field { margin-bottom: 12px; }
-.modal-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px; }
-.modal-input {
-  width: 100%; background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 10px; color: #fff; font-size: 15px; font-family: inherit;
-  font-weight: 500; padding: 11px 14px; outline: none;
-  -webkit-appearance: none; appearance: none;
-}
-.modal-input:focus { border-color: rgba(255,255,255,0.3); }
+.modal-lbl { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 6px; }
+.modal-inp { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 16px; font-family: inherit; font-weight: 500; padding: 12px 14px; outline: none; -webkit-appearance: none; }
+.modal-inp:focus { border-color: rgba(255,255,255,.3); }
 .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
-.modal-btn-cancel { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; color: var(--text2); }
-.modal-btn-save { background: #fff; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; color: #000; }
+.modal-cancel { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 13px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; color: var(--text2); }
+.modal-save { background: #fff; border: none; border-radius: 12px; padding: 13px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; color: #000; }
 
-/* ── Primary button ── */
-.primary-btn {
-  display: block; width: 100%;
-  background: #fff; color: #000; border: none;
-  border-radius: 14px; padding: 15px;
-  font-size: 16px; font-weight: 700; font-family: inherit;
-  cursor: pointer; transition: opacity 0.15s;
-}
-.primary-btn:active { opacity: 0.8; }
+/* ── QL Edit modal ── */
+.ql-edit-time { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 20px; font-family: inherit; font-weight: 600; padding: 14px; outline: none; text-align: center; -webkit-appearance: none; margin-bottom: 14px; }
 
 /* ── Toast ── */
-.toast {
-  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-  background: rgba(28,28,30,0.95); color: #fff;
-  font-size: 13px; font-weight: 500; padding: 10px 18px;
-  border-radius: 20px; z-index: 400; opacity: 0;
-  transition: opacity 0.2s; pointer-events: none; white-space: nowrap;
-  border: 1px solid var(--border2);
-  backdrop-filter: blur(10px);
-}
+.toast { position: fixed; top: calc(20px + var(--safe-top)); left: 50%; transform: translateX(-50%); background: rgba(28,28,30,0.96); color: #fff; font-size: 13px; font-weight: 500; padding: 10px 18px; border-radius: 22px; z-index: 500; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: nowrap; border: 1px solid var(--border2); backdrop-filter: blur(12px); }
 .toast.show { opacity: 1; }
 
-/* ── Empty state ── */
-.empty-state { text-align: center; padding: 60px 20px; }
-.empty-icon { font-size: 48px; margin-bottom: 16px; }
-.empty-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+/* ── Empty ── */
+.empty { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 52px; margin-bottom: 16px; }
+.empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
 .empty-body { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
 
-/* ── PWA install ── */
-@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
 <div class="app">
+  <!-- Gradient background -->
+  <div class="gradient-bg" id="grad-bg"></div>
+
+  <!-- Loading -->
   <div id="loading-screen">
     <div class="spinner"></div>
-    <div style="font-size:13px;color:var(--text3)">Loading Somnus…</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.3)">Loading Somnus…</div>
   </div>
 
+  <!-- Auth -->
   <div id="auth-screen">
-    <div style="font-size:56px;margin-bottom:20px">🌙</div>
+    <div class="auth-moon">🌙</div>
     <div class="auth-logo">Somnus<span>.</span></div>
     <div class="auth-tag">Your personal sleep debt tracker.<br>Science-backed. Beautifully simple.</div>
     <input type="email" id="auth-email" class="auth-field" placeholder="Email address" onkeydown="if(event.key==='Enter')document.getElementById('auth-pass').focus()">
-    <input type="password" id="auth-pass" class="auth-field" placeholder="Password (6+ characters)" onkeydown="if(event.key==='Enter')doSignIn()">
+    <input type="password" id="auth-pass" class="auth-field" placeholder="Password" onkeydown="if(event.key==='Enter')doSignIn()">
     <div id="auth-error"></div>
-    <button onclick="doSignIn()" class="auth-btn-p">Sign in</button>
-    <button onclick="doRegister()" class="auth-btn-s">Create account</button>
-    <div class="auth-note">Stays signed in permanently on all browsers.</div>
+    <button class="auth-btn-p" onclick="doSignIn()">Sign in</button>
+    <button class="auth-btn-s" onclick="doRegister()">Create account</button>
+    <div class="auth-note">Stays signed in permanently. Works on all browsers.</div>
   </div>
 
+  <!-- Main app -->
   <div id="main-app">
-    <div class="header">
-      <div class="logo">Somnus<span class="logo-dot">.</span></div>
-      <div class="header-right">
-        <div class="streak-pill" id="streak-pill"></div>
-        <div class="avatar-btn" id="avatar-btn" onclick="openSettings()">BK</div>
-        <div class="settings-btn" onclick="openSettings()">⚙</div>
+    <div class="content-layer">
+      <div class="header">
+        <div class="logo">Somnus<span class="logo-dot">.</span></div>
+        <div class="header-right">
+          <div class="streak-pill" id="streak-pill"></div>
+          <div class="icon-btn" onclick="openSettings()" title="Settings">⚙</div>
+        </div>
       </div>
-    </div>
 
-    <div id="page-home" class="page active"></div>
-    <div id="page-plan" class="page"></div>
-    <div id="page-log" class="page"></div>
-    <div id="page-insights" class="page"></div>
+      <!-- Quick log bar -->
+      <div class="ql-bar" id="ql-bar"></div>
 
-    <div class="nav">
-      <div class="nav-item active" onclick="go('home',this)"><div class="nav-icon">◑</div><div class="nav-label">Home</div></div>
-      <div class="nav-item" onclick="go('plan',this)"><div class="nav-icon">◈</div><div class="nav-label">Today</div></div>
-      <div class="nav-item" onclick="go('log',this)"><div class="nav-icon">⊕</div><div class="nav-label">Log</div></div>
-      <div class="nav-item" onclick="go('insights',this)"><div class="nav-icon">◉</div><div class="nav-label">Insights</div></div>
+      <div id="page-home" class="page active"></div>
+      <div id="page-plan" class="page"></div>
+      <div id="page-log" class="page"></div>
+      <div id="page-insights" class="page"></div>
+
+      <div class="nav">
+        <div class="nav-item active" onclick="go('home',this)"><div class="nav-icon">◑</div><div class="nav-label">Home</div></div>
+        <div class="nav-item" onclick="go('plan',this)"><div class="nav-icon">◈</div><div class="nav-label">Today</div></div>
+        <div class="nav-item" onclick="go('log',this)"><div class="nav-icon">⊕</div><div class="nav-label">Log</div></div>
+        <div class="nav-item" onclick="go('insights',this)"><div class="nav-icon">◉</div><div class="nav-label">Insights</div></div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Edit modal -->
-<div class="modal-overlay" id="edit-modal">
+<div class="modal-ov" id="edit-modal">
   <div class="modal">
     <div class="modal-title">Edit entry</div>
     <input type="hidden" id="edit-date">
-    <div class="modal-field"><label class="modal-label">Bedtime</label><input type="time" id="edit-bed" class="modal-input"></div>
-    <div class="modal-field"><label class="modal-label">Wake time</label><input type="time" id="edit-wake" class="modal-input"></div>
-    <div class="modal-field"><label class="modal-label">Sleep onset</label>
-      <select id="edit-onset" class="modal-input">
-        <option value="5">5 min</option><option value="15" selected>15 min</option>
-        <option value="30">30 min</option><option value="45">45 min</option><option value="60">60+ min</option>
-      </select>
-    </div>
-    <div class="modal-field"><label class="modal-label">Sleep quality</label>
-      <select id="edit-quality" class="modal-input">
+    <div class="modal-field"><label class="modal-lbl">Bedtime</label><input type="time" id="edit-bed" class="modal-inp"></div>
+    <div class="modal-field"><label class="modal-lbl">Wake time</label><input type="time" id="edit-wake" class="modal-inp"></div>
+    <div class="modal-field"><label class="modal-lbl">Quality</label>
+      <select id="edit-quality" class="modal-inp">
         <option value="1">😵 Terrible</option><option value="2">😩 Poor</option>
         <option value="3" selected>😐 Okay</option><option value="4">🙂 Good</option><option value="5">⚡ Great</option>
       </select>
     </div>
     <div class="modal-btns">
-      <button class="modal-btn-cancel" onclick="closeEdit()">Cancel</button>
-      <button class="modal-btn-save" onclick="saveEdit()">Save</button>
+      <button class="modal-cancel" onclick="closeEdit()">Cancel</button>
+      <button class="modal-save" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- QL Edit modal -->
+<div class="modal-ov" id="ql-modal">
+  <div class="modal">
+    <div class="modal-title" id="ql-modal-title">Edit time</div>
+    <input type="time" id="ql-edit-time" class="ql-edit-time">
+    <div style="font-size:13px;color:var(--text3);margin-bottom:16px;text-align:center">Adjust the recorded time if needed</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeQLModal()">Cancel</button>
+      <button class="modal-save" onclick="saveQLTime()">Save</button>
     </div>
   </div>
 </div>
 
 <!-- Settings sheet -->
-<div class="settings-sheet" id="settings-sheet" onclick="closeSettings(event)">
-  <div class="settings-inner" id="settings-inner">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Settings</div>
-    <div id="settings-content"></div>
+<div class="s-sheet" id="s-sheet" onclick="closeSettingsOutside(event)">
+  <div class="s-inner" id="s-inner">
+    <div class="s-handle"></div>
+    <div class="s-header">
+      <div class="s-title">Settings</div>
+      <div class="s-done" onclick="closeSettings()">Done</div>
+    </div>
+    <div id="s-content"></div>
   </div>
 </div>
 
@@ -635,18 +573,21 @@ const auth=firebase.auth(), db=firebase.firestore();
 
 // ── State ──────────────────────────────────────────────────────
 let S={
-  need:9.5, wakeTime:'07:00', log:[], naps:[],
-  startingDebt:0, checkins:[],
-  goal:{targetDebt:5,targetDays:60,startDate:null,startDebt:null}
+  need:9.5, wakeTime:'07:00', log:[], naps:[], startingDebt:0,
+  checkins:[], goal:{targetDebt:5,targetDays:60,startDate:null,startDebt:null},
+  ql:{bedTime:null,bedDate:null,wakeTime:null,wakeDate:null}
 };
-let CU=null, tChart=null, insPeriod='month', tipIdx=0, logQ=3, logWU=0, logTags=[];
+let CU=null, tChart=null, insPeriod='month', tipIdx=0;
+let logQ=3, logWU=0, logTags=[];
+let qlEditType=null;
+
 const TAGS=['Alcohol','Stress','Travel','Illness','Cinema','Football','Late work','Exercise'];
 const TIPS=[
-  {h:'Avoid caffeine after {cutoff}',b:'Caffeine has a 6h half-life. Drinking it later delays sleep onset significantly.'},
-  {h:'Target bedtime: {bed} tonight',b:'Getting {need}h gives your brain and body full recovery time.'},
-  {h:'Sleep debt compounds like interest',b:'Every short night adds to debt. But every good night chips away at it.'},
-  {h:'Best focus window: {peak}',b:'This is when your cortisol and body temperature are optimal for hard thinking.'},
-  {h:'A 20-min nap before 3pm helps',b:'Offsets up to 0.4h of sleep debt without disrupting tonight\'s sleep.'},
+  {h:'Avoid caffeine after {cutoff}',b:"Caffeine's 6h half-life means late coffee significantly delays sleep onset."},
+  {h:'Target bedtime: {bed} tonight',b:'Hitting your full {need} every night is the most powerful thing you can do for your health.'},
+  {h:'Sleep debt compounds quietly',b:'A 1h nightly deficit adds 7h of debt per week. Small consistent improvements matter most.'},
+  {h:'Peak focus: {peak}',b:'This is when cortisol and body temperature align for optimal cognitive performance.'},
+  {h:'A 20-min nap before 3pm helps',b:"Reduces today's debt ~0.4h without affecting tonight's sleep pressure."},
 ];
 
 // ── Auth ──────────────────────────────────────────────────────
@@ -657,6 +598,7 @@ auth.onAuthStateChanged(async user=>{
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('main-app').style.display='block';
     await loadFS();
+    updateGradient();
     go('home',document.querySelector('.nav-item'));
   } else {
     CU=null;
@@ -675,7 +617,7 @@ async function doSignIn(){
   try{await auth.signInWithEmailAndPassword(em,pw);}
   catch(e){
     const m={'auth/user-not-found':'No account found.','auth/wrong-password':'Wrong password.','auth/invalid-credential':'Wrong email or password.','auth/invalid-email':'Invalid email.'};
-    showAuthErr(m[e.code]||'Sign in failed.');
+    showAuthErr(m[e.code]||'Sign in failed. Try again.');
   }
 }
 
@@ -706,6 +648,7 @@ async function loadFS(){
       if(!Array.isArray(S.naps))S.naps=[];
       if(!Array.isArray(S.checkins))S.checkins=[];
       if(!S.goal)S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};
+      if(!S.ql)S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};
     }
   }catch(e){console.error(e);}
 }
@@ -714,15 +657,22 @@ function saveFS(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
     if(!CU)return;
-    showToast('Saving…');
     try{await uDoc().set(S,{merge:true});showToast('Saved ✓');}
     catch(e){showToast('Save failed');}
   },800);
 }
-function showToast(m){
-  const t=document.getElementById('toast');
-  t.textContent=m;t.classList.add('show');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2000);
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2000);}
+
+// ── Gradient ──────────────────────────────────────────────────
+function updateGradient(){
+  const debt=getDebt();
+  const el=document.getElementById('grad-bg');
+  if(!el)return;
+  let glow;
+  if(debt<5) glow='rgba(48,209,88,0.12)';
+  else if(debt<10) glow='rgba(255,159,10,0.10)';
+  else glow='rgba(255,69,58,0.10)';
+  el.style.background=`radial-gradient(ellipse 80% 40% at 50% 0%, ${glow}, transparent 70%)`;
 }
 
 // ── Nav ───────────────────────────────────────────────────────
@@ -732,110 +682,118 @@ function go(p,el){
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   if(el)el.classList.add('active');
   window.scrollTo(0,0);
+  renderQL();
   ({home:rHome,plan:rPlan,log:rLog,insights:rInsights})[p]?.();
 }
 
-// ── Settings sheet ────────────────────────────────────────────
-function openSettings(){
-  renderSettings();
-  document.getElementById('settings-sheet').classList.add('open');
-}
-function closeSettings(e){
-  if(!e||e.target===document.getElementById('settings-sheet'))
-    document.getElementById('settings-sheet').classList.remove('open');
-}
+// ── Settings ──────────────────────────────────────────────────
+function openSettings(){renderSettings();document.getElementById('s-sheet').classList.add('open');}
+function closeSettings(){document.getElementById('s-sheet').classList.remove('open');}
+function closeSettingsOutside(e){if(e.target===document.getElementById('s-sheet'))closeSettings();}
 
 function renderSettings(){
-  const el=document.getElementById('settings-content');
-  el.innerHTML=`
+  document.getElementById('s-content').innerHTML=`
     <div class="s-section">
-      <div class="s-section-title">Sleep profile</div>
+      <div class="s-sec-title">Sleep profile</div>
       <div class="s-card">
-        <div class="s-row">
-          <span class="s-row-label">Sleep need</span>
-          <div style="display:flex;align-items:center;gap:6px">
-            <input type="number" class="s-input" id="s-need" value="${S.need}" min="4" max="12" step="0.1" style="width:60px" oninput="S.need=parseFloat(this.value)||9.5;saveFS();">
-            <span style="color:var(--text3);font-size:14px">h</span>
+        <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+            <span class="s-row-lbl">Sleep need</span>
+            <div style="display:flex;align-items:center;gap:4px">
+              <input type="number" class="s-input" id="s-need-h" value="${Math.floor(S.need)}" min="4" max="12" step="1" style="width:45px;text-align:right" oninput="updateNeed()"> h
+              <select class="s-input" id="s-need-m" style="width:58px;text-align:right" onchange="updateNeed()">
+                <option value="0" ${Math.round((S.need%1)*60)<8?'selected':''}>0 min</option>
+                <option value="0.25" ${Math.round((S.need%1)*60)>=8&&Math.round((S.need%1)*60)<23?'selected':''}>15 min</option>
+                <option value="0.5" ${Math.round((S.need%1)*60)>=23&&Math.round((S.need%1)*60)<53?'selected':''}>30 min</option>
+                <option value="0.75" ${Math.round((S.need%1)*60)>=53?'selected':''}>45 min</option>
+              </select>
+            </div>
           </div>
+          <div class="s-note" style="padding:0;font-size:12px;color:var(--text3)">Rise-calculated: 9h 30min</div>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Wake time</span>
-          <input type="time" class="s-input" value="${S.wakeTime}" style="width:100px" oninput="S.wakeTime=this.value;saveFS();">
+          <span class="s-row-lbl">Wake time</span>
+          <input type="time" class="s-input" value="${S.wakeTime}" oninput="S.wakeTime=this.value;saveFS();">
         </div>
       </div>
     </div>
 
     <div class="s-section">
-      <div class="s-section-title">Starting debt</div>
+      <div class="s-sec-title">Current sleep debt</div>
       <div class="s-card">
-        <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:10px">
-          <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
-            <span class="s-row-label">Current debt baseline</span>
-            <div style="display:flex;align-items:center;gap:6px">
-              <input type="number" class="s-input" id="s-debt" value="${S.startingDebt}" min="0" max="50" step="0.1" style="width:70px" oninput="S.startingDebt=parseFloat(this.value)||0;saveFS();">
-              <span style="color:var(--text3);font-size:14px">h</span>
-            </div>
+        <div class="s-row">
+          <div>
+            <div class="s-row-lbl">Debt baseline</div>
+            <div class="s-row-sub">Type any value e.g. 12.8h</div>
           </div>
-          <div style="font-size:12px;color:var(--text3)">Type any value e.g. 12.8. Adjusts as you log nights.</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <input type="number" class="s-input" id="s-debt" value="${S.startingDebt}" min="0" max="100" step="0.1" style="width:70px" oninput="S.startingDebt=parseFloat(this.value)||0;saveFS();">
+            <span style="color:var(--text3);font-size:15px">h</span>
+          </div>
         </div>
       </div>
       <div class="s-btn-row">
-        <button class="s-btn" onclick="S.startingDebt=0;document.getElementById('s-debt').value=0;saveFS();showToast('Reset to 0')">Reset to 0</button>
-        <button class="s-btn" onclick="S.startingDebt=12.5;document.getElementById('s-debt').value=12.5;saveFS();showToast('Set to 12.5h')">Set to 12.5h</button>
+        <button class="s-btn" onclick="S.startingDebt=0;document.getElementById('s-debt').value=0;saveFS();showToast('Reset to 0');">Reset to 0</button>
+        <button class="s-btn" onclick="const v=parseFloat(document.getElementById('s-debt').value)||0;S.startingDebt=v;saveFS();showToast('Debt set to '+v+'h');">Confirm current</button>
       </div>
     </div>
 
     <div class="s-section">
-      <div class="s-section-title">Debt goal</div>
+      <div class="s-sec-title">Debt goal</div>
       <div class="s-card">
         <div class="s-row">
-          <span class="s-row-label">Target debt</span>
-          <div style="display:flex;align-items:center;gap:6px">
+          <span class="s-row-lbl">Target debt</span>
+          <div style="display:flex;align-items:center;gap:4px">
             <input type="number" class="s-input" id="s-gtarget" value="${S.goal?.targetDebt||5}" min="0" max="20" step="0.5" style="width:60px">
-            <span style="color:var(--text3);font-size:14px">h</span>
+            <span style="color:var(--text3);font-size:15px">h</span>
           </div>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Days to achieve</span>
-          <div style="display:flex;align-items:center;gap:6px">
+          <span class="s-row-lbl">Days to achieve</span>
+          <div style="display:flex;align-items:center;gap:4px">
             <input type="number" class="s-input" id="s-gdays" value="${S.goal?.targetDays||60}" min="7" max="365" step="7" style="width:70px">
             <span style="color:var(--text3);font-size:14px">days</span>
           </div>
         </div>
       </div>
-      <button class="s-btn-full" onclick="setGoal()">Set goal</button>
+      <button class="s-btn-full" onclick="setGoal()">Set goal & start tracking</button>
+      ${S.goal?.startDate?`<div class="s-note">Goal started ${fmtDate(S.goal.startDate)}</div>`:''}
     </div>
 
     <div class="s-section">
-      <div class="s-section-title">Account</div>
+      <div class="s-sec-title">Account</div>
       <div class="s-card">
-        <div class="s-row">
-          <span class="s-row-label">Email</span>
-          <span class="s-row-val" style="font-size:13px">${CU?.email||''}</span>
-        </div>
+        <div class="s-row"><span class="s-row-lbl">Signed in as</span><span style="font-size:13px;color:var(--text2)">${CU?.email||''}</span></div>
       </div>
-      <button class="s-btn-full" onclick="doSignOut()" style="margin-top:8px;color:var(--red);border-color:rgba(255,69,58,0.2)">Sign out</button>
+      <button class="s-btn-full" onclick="doSignOut()" style="color:var(--red);border-color:rgba(255,69,58,0.2);background:rgba(255,69,58,0.06)">Sign out</button>
     </div>
 
-    <div class="s-section">
-      <div class="s-section-title">Data</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">Synced to Firebase. Persistent across devices.</div>
-      <button class="s-btn-full s-btn-danger" onclick="clearAll()">Delete all data</button>
+    <div class="s-section" style="padding-bottom:20px">
+      <div class="s-sec-title">Data</div>
+      <button class="s-btn-full s-btn-danger" onclick="clearAll()">Delete all data permanently</button>
     </div>`;
 }
 
+function updateNeed(){
+  const h=parseFloat(document.getElementById('s-need-h')?.value)||9;
+  const m=parseFloat(document.getElementById('s-need-m')?.value)||0;
+  S.need=Math.round((h+m)*100)/100;
+  saveFS();
+}
+
 function setGoal(){
-  const td=parseFloat(document.getElementById('s-gtarget').value)||5;
-  const tdays=parseInt(document.getElementById('s-gdays').value)||60;
+  const td=parseFloat(document.getElementById('s-gtarget')?.value)||5;
+  const tdays=parseInt(document.getElementById('s-gdays')?.value)||60;
   S.goal={targetDebt:td,targetDays:tdays,startDate:today(),startDebt:getDebt()};
-  saveFS();showToast('Goal set ✓');
+  saveFS();showToast('Goal set ✓');renderSettings();
 }
 
 async function clearAll(){
   if(!confirm('Delete all Somnus data permanently?'))return;
   S.log=[];S.naps=[];S.checkins=[];S.startingDebt=0;
   S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};
-  await uDoc().set(S);rHome();
+  S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};
+  await uDoc().set(S);closeSettings();rHome();
 }
 
 // ── Math ──────────────────────────────────────────────────────
@@ -856,6 +814,7 @@ function fmtH(h){return `${h===0?12:h>12?h-12:h}${h<12?'am':'pm'}`;}
 function fmtDate(d){return new Date(d+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});}
 function today(){return new Date().toISOString().slice(0,10);}
 function yesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
+function nowTimeStr(){const n=new Date();return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}
 
 function bedDef(bed){
   const tb=targetBed(),[th,tm]=tb.split(':').map(Number);
@@ -866,6 +825,7 @@ function bedDef(bed){
 }
 function recov(x){return x<=0?0:Math.round(Math.log(1+x*2)*.8*10)/10;}
 function napCredit(date){return(S.naps||[]).filter(n=>n.date===date).reduce((s,n)=>s+n.mins/60*.55,0);}
+
 function getDebt(){
   const r=S.log.slice(0,14);
   if(!r.length)return Math.round(S.startingDebt*10)/10;
@@ -897,29 +857,158 @@ function bedAlert(){
   if(tM<720)tM+=1440;if(nM<720)nM+=1440;
   const d=tM-nM;return(d>0&&d<=180)?d:null;
 }
-function cdown(m){if(m<60)return m+'min';return Math.floor(m/60)+'h '+(m%60>0?m%60+'min':'');}
+function cdown(m){if(m<60)return m+'min';return Math.floor(m/60)+'h'+(m%60>0?' '+m%60+'min':'');}
+
+// ── Quick Log ─────────────────────────────────────────────────
+// Bed button: 8pm–5am (20:00–05:00)
+// Wake button: 5am–11am (05:00–11:00)
+
+function qlDateForBed(){
+  // If time is 0–5, bed date is yesterday
+  const h=new Date().getHours();
+  return h<5?yesterday():today();
+}
+
+function getQLState(){
+  const h=new Date().getHours();
+  const td=today(),yd=yesterday();
+  const todayLogged=S.log.find(e=>e.date===td||e.date===yd);
+
+  // Wake button: 5am–11am
+  if(h>=5&&h<=11){
+    const wDone=S.ql?.wakeDate===td;
+    return {
+      showWake:true, wakeDone:wDone,
+      showBed:false, bedDone:false
+    };
+  }
+  // Bed button: 8pm–5am (20–23 or 0–5)
+  if(h>=20||h<5){
+    const bedDate=qlDateForBed();
+    const bDone=S.ql?.bedDate===bedDate;
+    // Also show wake pill if wake was recorded today
+    const wDone=S.ql?.wakeDate===td;
+    return {
+      showBed:true, bedDone:bDone,
+      showWake:wDone, wakeDone:wDone
+    };
+  }
+  // Show wake if recorded today even outside normal hours
+  const wDone=S.ql?.wakeDate===td;
+  if(wDone) return {showWake:true,wakeDone:true,showBed:false,bedDone:false};
+  return {showWake:false,wakeDone:false,showBed:false,bedDone:false};
+}
+
+function renderQL(){
+  const el=document.getElementById('ql-bar');
+  if(!el)return;
+  const st=getQLState();
+  let html='';
+
+  if(st.showBed){
+    if(st.bedDone){
+      html+=`<div class="ql-pill ql-pill-done ql-pill-edit" onclick="openQLEdit('bed')">🛌 ${fmt(S.ql.bedTime)} · tap to edit</div>`;
+    } else {
+      html+=`<div class="ql-pill ql-pill-bed" onclick="recordBed()">🛌 Just went to bed</div>`;
+    }
+  }
+  if(st.showWake){
+    if(st.wakeDone){
+      html+=`<div class="ql-pill ql-pill-done ql-pill-edit" onclick="openQLEdit('wake')">☀️ ${fmt(S.ql.wakeTime)} · tap to edit</div>`;
+    } else {
+      html+=`<div class="ql-pill ql-pill-wake" onclick="recordWake()">☀️ Just woke up</div>`;
+    }
+  }
+  el.innerHTML=html;
+  el.style.display=(st.showBed||st.showWake)?'flex':'none';
+}
+
+function recordBed(){
+  const t=nowTimeStr();
+  const d=qlDateForBed();
+  if(!S.ql)S.ql={};
+  S.ql.bedTime=t; S.ql.bedDate=d;
+  saveFS(); renderQL();
+  showToast('Bedtime recorded: '+fmt(t));
+}
+function recordWake(){
+  const t=nowTimeStr();
+  const d=today();
+  if(!S.ql)S.ql={};
+  S.ql.wakeTime=t; S.ql.wakeDate=d;
+  saveFS(); renderQL();
+  showToast('Wake time recorded: '+fmt(t));
+}
+
+function openQLEdit(type){
+  qlEditType=type;
+  const title=type==='bed'?'Edit bedtime':'Edit wake time';
+  const current=type==='bed'?S.ql?.bedTime:S.ql?.wakeTime;
+  document.getElementById('ql-modal-title').textContent=title;
+  document.getElementById('ql-edit-time').value=current||nowTimeStr();
+  document.getElementById('ql-modal').classList.add('open');
+}
+function closeQLModal(){document.getElementById('ql-modal').classList.remove('open');}
+function saveQLTime(){
+  const t=document.getElementById('ql-edit-time').value;
+  if(!S.ql)S.ql={};
+  if(qlEditType==='bed'){S.ql.bedTime=t;}
+  else{S.ql.wakeTime=t;}
+  saveFS(); closeQLModal(); renderQL();
+  showToast('Time updated: '+fmt(t));
+}
+
+// Pre-fill log from QL
+function getQLPrefill(){
+  const yd=yesterday();
+  const bed=(S.ql?.bedDate===yd||S.ql?.bedDate===today())?S.ql.bedTime:null;
+  const wake=S.ql?.wakeDate===today()?S.ql.wakeTime:null;
+  return {bed,wake};
+}
 
 // ── HOME PAGE ─────────────────────────────────────────────────
 function rHome(){
   const debt=getDebt(),last=S.log[0]||null,streak=getStreak(),tb=targetBed();
   const mins=bedAlert();
+  const[wh]=S.wakeTime.split(':').map(Number);
+  const n=new Date(),nowH=n.getHours()+n.getMinutes()/60;
 
   document.getElementById('streak-pill').textContent=streak>0?`${streak} day streak`:'start logging';
-  document.getElementById('hdr-date')&&(document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'}));
+  updateGradient();
 
   const dC=debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)';
   const dPct=Math.min(100,Math.round(debt/20*100));
   const lEff=last?eff(last.hrs,last.quality||3,last.wakeups||0):null;
   const lDef=last?bedDef(last.bed):0;
-  const[wh]=S.wakeTime.split(':').map(Number);
 
-  // Bedtime countdown
-  const n=new Date();
+  // Bed countdown
   let tM=parseInt(tb.split(':')[0])*60+parseInt(tb.split(':')[1]);
   let nM=n.getHours()*60+n.getMinutes();
   if(tM<720)tM+=1440;if(nM<720)nM+=1440;
   const mLeft=tM-nM;
   const bedC=mLeft<60?'var(--red)':mLeft<120?'var(--amber)':'var(--green)';
+
+  // Energy
+  const elapsedH=(nowH-wh+24)%24;
+  const zones=[
+    {l:'Rise',h:0,len:1.5,c:'rgba(139,92,246,0.7)'},
+    {l:'Focus',h:1.5,len:3.5,c:'rgba(48,209,88,0.75)'},
+    {l:'Dip',h:5,len:2,c:'rgba(255,159,10,0.7)'},
+    {l:'Wind',h:7,len:2,c:'rgba(10,132,255,0.7)'},
+    {l:'Peak',h:9,len:2,c:'rgba(48,209,88,0.75)'},
+    {l:'Down',h:11,len:5,c:'rgba(255,69,58,0.65)'},
+  ];
+  const zColors=['rgba(139,92,246,1)','rgba(48,209,88,1)','rgba(255,159,10,1)','rgba(10,132,255,1)','rgba(48,209,88,1)','rgba(255,69,58,0.9)'];
+  let curZone=zones[zones.length-1],curIdx=5;
+  for(let i=0;i<zones.length;i++){if(elapsedH>=zones[i].h&&elapsedH<zones[i].h+zones[i].len){curZone=zones[i];curIdx=i;break;}}
+  const markerPct=Math.min(100,Math.max(0,elapsedH/16*100));
+  const segsH=zones.map(z=>`<div class="tl-seg" style="flex:${z.len};background:${z.c}"></div>`).join('');
+  const pillsH=zones.map((z,i)=>`<div class="zone-pill${i===curIdx?' zone-now':''}" style="background:${zColors[i]}18;border-color:${zColors[i]}40;color:${zColors[i]}">${fmtH((wh+z.h)%24)} ${z.l}</div>`).join('');
+
+  // Tip
+  const tipR=TIPS[tipIdx%TIPS.length];
+  const tipH2=tipR.h.replace('{cutoff}',fmtH((wh+10)%24)).replace('{bed}',fmt(tb)).replace('{need}',S.need+'h').replace('{peak}',fmtH(wh+2)+'–'+fmtH(wh+5));
+  const tipDots=TIPS.map((_,i)=>`<div class="tip-dot${i===tipIdx%TIPS.length?' on':''}"></div>`).join('');
 
   // Goal
   let goalH='';
@@ -927,76 +1016,69 @@ function rHome(){
     const elapsed=Math.max(0,Math.round((new Date()-new Date(S.goal.startDate))/86400000));
     const dLeft=Math.max(0,S.goal.targetDays-elapsed);
     const reduced=Math.max(0,(S.goal.startDebt||0)-debt);
-    const targetR=(S.goal.startDebt||0)-S.goal.targetDebt;
-    const pct=Math.min(100,targetR>0?Math.round(reduced/targetR*100):0);
+    const targetR=Math.max(0.01,(S.goal.startDebt||0)-S.goal.targetDebt);
+    const pct=Math.min(100,Math.round(reduced/targetR*100));
+    const arcLen=Math.round(pct/100*150.8);
+    const gC=pct>=100?'var(--green)':pct>=50?'var(--amber)':'var(--text3)';
+    const dailyNeed=dLeft>0?Math.round((debt-S.goal.targetDebt)/dLeft*10)/10:0;
     goalH=`<div class="goal-wrap"><div class="goal-card">
-      <div class="goal-header"><span class="goal-title">Debt goal</span><span class="goal-pct">${pct}%</span></div>
-      <div class="goal-bar"><div class="goal-bar-fill" style="width:${pct}%"></div></div>
-      <div class="goal-footer">
-        <span>${S.goal.targetDebt}h target · ${dLeft} days left</span>
-        <span>${debt>S.goal.targetDebt?`${debt}h → ${S.goal.targetDebt}h`:'🎉 Done!'}</span>
+      <div class="goal-top">
+        <div class="goal-arc-wrap">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="24" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+            <circle cx="32" cy="32" r="24" fill="none" stroke="${gC}" stroke-width="6"
+              stroke-dasharray="${arcLen} 150.8" stroke-linecap="round"/>
+          </svg>
+          <div class="goal-arc-label">
+            <div class="goal-arc-pct" style="color:${gC}">${pct}%</div>
+            <div class="goal-arc-sub">done</div>
+          </div>
+        </div>
+        <div class="goal-info">
+          <div class="goal-title">Debt goal</div>
+          <div class="goal-desc">${debt.toFixed(1)}h → ${S.goal.targetDebt}h<br>${dLeft} days remaining</div>
+        </div>
+      </div>
+      <div class="goal-row">
+        <span>Started at ${S.goal.startDebt}h debt</span>
+        <span>${debt>S.goal.targetDebt&&dLeft>0?`+${dailyNeeded2(debt,S.goal.targetDebt,dLeft)}h sleep/night needed`:'🎉 Goal reached!'}</span>
       </div>
     </div></div>`;
   }
 
-  // Tips
-  const [th2]=S.wakeTime.split(':').map(Number);
-  const tip=TIPS[tipIdx%TIPS.length];
-  const tipH=tip.h.replace('{cutoff}',fmtH((th2+10)%24)).replace('{bed}',fmt(tb)).replace('{need}',S.need+'h').replace('{peak}',fmtH(th2+2)+'–'+fmtH(th2+5));
-  const tipDots=TIPS.map((_,i)=>`<div class="tip-dot${i===tipIdx%TIPS.length?' on':''}"></div>`).join('');
-
-  // Energy timeline
-  const nowH=n.getHours()+n.getMinutes()/60;
-  const zones=[
-    {l:'Rise',h:0,len:1.5,c:'#6e56cf',tc:'#fff'},
-    {l:'Focus',h:1.5,len:3.5,c:'#30d158',tc:'#000'},
-    {l:'Dip',h:5,len:2,c:'#ff9f0a',tc:'#000'},
-    {l:'Wind',h:7,len:2,c:'#64d2ff',tc:'#000'},
-    {l:'Peak',h:9,len:2,c:'#30d158',tc:'#000'},
-    {l:'Down',h:11,len:5,c:'#ff453a',tc:'#fff'},
-  ];
-  const elapsed2=(nowH-wh+24)%24;
-  let curZone=zones[zones.length-1];
-  for(const z of zones){if(elapsed2>=z.h&&elapsed2<z.h+z.len){curZone=z;break;}}
-  const markerPct=Math.min(100,Math.max(0,elapsed2/16*100));
-  const segsH=zones.map(z=>`<div style="flex:${z.len};background:${z.c}"></div>`).join('');
-  const pillsH=zones.map(z=>`<div class="zone-pill${z.l===curZone.l?' zone-now':''}" style="background:${z.c}20;border-color:${z.c}40;color:${z.c}">${fmtH((wh+z.h)%24)} ${z.l}</div>`).join('');
-
-  // Alert
-  const alertH=mins!==null?`<div class="alert-wrap"><div class="alert-pill">🌙 <span>Bedtime in <strong>${cdown(mins)}</strong> — target ${fmt(tb)}</span></div></div>`:'';
+  const alertH=mins!==null?`<div class="alert-bar">🌙 <span>Bedtime in <strong>${cdown(mins)}</strong> — target ${fmt(tb)}</span></div>`:'';
 
   document.getElementById('page-home').innerHTML=alertH+`
 
     <div class="debt-hero">
-      <div class="debt-status-label" style="color:${dC}">${debt<5?'Safe zone':debt<10?'Significant debt':'Critical debt'}</div>
-      <div class="debt-big" style="color:${dC}">${debt}</div>
-      <div class="debt-sub">hrs owed</div>
+      <div class="debt-status" style="color:${dC}">${debt<5?'Safe zone':debt<10?'Significant debt':'Critical debt'}</div>
+      <div class="debt-num" style="color:${dC}">${debt}</div>
+      <div class="debt-unit">hrs owed</div>
       <div class="debt-bar"><div class="debt-bar-fill" style="width:${dPct}%;background:${dC}"></div></div>
       <div class="debt-meta">
-        <span>${S.need}h need</span>
-        <span>·</span>
-        <span>bed ${fmt(tb)}</span>
-        <span>·</span>
+        <span class="debt-meta-item">${S.need}h need</span>
+        <span class="debt-meta-item">·</span>
+        <span class="debt-meta-item">bed ${fmt(tb)}</span>
         <span class="safe-badge">Safe: under 5h</span>
       </div>
     </div>
 
-    <div class="ln-row">
-      <div class="ln-col">
-        <div class="ln-col-label">Last night</div>
-        <div class="ln-col-val" style="color:${last&&lEff>=S.need?'var(--green)':last&&lEff>=S.need*.85?'var(--amber)':'var(--red)'}">${last?lEff+'h':'—'}</div>
-        <div class="ln-col-sub">${last?last.hrs+'h raw':''}</div>
+    <div class="strip">
+      <div class="strip-card">
+        <div class="strip-label">Last night</div>
+        <div class="strip-val" style="color:${last&&lEff>=S.need?'var(--green)':last&&lEff>=S.need*.85?'var(--amber)':'var(--red)'}">${last?lEff+'h':'—'}</div>
+        <div class="strip-sub">${last?last.hrs+'h raw':''}</div>
       </div>
-      <div class="ln-col">
-        <div class="ln-col-label">Target bed</div>
-        <div class="ln-col-val">${fmt(tb)}</div>
-        <div class="ln-col-sub" style="color:${bedC}">${mLeft>0?'in '+cdown(mLeft):'now'}</div>
+      <div class="strip-card">
+        <div class="strip-label">Target bed</div>
+        <div class="strip-val">${fmt(tb)}</div>
+        <div class="strip-sub" style="color:${bedC}">${mLeft>0?'in '+cdown(mLeft):'now'}</div>
       </div>
     </div>
 
-    ${last?`<div class="section">
-      <div class="section-label">Last night detail</div>
-      <div class="detail-rows">
+    ${last?`<div class="sec">
+      <div class="sec-label">Last night detail</div>
+      <div class="d-rows">
         <div class="d-row"><span class="d-label">Slept at</span><span class="d-val">${fmt(last.bed)}</span></div>
         <div class="d-row"><span class="d-label">Woke at</span><span class="d-val">${fmt(last.wake)}</span></div>
         <div class="d-row"><span class="d-label">Bedtime deficit</span><span class="d-val" style="color:${lDef>0?'var(--amber)':'var(--green)'}">${lDef>0?'+'+lDef+'h late':'On target'}</span></div>
@@ -1004,19 +1086,19 @@ function rHome(){
         <div class="d-row"><span class="d-label">Quality</span><span class="d-val">${['','Terrible','Poor','Okay','Good','Great'][last.quality||3]}</span></div>
         ${last.wakeups?`<div class="d-row"><span class="d-label">Wakeups</span><span class="d-val">${last.wakeups}x</span></div>`:''}
         ${last.tags?.length?`<div class="d-row"><span class="d-label">Tags</span><span class="d-val" style="color:var(--green);font-size:12px">${last.tags.join(' · ')}</span></div>`:''}
-        ${last.note?`<div class="d-row"><span class="d-label">Note</span><span class="d-val" style="color:var(--text2);font-size:13px;font-style:italic">"${last.note}"</span></div>`:''}
+        ${last.note?`<div class="d-row"><span class="d-label">Note</span><span class="d-val" style="color:var(--text2);font-style:italic;font-size:13px">"${last.note}"</span></div>`:''}
       </div>
     </div>`:''}
 
-    <div class="section">
-      <div class="section-label">Energy — ${curZone.l} zone now</div>
+    <div class="sec">
+      <div class="sec-label">Energy · ${curZone.l} zone now</div>
       <div class="energy-wrap">
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px">
-          <span>${fmtH(wh%24)}</span><span>${fmtH((wh+8)%24)}</span><span>${fmtH((wh+16)%24)}</span>
-        </div>
-        <div class="tl-strip">
+        <div class="tl-row">
           ${segsH}
-          <div class="tl-marker" style="left:${markerPct}%"></div>
+          <div class="tl-now" style="left:${markerPct}%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:8px">
+          <span>${fmtH(wh%24)}</span><span>${fmtH((wh+4)%24)}</span><span>${fmtH((wh+8)%24)}</span><span>${fmtH((wh+12)%24)}</span><span>${fmtH((wh+16)%24)}</span>
         </div>
         <div class="zone-pills">${pillsH}</div>
       </div>
@@ -1024,8 +1106,8 @@ function rHome(){
 
     <div class="tip-wrap">
       <div class="tip-card">
-        <div class="tip-main">${tipH}</div>
-        <div class="tip-body">${tip.b}</div>
+        <div class="tip-head">${tipH2}</div>
+        <div class="tip-body">${tipR.b.replace('{need}',S.need+'h')}</div>
         <div class="tip-footer">
           <div class="tip-dots">${tipDots}</div>
           <span class="tip-next" onclick="tipIdx++;rHome()">Next →</span>
@@ -1034,6 +1116,11 @@ function rHome(){
     </div>
 
     ${goalH}`;
+}
+
+function dailyNeeded2(debt,target,daysLeft){
+  if(daysLeft<=0)return 0;
+  return Math.round((debt-target)/daysLeft*10)/10;
 }
 
 // ── PLAN PAGE ─────────────────────────────────────────────────
@@ -1054,12 +1141,12 @@ function rPlan(){
   }else if(ci){
     ciH=`<div class="mood-wrap"><div class="mood-card">
       <div class="mood-title">Today's mood</div>
-      <div style="font-size:28px;margin-top:6px">${ci.emoji}</div>
+      <div style="font-size:30px;margin-top:6px">${ci.emoji}</div>
     </div></div>`;
   }
 
   if(!last){
-    document.getElementById('page-plan').innerHTML=ciH+`<div class="empty-state">
+    document.getElementById('page-plan').innerHTML=ciH+`<div class="empty">
       <div class="empty-icon">🌙</div>
       <div class="empty-title">Log last night first</div>
       <div class="empty-body">Your personalised day plan appears after logging sleep.</div>
@@ -1071,18 +1158,18 @@ function rPlan(){
   const ef=eff(last.hrs,last.quality||3,last.wakeups||0),need=S.need,def=need-ef;
   let dtype,dc,dsub;
   if(def<=0){dtype='Well rested';dc='var(--green)';dsub=`${ef}h effective — at your need. Expect a sharp, focused day.`;}
-  else if(def<1.5){dtype='Mildly short';dc='var(--green)';dsub=`${ef}h effective (${def.toFixed(1)}h short). Mostly good — dip expected mid-afternoon.`;}
+  else if(def<1.5){dtype='Mildly short';dc='rgba(48,209,88,0.9)';dsub=`${ef}h effective (${def.toFixed(1)}h short). Mostly good — dip expected mid-afternoon.`;}
   else if(def<3){dtype='Underslept';dc='var(--amber)';dsub=`${ef}h effective (${def.toFixed(1)}h short). Some fog and slower reactions today.`;}
   else{dtype='Significantly short';dc='var(--red)';dsub=`${ef}h effective (${def.toFixed(1)}h short). Protect your schedule today.`;}
 
   const p1s=wh+2,p1e=wh+5,d1s=wh+6,d1e=wh+8,p2s=wh+8,p2e=wh+10,d2s=wh+11,d2e=wh+14;
   const vzones=[
-    {bg:'rgba(48,209,88,0.3)',tc:'#30d158',l:'Focus',d:def<1.5?'Best focus. Deep work, hard decisions.':'Reduced focus. Do important tasks early.',start:p1s,end:p1e},
-    def>=1.5?{bg:'rgba(255,69,58,0.3)',tc:'#ff453a',l:'Crash',d:'Post-lunch crash hits harder. Avoid critical decisions.',start:d1s,end:d1e}
-    :{bg:'rgba(110,86,207,0.3)',tc:'#6e56cf',l:'Dip',d:'Natural dip. Emails, admin, routine tasks.',start:d1s,end:d1e},
-    def<3?{bg:'rgba(100,210,255,0.3)',tc:'#64d2ff',l:'Wind 2',d:'Second wind. Meetings, calls, collaborative work.',start:p2s,end:p2e}
-    :{bg:'rgba(255,159,10,0.3)',tc:'#ff9f0a',l:'Blunted',d:'Second wind blunted. Light tasks only.',start:p2s,end:p2e},
-    {bg:'rgba(110,86,207,0.3)',tc:'#6e56cf',l:'Wind down',d:'Energy dropping. Dim screens, begin wind-down.',start:d2s,end:d2e},
+    {bg:'rgba(48,209,88,0.25)',tc:'var(--green)',l:'Focus',d:def<1.5?'Best focus window. Deep work, hard decisions, creative tasks.':'Reduced focus. Tackle important work early before energy drops further.',s:p1s,e:p1e},
+    def>=1.5?{bg:'rgba(255,69,58,0.2)',tc:'var(--red)',l:'Crash',d:'Post-lunch crash hits harder today. Avoid critical decisions if possible.',s:d1s,e:d1e}
+    :{bg:'rgba(139,92,246,0.2)',tc:var_purple(),l:'Dip',d:'Natural afternoon dip. Emails, admin, routine tasks.',s:d1s,e:d1e},
+    def<3?{bg:'rgba(10,132,255,0.2)',tc:'var(--blue)',l:'Wind 2',d:'Second wind. Good for meetings, calls, collaborative work.',s:p2s,e:p2e}
+    :{bg:'rgba(255,159,10,0.2)',tc:'var(--amber)',l:'Blunted',d:'Second wind blunted. Light tasks only.',s:p2s,e:p2e},
+    {bg:'rgba(139,92,246,0.15)',tc:var_purple(),l:'Wind down',d:'Energy dropping. Begin wind-down. Dim screens.',s:d2s,e:d2e},
   ];
 
   const tb=targetBed();
@@ -1092,65 +1179,55 @@ function rPlan(){
   if(tM2<720)tM2+=1440;if(nM2<720)nM2+=1440;
   const mLeft2=tM2-nM2;
 
-  const napRec=def>=3?{show:true,txt:`Nap recommended — ${fmtH((wh+6)%24)} to ${fmtH((wh+8)%24)}`,bg:'rgba(255,69,58,0.1)',bc:'rgba(255,69,58,0.2)',tc:'var(--red)'}
-    :def>=1.5?{show:true,txt:`Optional nap before ${fmtH((wh+8)%24)} if you feel the dip`,bg:'rgba(255,159,10,0.1)',bc:'rgba(255,159,10,0.2)',tc:'var(--amber)'}
-    :{show:false,txt:'No nap needed — skip to protect tonight\'s sleep',bg:'rgba(48,209,88,0.1)',bc:'rgba(48,209,88,0.2)',tc:'var(--green)'};
+  const napRec=def>=3?{show:true,txt:`Nap recommended — ${fmtH((wh+6)%24)} to ${fmtH((wh+8)%24)}`,bg:'rgba(255,69,58,0.1)',bc:'rgba(255,69,58,0.25)',tc:'var(--red)'}
+    :def>=1.5?{show:true,txt:`Optional nap before ${fmtH((wh+8)%24)} if you feel the dip`,bg:'rgba(255,159,10,0.1)',bc:'rgba(255,159,10,0.25)',tc:'var(--amber)'}
+    :{show:false,txt:"No nap needed — skip to protect tonight's sleep",bg:'rgba(48,209,88,0.08)',bc:'rgba(48,209,88,0.2)',tc:'var(--green)'};
 
   document.getElementById('page-plan').innerHTML=ciH+`
     <div class="plan-hero">
-      <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Today's outlook</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Today's outlook</div>
       <div class="plan-type" style="color:${dc}">${dtype}</div>
-      <div style="font-size:13px;color:var(--text2);margin-top:4px">${ef}h effective · ${need}h needed</div>
+      <div style="font-size:13px;color:var(--text3);margin-top:3px">${ef}h effective · ${need}h needed</div>
       <div style="font-size:14px;color:var(--text2);margin-top:10px;line-height:1.6">${dsub}</div>
     </div>
 
     <div class="vt-wrap">
-      <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Hour by hour — tap a zone</div>
-      <div class="vt-strip">${vzones.map((z,i)=>`<div class="vt-seg" style="flex:${z.end-z.start};background:${z.bg};color:${z.tc};" onclick="showVZ(${i})">${z.l}</div>`).join('')}</div>
+      <div class="sec-label" style="padding:0;margin-bottom:8px">Hour by hour — tap a zone</div>
+      <div class="vt-strip" id="vt-strip">${vzones.map((z,i)=>`<div class="vt-seg" style="flex:${z.e-z.s};background:${z.bg};color:${z.tc};" onclick="showVZ(${i})">${z.l}</div>`).join('')}</div>
       <div class="vt-detail" id="vt-d">Tap a zone to see what to do during that time.</div>
     </div>
-    <script>window._vz=${JSON.stringify(vzones)};<\/script>
 
     <div class="pills-row">
-      <div class="pill-box">
-        <div class="pill-val">${fmtH((wh+10)%24)}</div>
-        <div class="pill-lbl">Last coffee</div>
-      </div>
-      <div class="pill-box">
-        <div class="pill-val">${fmt(tb)}</div>
-        <div class="pill-lbl">Target bed</div>
-      </div>
-      <div class="pill-box">
-        <div class="pill-val" style="color:${mLeft2<60?'var(--red)':mLeft2<120?'var(--amber)':'var(--green)'}">${mLeft2>0?cdown(mLeft2):'Now'}</div>
-        <div class="pill-lbl">Bed in</div>
-      </div>
+      <div class="pill-box"><div class="pill-val">${fmtH((wh+10)%24)}</div><div class="pill-lbl">Last coffee</div></div>
+      <div class="pill-box"><div class="pill-val">${fmt(tb)}</div><div class="pill-lbl">Target bed</div></div>
+      <div class="pill-box"><div class="pill-val" style="color:${mLeft2<60?'var(--red)':mLeft2<120?'var(--amber)':'var(--green)'}">${mLeft2>0?cdown(mLeft2):'Now'}</div><div class="pill-lbl">Bed in</div></div>
     </div>
 
-    <div class="nap-banner" style="background:${napRec.bg};border-color:${napRec.bc};color:${napRec.tc}">
+    <div class="nap-row" style="background:${napRec.bg};border-color:${napRec.bc};color:${napRec.tc}">
       <span style="font-size:18px">${napRec.show?'💤':'✓'}</span>
       <span>${napRec.txt}</span>
     </div>
 
-    <div class="section">
-      <div class="section-label">Tonight</div>
-      <div class="detail-rows">
+    <div class="sec">
+      <div class="sec-label">Tonight</div>
+      <div class="d-rows">
         <div class="d-row"><span class="d-label">Target bedtime</span><span class="d-val">${fmt(tb)}</span></div>
         <div class="d-row"><span class="d-label">Sleep needed</span><span class="d-val">${need}h</span></div>
-        ${mLeft2>0&&mLeft2<120?`<div class="d-row"><span class="d-label">Wind-down now</span><span class="d-val" style="color:var(--amber)">In ${cdown(mLeft2)}</span></div>`:''}
+        ${mLeft2>0&&mLeft2<120?`<div class="d-row"><span class="d-label">Wind-down</span><span class="d-val" style="color:var(--amber)">In ${cdown(mLeft2)}</span></div>`:''}
       </div>
     </div>`;
+
   window._vz=vzones;
 }
 
+function var_purple(){return 'rgba(191,90,242,0.9)';}
 function showVZ(i){
   const z=window._vz?.[i];if(!z)return;
   const[wh]=S.wakeTime.split(':').map(Number);
-  document.getElementById('vt-d').innerHTML=`<span style="font-weight:600;color:${z.tc}">${fmtH(z.start%24)}–${fmtH(z.end%24)} · ${z.l}</span><br><span style="color:var(--text2)">${z.d}</span>`;
+  document.getElementById('vt-d').innerHTML=`<span style="font-weight:700;color:${z.tc}">${fmtH(z.s%24)}–${fmtH(z.e%24)} · ${z.l}</span><br><span style="color:var(--text2)">${z.d}</span>`;
 }
-
 function logMood(score,emoji){
-  const td=today();
-  if(!S.checkins)S.checkins=[];
+  const td=today();if(!S.checkins)S.checkins=[];
   S.checkins=S.checkins.filter(c=>c.date!==td);
   S.checkins.push({date:td,score,emoji});
   saveFS();rPlan();
@@ -1160,93 +1237,94 @@ function logMood(score,emoji){
 function rLog(){
   logQ=3;logWU=0;logTags=[];
   const yd=yesterday();
+  const pf=getQLPrefill();
+
   document.getElementById('page-log').innerHTML=`
-    <div class="log-section">
-      <div class="log-section-title">Log a night</div>
+    <div class="log-sec">
+      <div class="log-sec-title">Log a night</div>
       <div class="log-card">
         <div class="log-row">
-          <span class="log-row-label">Date</span>
-          <input type="date" class="log-row-input" id="ld" value="${yd}" max="${today()}" oninput="updPrev()">
+          <span class="log-lbl">Date</span>
+          <input type="date" class="log-inp" id="ld" value="${yd}" max="${today()}" oninput="updPrev()">
         </div>
         <div class="log-row">
-          <span class="log-row-label">Bedtime</span>
-          <input type="time" class="log-row-input" id="lb" value="01:00" oninput="updPrev()">
+          <span class="log-lbl">Bedtime</span>
+          <input type="time" class="log-inp" id="lb" value="${pf.bed||'01:00'}" oninput="updPrev()">
         </div>
         <div class="log-row">
-          <span class="log-row-label">Wake time</span>
-          <input type="time" class="log-row-input" id="lw" value="07:00" oninput="updPrev()">
+          <span class="log-lbl">Wake time</span>
+          <input type="time" class="log-inp" id="lw" value="${pf.wake||'07:00'}" oninput="updPrev()">
         </div>
-        <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:6px">
-          <span class="log-row-label">Sleep quality</span>
-          <div class="qual-row" style="width:100%">
-            ${[['😵','Terrible',1],['😩','Poor',2],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic,lb,v])=>
-              `<button class="qbtn${v===3?' sel':''}" onclick="setQ(${v},this)"><span class="qi">${ic}</span>${lb}</button>`).join('')}
+        <div class="more-toggle" onclick="toggleMore(this)" id="more-toggle-btn">
+          <span class="more-toggle-lbl">More details</span>
+          <span class="more-toggle-icon" id="more-icon">▼</span>
+        </div>
+        <div class="more-details" id="more-details">
+          <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding-bottom:6px">
+            <span class="log-lbl" style="font-size:13px;color:var(--text3);padding-top:4px">Sleep quality</span>
+            <div class="qual-row" style="width:100%">
+              ${[['😵','Terrible',1],['😩','Poor',2],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic,lb,v])=>
+                `<button class="qbtn${v===3?' sel':''}" onclick="setQ(${v},this)"><span class="qi">${ic}</span>${lb}</button>`).join('')}
+            </div>
           </div>
-        </div>
-        <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:6px">
-          <span class="log-row-label">Times woken up</span>
-          <div class="wakeup-row" style="width:100%">
-            ${[0,1,2,3,'4+'].map((v,i)=>`<button class="wbtn${i===0?' sel':''}" onclick="setWU(${i===4?4:v},this)">${v}</button>`).join('')}
+          <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding-bottom:6px">
+            <span class="log-lbl" style="font-size:13px;color:var(--text3)">Times woken up</span>
+            <div class="wakeup-row" style="width:100%">
+              ${[0,1,2,3,'4+'].map((v,i)=>`<button class="wbtn${i===0?' sel':''}" onclick="setWU(${i===4?4:v},this)">${v}</button>`).join('')}
+            </div>
           </div>
-        </div>
-        <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:0">
-          <span class="log-row-label">Tags</span>
-          <div class="tags-wrap">${TAGS.map(t=>`<div class="tag" onclick="toggleTag('${t}',this)">${t}</div>`).join('')}</div>
-        </div>
-        <div class="log-row" style="padding:0">
-          <textarea class="notes-area" id="ln" placeholder="Notes (optional)…"></textarea>
+          <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding-bottom:6px">
+            <span class="log-lbl" style="font-size:13px;color:var(--text3)">Tags</span>
+            <div class="tags-wrap" style="padding:4px 0">${TAGS.map(t=>`<div class="tag" onclick="toggleTag('${t}',this)">${t}</div>`).join('')}</div>
+          </div>
+          <div style="border-top:1px solid var(--border)">
+            <textarea class="notes-area" id="ln" placeholder="Notes — stress, travel, anything different…"></textarea>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="preview-strip" id="prev">Enter your times above</div>
+    <div class="preview-box" id="prev">Enter your times above</div>
 
-    <div style="padding:0 20px;margin-bottom:16px">
+    <div style="padding:0 20px;margin-bottom:20px">
       <button class="primary-btn" onclick="doLog()">Save sleep</button>
     </div>
 
-    <div class="log-section">
-      <div class="log-section-title" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Nap</span>
-        <span style="font-size:12px;color:var(--green);cursor:pointer" onclick="toggleNap()">+ Add nap</span>
+    <div class="log-sec">
+      <div class="log-sec-title" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Log a nap</span>
+        <span style="font-size:13px;color:var(--green);cursor:pointer" onclick="toggleNap()">+ Add</span>
       </div>
       <div id="nap-form" style="display:none">
         <div class="log-card" style="margin-bottom:12px">
-          <div class="log-row">
-            <span class="log-row-label">Date</span>
-            <input type="date" class="log-row-input" id="nd-date" value="${yd}" max="${today()}">
-          </div>
-          <div class="log-row">
-            <span class="log-row-label">Start time</span>
-            <input type="time" class="log-row-input" id="ns" value="13:00">
-          </div>
-          <div class="log-row">
-            <span class="log-row-label">Duration</span>
-            <select class="log-row-input" id="ndur">
+          <div class="log-row"><span class="log-lbl">Date</span><input type="date" class="log-inp" id="nd-date" value="${yd}" max="${today()}"></div>
+          <div class="log-row"><span class="log-lbl">Start time</span><input type="time" class="log-inp" id="ns" value="13:00"></div>
+          <div class="log-row"><span class="log-lbl">Duration</span>
+            <select class="log-inp" id="ndur">
               <option value="20">20 min</option><option value="30">30 min</option>
               <option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option>
             </select>
           </div>
         </div>
-        <div style="padding:0 0 16px">
-          <button class="primary-btn" style="background:var(--bg2);color:#fff;border:1px solid var(--border)" onclick="doNap()">Save nap</button>
-        </div>
+        <div style="margin-bottom:16px"><button class="secondary-btn" onclick="doNap()">Save nap</button></div>
       </div>
     </div>
 
-    <div class="log-section">
-      <div class="log-section-title">History</div>
-      <div class="log-card" id="hist"></div>
+    <div class="log-sec">
+      <div class="log-sec-title">History</div>
+      <div class="hist-card" id="hist"></div>
     </div>`;
 
   updPrev();rHist();
 }
 
-function toggleNap(){
-  const f=document.getElementById('nap-form');
-  f.style.display=f.style.display==='none'?'block':'none';
+function toggleMore(btn){
+  const d=document.getElementById('more-details');
+  const ic=document.getElementById('more-icon');
+  const open=d.classList.toggle('open');
+  ic.textContent=open?'▲':'▼';
 }
-
+function toggleNap(){const f=document.getElementById('nap-form');f.style.display=f.style.display==='none'?'block':'none';}
 function setQ(v,el){logQ=v;document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
 function setWU(v,el){logWU=v;document.querySelectorAll('.wbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
 function toggleTag(t,el){
@@ -1262,28 +1340,27 @@ function updPrev(){
   const raw=calcHrs(bed,wake,15),ef2=eff(raw,logQ,logWU),bd=bedDef(bed),tb=targetBed();
   const ex=S.log.find(e=>e.date===date);
   const el=document.getElementById('prev');
-  if(el)el.innerHTML=`${raw.toFixed(1)}h raw · <strong style="color:#fff">${ef2.toFixed(1)}h effective</strong>
-    <br><span style="font-size:12px;color:${bd>0?'var(--amber)':'var(--green)'}">${bd>0?`Bedtime ${bd}h past target ${fmt(tb)}`:'Bedtime on target ✓'}</span>
-    ${ex?`<br><span style="font-size:12px;color:var(--green)">Updates entry for ${fmtDate(date)}</span>`:''}`;
+  if(el)el.innerHTML=`${raw.toFixed(1)}h raw · <strong style="color:#fff">${ef2.toFixed(1)}h effective</strong><br><span style="font-size:12px;color:${bd>0?'var(--amber)':'var(--green)'}">${bd>0?`Bedtime ${bd}h past target ${fmt(tb)}`:'Bedtime on target ✓'}</span>${ex?`<br><span style="font-size:12px;color:var(--green)">Updates entry for ${fmtDate(date)}</span>`:''}`;
 }
 
 function doLog(){
   const bed=document.getElementById('lb').value,wake=document.getElementById('lw').value;
-  const date=document.getElementById('ld').value,note=document.getElementById('ln').value.trim();
+  const date=document.getElementById('ld').value;
+  const note=document.getElementById('ln')?.value?.trim()||'';
   const hrs=calcHrs(bed,wake,15);
   if(hrs<1||hrs>16){alert('Check your times');return;}
   S.log=S.log.filter(e=>e.date!==date);
   S.log.push({date,bed,wake,hrs,onset:15,quality:logQ,wakeups:logWU,tags:[...logTags],note});
   S.log.sort((a,b)=>b.date.localeCompare(a.date));
   if(S.log.length>365)S.log=S.log.slice(0,365);
+  // Clear QL for logged date
+  if(S.ql){S.ql.bedDate=null;S.ql.wakeDate=null;}
   saveFS();
   go('plan',document.querySelectorAll('.nav-item')[1]);
 }
 
 function doNap(){
-  const start=document.getElementById('ns').value;
-  const mins=parseInt(document.getElementById('ndur').value);
-  const date=document.getElementById('nd-date').value;
+  const start=document.getElementById('ns').value,mins=parseInt(document.getElementById('ndur').value),date=document.getElementById('nd-date').value;
   if(!S.naps)S.naps=[];
   S.naps.push({date,start,mins});
   saveFS();showToast('Nap saved ✓');
@@ -1292,16 +1369,10 @@ function doNap(){
 
 function rHist(){
   const el=document.getElementById('hist');if(!el)return;
-  if(!S.log.length){
-    el.innerHTML='<div style="padding:20px;text-align:center;font-size:13px;color:var(--text3)">No entries yet</div>';
-    return;
-  }
+  if(!S.log.length){el.innerHTML='<div style="padding:24px;text-align:center;font-size:14px;color:var(--text3)">No entries yet</div>';return;}
   const qI=['','😵','😩','😐','🙂','⚡'];
   el.innerHTML=S.log.slice(0,21).map(e=>{
-    const ef2=eff(e.hrs,e.quality||3,e.wakeups||0);
-    const good=ef2>=S.need-.5;
-    const c=good?'var(--green)':'var(--red)';
-    const bd=bedDef(e.bed);
+    const ef2=eff(e.hrs,e.quality||3,e.wakeups||0),good=ef2>=S.need-.5,c=good?'var(--green)':'var(--red)';
     return `<div class="hist-entry" id="he-${e.date}">
       <div class="hist-main" onclick="toggleHist('${e.date}')">
         <div class="hist-dot" style="background:${c}"></div>
@@ -1311,14 +1382,13 @@ function rHist(){
           ${e.tags?.length?`<div class="hist-tags">${e.tags.join(' · ')}</div>`:''}
         </div>
         <div class="hist-hrs" style="color:${c}">${ef2}h</div>
-        <div class="hist-arrow">›</div>
       </div>
       <div class="hist-expanded" id="hx-${e.date}">
-        <div class="hist-exp-row"><span class="hist-exp-label">Raw sleep</span><span class="hist-exp-val">${e.hrs}h</span></div>
-        <div class="hist-exp-row"><span class="hist-exp-label">Effective</span><span class="hist-exp-val">${ef2}h</span></div>
-        <div class="hist-exp-row"><span class="hist-exp-label">vs need</span><span class="hist-exp-val" style="color:${ef2>=S.need?'var(--green)':'var(--red)'}">${ef2>=S.need?'+':''}${Math.round((ef2-S.need)*10)/10}h</span></div>
-        <div class="hist-exp-row"><span class="hist-exp-label">Bedtime deficit</span><span class="hist-exp-val" style="color:${bd>0?'var(--amber)':'var(--green)'}">${bd>0?'+'+bd+'h late':'On target'}</span></div>
-        ${e.note?`<div class="hist-exp-row"><span class="hist-exp-label">Note</span><span class="hist-exp-val" style="color:var(--text2);font-style:italic">"${e.note}"</span></div>`:''}
+        <div class="hist-exp-row"><span class="hist-exp-lbl">Raw sleep</span><span class="hist-exp-val">${e.hrs}h</span></div>
+        <div class="hist-exp-row"><span class="hist-exp-lbl">Effective</span><span class="hist-exp-val">${ef2}h</span></div>
+        <div class="hist-exp-row"><span class="hist-exp-lbl">vs need</span><span class="hist-exp-val" style="color:${ef2>=S.need?'var(--green)':'var(--red)'}">${ef2>=S.need?'+':''}${Math.round((ef2-S.need)*10)/10}h</span></div>
+        <div class="hist-exp-row"><span class="hist-exp-lbl">Bedtime</span><span class="hist-exp-val" style="color:${bedDef(e.bed)>0?'var(--amber)':'var(--green)'}">${bedDef(e.bed)>0?'+'+bedDef(e.bed)+'h late':'On target'}</span></div>
+        ${e.note?`<div class="hist-exp-row"><span class="hist-exp-lbl">Note</span><span class="hist-exp-val" style="color:var(--text2);font-style:italic">"${e.note}"</span></div>`:''}
         <div class="hist-actions">
           <button class="hist-action edit" onclick="openEdit('${e.date}')">Edit</button>
           <button class="hist-action del" onclick="delEntry('${e.date}')">Delete</button>
@@ -1328,27 +1398,23 @@ function rHist(){
   }).join('');
 }
 
-function toggleHist(date){
-  const x=document.getElementById('hx-'+date);
-  if(x)x.style.display=x.style.display==='block'?'none':'block';
-}
-function delEntry(date){if(!confirm(`Delete entry for ${fmtDate(date)}?`))return;S.log=S.log.filter(e=>e.date!==date);saveFS();rLog();}
-function openEdit(date){
-  const e=S.log.find(e=>e.date===date);if(!e)return;
-  document.getElementById('edit-date').value=date;
+function toggleHist(d){const x=document.getElementById('hx-'+d);if(x)x.style.display=x.style.display==='block'?'none':'block';}
+function delEntry(d){if(!confirm(`Delete entry for ${fmtDate(d)}?`))return;S.log=S.log.filter(e=>e.date!==d);saveFS();rLog();}
+function openEdit(d){
+  const e=S.log.find(e=>e.date===d);if(!e)return;
+  document.getElementById('edit-date').value=d;
   document.getElementById('edit-bed').value=e.bed;
   document.getElementById('edit-wake').value=e.wake;
-  document.getElementById('edit-onset').value=e.onset||15;
   document.getElementById('edit-quality').value=e.quality||3;
   document.getElementById('edit-modal').classList.add('open');
 }
 function closeEdit(){document.getElementById('edit-modal').classList.remove('open');}
 function saveEdit(){
-  const date=document.getElementById('edit-date').value;
+  const d=document.getElementById('edit-date').value;
   const bed=document.getElementById('edit-bed').value,wake=document.getElementById('edit-wake').value;
-  const onset=parseInt(document.getElementById('edit-onset').value),quality=parseInt(document.getElementById('edit-quality').value);
-  const hrs=calcHrs(bed,wake,onset);
-  S.log=S.log.map(e=>e.date===date?{...e,bed,wake,hrs,onset,quality}:e);
+  const quality=parseInt(document.getElementById('edit-quality').value);
+  const hrs=calcHrs(bed,wake,15);
+  S.log=S.log.map(e=>e.date===d?{...e,bed,wake,hrs,quality}:e);
   saveFS();closeEdit();rLog();
 }
 
@@ -1356,27 +1422,20 @@ function saveEdit(){
 function rInsights(){
   if(S.log.length<3){
     document.getElementById('page-insights').innerHTML=`
-      <div style="padding:0 20px;margin-bottom:20px">
-        <div class="ptabs" style="padding:0">${['week','month','year','all'].map(p=>`<div class="ptab${insPeriod===p?' on':''}" onclick="setP('${p}')">${p==='all'?'All':p.charAt(0).toUpperCase()+p.slice(1)}</div>`).join('')}</div>
-      </div>
-      <div class="empty-state">
+      <div class="ptabs">${['week','month','year','all'].map(p=>`<div class="ptab${insPeriod===p?' on':''}" onclick="setP('${p}')">${p==='all'?'All':p.charAt(0).toUpperCase()+p.slice(1)}</div>`).join('')}</div>
+      <div class="empty">
         <div class="empty-icon">📊</div>
         <div class="empty-title">Insights unlock soon</div>
-        <div class="empty-body">Log ${3-S.log.length} more night${3-S.log.length===1?'':'s'} to unlock patterns and insights.</div>
+        <div class="empty-body">Log ${3-S.log.length} more night${3-S.log.length===1?'':'s'} to unlock patterns.</div>
       </div>
       <div style="padding:0 20px">
-        <div class="log-section-title">What you'll see</div>
         ${[
-          {icon:'🗓️',title:'Sleep heatmap',body:'16 weeks of colour-coded squares showing your sleep vs need at a glance.'},
-          {icon:'⏰',title:'Bedtime consistency',body:'A score showing how regular your sleep timing is — as important as duration.'},
-          {icon:'📅',title:'Day of week patterns',body:'Your best and worst sleep days. Reveals hidden lifestyle patterns.'},
-          {icon:'🔗',title:'Mood vs sleep correlation',body:'After logging morning mood for 5+ days, we show how sleep quality affects your feelings.'},
-          {icon:'📈',title:'Debt trend',body:'How your sleep debt has moved over time as you log more nights.'},
-        ].map(i=>`<div class="insight-card" style="opacity:0.4">
-          <div class="insight-icon">${i.icon}</div>
-          <div class="insight-title">${i.title}</div>
-          <div class="insight-body">${i.body}</div>
-        </div>`).join('')}
+          {icon:'🗓️',t:'Sleep heatmap',b:'16 weeks of colour-coded squares. See patterns at a glance.'},
+          {icon:'⏰',t:'Bedtime consistency',b:'Scores how regular your sleep timing is.'},
+          {icon:'📅',t:'Day of week patterns',b:'Your best and worst sleep days revealed.'},
+          {icon:'🔗',t:'Mood vs sleep',b:'Correlation between how you sleep and how you feel.'},
+          {icon:'📈',t:'Debt trend',b:'How your sleep debt moves over time.'},
+        ].map(i=>`<div class="ins-card" style="opacity:.35"><div class="ins-icon">${i.icon}</div><div class="ins-title">${i.t}</div><div class="ins-body">${i.b}</div></div>`).join('')}
       </div>`;
     return;
   }
@@ -1398,18 +1457,19 @@ function rInsights(){
       <div class="ps-card"><div class="ps-val" style="color:var(--red)">${worst}h</div><div class="ps-lbl">Worst night</div></div>
     </div>
 
-    <div class="ins-section">
-      <div class="log-section-title">Sleep heatmap</div>
-      <div class="log-card" style="padding:14px"><div id="hm"></div>
+    <div style="padding:0 20px;margin-bottom:20px">
+      <div class="log-sec-title">Sleep heatmap</div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:14px">
+        <div id="hm"></div>
         <div style="display:flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;color:var(--text3);flex-wrap:wrap">
-          <span>Less</span>${['#333','#7f1d1d','#713f12','#14532d','#166534'].map(c=>`<div style="width:11px;height:11px;border-radius:2px;background:${c};flex-shrink:0"></div>`).join('')}<span>More</span>
+          <span>Less</span>${['#222','#4a1515','#4a3010','#0f3320','#0f4a20'].map(c=>`<div style="width:11px;height:11px;border-radius:2px;background:${c};flex-shrink:0"></div>`).join('')}<span>More</span>
         </div>
       </div>
     </div>
 
-    <div class="ins-section">
-      <div class="log-section-title">Bedtime consistency</div>
-      <div class="log-card" style="padding:16px">
+    <div style="padding:0 20px;margin-bottom:20px">
+      <div class="log-sec-title">Bedtime consistency</div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:16px">
         <div class="cons-ring">
           <div class="ring-wrap">
             <svg width="72" height="72" viewBox="0 0 72 72">
@@ -1417,65 +1477,56 @@ function rInsights(){
               <circle cx="36" cy="36" r="30" fill="none" stroke="${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}" stroke-width="6"
                 stroke-dasharray="${Math.round(cons/100*188.5)} 188.5" stroke-linecap="round"/>
             </svg>
-            <div class="ring-label">
-              <div class="ring-num" style="color:${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}">${cons}</div>
-              <div class="ring-sub">/ 100</div>
-            </div>
+            <div class="ring-inner"><div class="ring-num" style="color:${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}">${cons}</div><div class="ring-sub">/ 100</div></div>
           </div>
           <div>
-            <div style="font-size:14px;font-weight:600;margin-bottom:4px">${cons>=80?'Very consistent':cons>=60?'Fairly consistent':'Inconsistent'}</div>
-            <div style="font-size:12px;color:var(--text2);line-height:1.6">Based on bedtime variance. Timing matters as much as duration.</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:4px">${cons>=80?'Very consistent':cons>=60?'Fairly consistent':'Inconsistent'}</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6">Based on bedtime variance. Timing matters as much as duration.</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="ins-section">
-      <div class="log-section-title">Sleep by day of week</div>
-      <div class="log-card" style="padding:16px">
+    <div style="padding:0 20px;margin-bottom:20px">
+      <div class="log-sec-title">Sleep by day of week</div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:16px">
         <div id="dow"></div>
         <div style="font-size:11px;color:var(--text3);margin-top:8px">avg effective · need: ${S.need}h</div>
       </div>
     </div>
 
-    <div class="ins-section">
-      <div class="log-section-title">Debt trend</div>
-      <div class="log-card" style="padding:16px">
+    <div style="padding:0 20px;margin-bottom:20px">
+      <div class="log-sec-title">Debt trend</div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:16px">
         <div class="trend-wrap"><canvas id="tc"></canvas></div>
       </div>
     </div>
 
-    ${ins.length?`<div class="ins-section">
-      <div class="log-section-title">Insights</div>
-      ${ins.map(i=>`<div class="insight-card">
-        <div class="insight-icon">${i.icon}</div>
-        <div class="insight-title">${i.title}</div>
-        <div class="insight-body">${i.body}</div>
-      </div>`).join('')}
+    ${ins.length?`<div style="padding:0 20px;margin-bottom:20px">
+      <div class="log-sec-title">Insights</div>
+      ${ins.map(i=>`<div class="ins-card"><div class="ins-icon">${i.icon}</div><div class="ins-title">${i.title}</div><div class="ins-body">${i.body}</div></div>`).join('')}
     </div>`:''}
 
-    <div class="ins-section">
-      <div class="log-section-title">Projection</div>
-      <div class="log-card" style="padding:4px 16px">
-        <div style="font-size:12px;color:var(--text2);padding:10px 0;border-bottom:1px solid var(--border)">${nightly>=0?`Recovering ${Math.round(nightly*10)/10}h/night avg`:`Adding ${Math.round(Math.abs(nightly)*10)/10}h debt/night avg`}</div>
+    <div style="padding:0 20px;margin-bottom:20px">
+      <div class="log-sec-title">Debt projection</div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:4px 16px">
+        <div style="font-size:13px;color:var(--text2);padding:10px 0;border-bottom:1px solid var(--border)">${nightly>=0?`Recovering ${Math.round(nightly*10)/10}h/night avg`:`Adding ${Math.round(Math.abs(nightly)*10)/10}h debt/night avg`}</div>
         ${['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{
           running=Math.max(0,running+nightly*(i<3?7:28));
-          const rv=Math.round(running*10)/10;
-          const c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';
-          return `<div class="proj-row"><span style="color:var(--text2)">${w}</span><span style="font-weight:600;color:${c}">${rv}h debt</span></div>`;
+          const rv=Math.round(running*10)/10,c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';
+          return `<div class="proj-row"><span style="color:var(--text2)">${w}</span><span style="font-weight:700;color:${c}">${rv}h debt</span></div>`;
         }).join('')}
       </div>
     </div>
 
-    <div class="ins-section">
-      <button class="primary-btn" style="background:var(--bg2);color:#fff;border:1px solid var(--border)" onclick="doExport()">Export CSV</button>
+    <div style="padding:0 20px;margin-bottom:20px">
+      <button class="secondary-btn" onclick="doExport()">Export CSV</button>
     </div>`;
 
   buildHM();buildDOW();buildTrend(pl);
 }
 
 function setP(p){insPeriod=p;rInsights();}
-
 function getPL(period){
   const now=new Date(),cutoff=new Date(now);
   if(period==='week')cutoff.setDate(cutoff.getDate()-7);
@@ -1484,7 +1535,6 @@ function getPL(period){
   else return S.log;
   return S.log.filter(e=>new Date(e.date+'T12:00:00')>=cutoff);
 }
-
 function calcCons(logs){
   if(logs.length<3)return 0;
   const mins=logs.map(e=>{let[h,m]=e.bed.split(':').map(Number),v=h*60+m;if(v<720)v+=1440;return v;});
@@ -1492,7 +1542,6 @@ function calcCons(logs){
   const std=Math.sqrt(mins.reduce((s,v)=>s+(v-mean)**2,0)/mins.length);
   return Math.max(0,Math.round(100-std/.9));
 }
-
 function buildHM(){
   const c=document.getElementById('hm');if(!c)return;
   const logMap={};S.log.forEach(e=>{logMap[e.date]=eff(e.hrs,e.quality||3,e.wakeups||0);});
@@ -1500,7 +1549,7 @@ function buildHM(){
   start.setDate(start.getDate()-111);start.setDate(start.getDate()-start.getDay());
   const weeks=[];let cur=new Date(start);
   while(cur<=now){const week=[];for(let d=0;d<7;d++){const ds=cur.toISOString().slice(0,10);week.push({date:ds,v:logMap[ds]??null,f:cur>now});cur.setDate(cur.getDate()+1);}weeks.push(week);}
-  function cc(v){if(v===null)return '#222';const r=v/S.need;return r>=1?'#166534':r>=.85?'#14532d':r>=.7?'#713f12':r>=.5?'#7f1d1d':'#450a0a';}
+  function cc(v){if(v===null)return '#1a1a1a';const r=v/S.need;return r>=1?'#0f4a20':r>=.85?'#0f3320':r>=.7?'#4a3010':r>=.5?'#4a1515':'#3a0a0a';}
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],days=['S','M','T','W','T','F','S'];
   let mH='<div style="display:flex;margin-left:22px;margin-bottom:4px;gap:3px;">',lm=-1;
   weeks.forEach(w=>{const d=new Date(w[0].date+'T12:00:00');if(d.getMonth()!==lm){mH+=`<div style="font-size:9px;color:var(--text3);min-width:13px">${months[d.getMonth()]}</div>`;lm=d.getMonth();}else{mH+='<div style="min-width:13px"></div>';}});
@@ -1510,7 +1559,6 @@ function buildHM(){
   gH+='</div>';
   c.innerHTML=`<div style="overflow-x:auto">${mH}${gH}</div>`;
 }
-
 function buildDOW(){
   const el=document.getElementById('dow');if(!el)return;
   const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],b=Array(7).fill(null).map(()=>[]);
@@ -1523,7 +1571,6 @@ function buildDOW(){
     return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"><div class="dow-fill" style="width:${p}%;background:${c}"></div></div><div class="dow-val" style="color:${c}">${avgs[i]}h</div></div>`;
   }).join('');
 }
-
 function buildTrend(logs){
   const c=document.getElementById('tc');if(!c)return;
   const sorted=[...S.log].sort((a,b)=>a.date.localeCompare(b.date));
@@ -1534,19 +1581,10 @@ function buildTrend(logs){
   const labels=r.map(e=>new Date(e.date+'T12:00:00').toLocaleDateString('en-IN',{month:'short',day:'numeric'}));
   const data=r.map(e=>dm[e.date]||0);
   if(tChart)tChart.destroy();
-  tChart=new Chart(c,{
-    type:'line',
-    data:{labels,datasets:[{label:'Debt',data,borderColor:'#fff',backgroundColor:'rgba(255,255,255,0.04)',fill:true,tension:.3,pointRadius:2,borderWidth:2,pointBackgroundColor:'#fff'}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}h debt`}}},
-      scales:{
-        x:{ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6},grid:{display:false},border:{display:false}},
-        y:{min:0,ticks:{color:'rgba(255,255,255,0.3)',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'},border:{display:false}}
-      }
-    }
-  });
+  tChart=new Chart(c,{type:'line',data:{labels,datasets:[{label:'Debt',data,borderColor:'rgba(255,255,255,0.7)',backgroundColor:'rgba(255,255,255,0.04)',fill:true,tension:.3,pointRadius:2,borderWidth:2,pointBackgroundColor:'rgba(255,255,255,0.7)'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}h debt`}}},
+      scales:{x:{ticks:{color:'rgba(255,255,255,0.25)',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6},grid:{display:false},border:{display:false}},y:{min:0,ticks:{color:'rgba(255,255,255,0.25)',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'},border:{display:false}}}}});
 }
-
 function genInsights(){
   const ins=[];if(S.log.length<7)return ins;
   const ae=S.log.map(e=>({...e,ef:eff(e.hrs,e.quality||3,e.wakeups||0)}));
@@ -1558,7 +1596,7 @@ function genInsights(){
   if(valid.length>=3){
     const worst=valid.reduce((a,b)=>a.v<b.v?a:b),best=valid.reduce((a,b)=>a.v>b.v?a:b);
     if(worst.v<S.need-.5)ins.push({icon:'📉',title:`${dn[worst.i]}s are your worst nights`,body:`You average ${Math.round(worst.v*10)/10}h — ${Math.round((S.need-worst.v)*10)/10}h below your need.`});
-    if(best.v>=S.need-.3)ins.push({icon:'🏆',title:`${dn[best.i]}s are your best nights`,body:`You average ${Math.round(best.v*10)/10}h. Protect whatever you do that night.`});
+    if(best.v>=S.need-.3)ins.push({icon:'🏆',title:`${dn[best.i]}s are your best nights`,body:`You average ${Math.round(best.v*10)/10}h. Protect what you do that night.`});
   }
   const md=S.checkins?.length>=5?S.checkins:[];
   if(md.length>=5){
@@ -1576,17 +1614,16 @@ function genInsights(){
   const wd=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d>0&&d<6;});
   if(we.length>=3&&wd.length>=5){
     const weA=Math.round(we.reduce((s,e)=>s+e.ef,0)/we.length*10)/10,wdA=Math.round(wd.reduce((s,e)=>s+e.ef,0)/wd.length*10)/10;
-    if(weA>wdA+.5)ins.push({icon:'📅',title:`${Math.round((weA-wdA)*10)/10}h more sleep on weekends`,body:`Weekdays: ${wdA}h. Weekends: ${weA}h. Using weekends to recover debt.`});
+    if(weA>wdA+.5)ins.push({icon:'📅',title:`${Math.round((weA-wdA)*10)/10}h more sleep on weekends`,body:`Weekdays: ${wdA}h avg. Weekends: ${weA}h avg. Using weekends to recover debt.`});
   }
   const cons=calcCons(S.log.slice(0,30));
-  if(cons<60)ins.push({icon:'⏰',title:'Inconsistent bedtimes hurt you',body:`Consistency score: ${cons}/100. Irregular timing disrupts circadian rhythm.`});
+  if(cons<60)ins.push({icon:'⏰',title:'Inconsistent bedtimes are costing you',body:`Consistency score: ${cons}/100. Irregular timing disrupts circadian rhythm even when total hours look okay.`});
   return ins.slice(0,5);
 }
-
 function doExport(){
   if(!S.log.length){alert('No data');return;}
-  const rows=['Date,Bedtime,Wake,Onset(min),Raw(h),Quality,Wakeups,Tags,Note,Effective(h),Deficit(h)'];
-  S.log.forEach(e=>{const ef2=eff(e.hrs,e.quality||3,e.wakeups||0);rows.push(`${e.date},${e.bed},${e.wake},${e.onset||15},${e.hrs},${e.quality||3},${e.wakeups||0},"${(e.tags||[]).join(';')}","${e.note||''}",${ef2},${Math.round((S.need-ef2)*10)/10}`);});
+  const rows=['Date,Bedtime,Wake,Raw(h),Quality,Wakeups,Tags,Note,Effective(h),Deficit(h)'];
+  S.log.forEach(e=>{const ef2=eff(e.hrs,e.quality||3,e.wakeups||0);rows.push(`${e.date},${e.bed},${e.wake},${e.hrs},${e.quality||3},${e.wakeups||0},"${(e.tags||[]).join(';')}","${e.note||''}",${ef2},${Math.round((S.need-ef2)*10)/10}`);});
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download='somnus.csv';a.click();
 }
 
