@@ -398,7 +398,14 @@ function renderSettings(){
     <button class="s-btn-full s-btn-danger" onclick="clearAll()">Delete all data permanently</button>
   </div>`;
 }
-function updateNeed(){const h=parseFloat(document.getElementById('s-nh')?.value)||9,m=parseFloat(document.getElementById('s-nm')?.value)||0;S.need=Math.round((h+m)*100)/100;saveFS();}
+function updateNeed(){
+  const hEl=document.getElementById('s-nh'),mEl=document.getElementById('s-nm');
+  if(!hEl||!mEl)return;
+  const h=parseFloat(hEl.value)||9,m=parseFloat(mEl.value)||0;
+  S.need=Math.round((h+m)*100)/100;
+  saveFS();
+  showToast('Sleep need: '+Math.floor(S.need)+'h '+(Math.round((S.need%1)*60)||0)+'min');
+}
 function setGoal(){const td=parseFloat(document.getElementById('s-gt')?.value)||5,td2=parseInt(document.getElementById('s-gd')?.value)||60;S.goal={targetDebt:td,targetDays:td2,startDate:today(),startDebt:getDebt()};saveFS();showToast('Goal set ✓');}
 async function clearAll(){if(!confirm('Delete all Somnus data permanently?'))return;S.log=[];S.naps=[];S.checkins=[];S.startingDebt=0;S.customTags=[];S.recentTags=[];S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};await uDoc().set(S);closeSettings();rHome();}
 
@@ -429,7 +436,7 @@ function getGoodStreak(){let s=0;const t=new Date();for(let i=0;i<S.log.length;i
 function getMilestone(d){if(d>=15)return{emoji:'🔴',label:'Critical',color:'var(--red)'};if(d>=8)return{emoji:'🟠',label:'High',color:'var(--amber)'};if(d>=3)return{emoji:'🟡',label:'Moderate',color:'var(--amber)'};return{emoji:'🟢',label:'Safe zone',color:'var(--green)'};}
 function bedMinsLeft(){const tb=targetBed(),[th,tm]=tb.split(':').map(Number),n=new Date();let tM=th*60+tm,nM=n.getHours()*60+n.getMinutes();if(tM<720)tM+=1440;if(nM<720)nM+=1440;return tM-nM;}
 
-function updateGrad(){const debt=getDebt(),el=document.getElementById('grad');if(!el)return;let g=debt<5?'rgba(48,209,88,.10)':debt<8?'rgba(255,159,10,.09)':'rgba(255,69,58,.09)';el.style.background=`radial-gradient(ellipse 80% 45% at 50% 0%,${g},transparent 70%)`;}
+function updateGrad(){const debt=getDebt(),el=document.getElementById('grad');if(!el)return;let g=debt<5?'rgba(48,209,88,.22)':debt<8?'rgba(255,159,10,.18)':'rgba(255,69,58,.20)';el.style.background=`radial-gradient(ellipse 80% 45% at 50% 0%,${g},transparent 70%)`;}
 
 function renderStreaks(){
   const s=getStreak(),g=getGoodStreak();
@@ -525,11 +532,24 @@ function confirmQLLog(){
 function getAllTags(){return[...DEF_TAGS,...(S.customTags||[])];}
 function getDisplayTags(){const all=getAllTags(),recent=S.recentTags||[];return[...new Set([...recent,...all])].slice(0,8);}
 function addCustomTag(){
-  const v=document.getElementById('tag-inp').value.trim();if(!v)return;
+  const inp=document.getElementById('tag-inp');
+  if(!inp)return;
+  const v=inp.value.trim();
+  if(!v){showToast('Enter a tag name');return;}
+  if(!S.customTags)S.customTags=[];
   if(getAllTags().map(t=>t.toLowerCase()).includes(v.toLowerCase())){showToast('Tag already exists');return;}
-  if((S.customTags||[]).length>=12){showToast('Max 12 custom tags');return;}
-  if(!S.customTags)S.customTags=[];S.customTags.push(v);saveFS();
-  document.getElementById('tag-modal').classList.remove('open');document.getElementById('tag-inp').value='';showToast(`"${v}" added`);
+  if(S.customTags.length>=12){showToast('Max 12 custom tags');return;}
+  S.customTags.push(v);
+  // Immediately add to recentTags so it shows in display
+  if(!S.recentTags)S.recentTags=[];
+  S.recentTags=[v,...S.recentTags].slice(0,10);
+  saveFS();
+  document.getElementById('tag-modal').classList.remove('open');
+  inp.value='';
+  showToast('"'+v+'" added');
+  // Refresh current page to show new tag
+  const activePg=document.querySelector('.pg.on')?.id;
+  if(activePg==='pg-log')buildLogPage();
 }
 function updateRecentTags(sel){if(!sel.length)return;S.recentTags=[...sel,...(S.recentTags||[]).filter(t=>!sel.includes(t))].slice(0,10);}
 
@@ -769,13 +789,14 @@ function buildHistory(){
         <div class="hist-main" onclick="toggleHist('${e.date}')">
           <div class="hist-dot" style="background:${c}"></div>
           <div class="hist-info"><div class="hist-date">${fmtDate(e.date)}</div>
-            <div class="hist-times">${e.bed}→${e.wake} · ${qI[e.quality||3]}${e.wakeups?' · broken':''}</div>
+            <div class="hist-times">${e.bed}→${e.wake} · ${qI[e.quality||3]}${e.wakeups?' · broken':''}${napCredit(e.date)>0?' · 💤 +'+Math.round(napCredit(e.date)*60)+'min':''}</div>
             ${e.tags?.length?`<div class="hist-tags-l">${e.tags.join(' · ')}</div>`:''}
           </div>
           <div class="hist-hrs" style="color:${c}">${ef2}h</div>
         </div>
         <div class="hist-exp" id="hx-${e.date}">
           <div class="hist-exp-row"><span class="hist-exp-lbl">Effective sleep</span><span class="hist-exp-val">${ef2}h</span></div>
+          ${napCredit(e.date)>0?`<div class="hist-exp-row"><span class="hist-exp-lbl">Nap credit</span><span class="hist-exp-val" style="color:var(--green)">+${Math.round(napCredit(e.date)*60)} min</span></div>`:''}
           <div class="hist-exp-row"><span class="hist-exp-lbl">vs need</span><span class="hist-exp-val" style="color:${ef2>=S.need?'var(--green)':'var(--red)'}">${ef2>=S.need?'+':''}${Math.round((ef2-S.need)*10)/10}h</span></div>
           <div class="hist-exp-row"><span class="hist-exp-lbl">Bedtime deficit</span><span class="hist-exp-val" style="color:${bedDef(e.bed)>0?'var(--amber)':'var(--green)'}">${bedDef(e.bed)>0?`+${bedDef(e.bed)}h late`:'On target'}</span></div>
           ${e.note?`<div class="hist-exp-row"><span class="hist-exp-lbl">Note</span><span class="hist-exp-val" style="color:var(--text2);font-style:italic">"${e.note}"</span></div>`:''}
