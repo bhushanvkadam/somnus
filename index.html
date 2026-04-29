@@ -128,6 +128,7 @@ html, body {
   padding: 10px 20px 8px;
 }
 .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+.ctx-copy { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 3px; font-weight: 400; letter-spacing: -0.1px; max-width: 220px; line-height: 1.3; }
 .logo-dot { color: var(--green); }
 .header-right { display: flex; align-items: center; gap: 8px; }
 .streak-pill {
@@ -206,7 +207,7 @@ html, body {
 /* ── Hero debt ── */
 .debt-hero { padding: 8px 20px 24px; }
 .debt-status { font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
-.debt-num { font-size: 100px; font-weight: 700; line-height: .9; letter-spacing: -5px; }
+.debt-num { font-size: 96px; font-weight: 800; line-height: .9; letter-spacing: -6px; }
 .debt-unit { font-size: 17px; font-weight: 400; color: var(--text2); margin-top: 6px; margin-bottom: 18px; }
 .debt-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
 .debt-bar-fill { height: 100%; border-radius: 2px; transition: width .8s cubic-bezier(.4,0,.2,1); }
@@ -228,7 +229,7 @@ html, body {
   border: 1px solid var(--border); border-radius: 16px; padding: 14px;
 }
 .strip-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
-.strip-val { font-size: 28px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.strip-val { font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: -.04em; }
 .strip-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
 
 /* ── Detail rows ── */
@@ -276,7 +277,7 @@ html, body {
 
 /* ── TODAY TAB ── */
 .plan-hero { padding: 0 20px 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
-.plan-type { font-size: 32px; font-weight: 700; letter-spacing: -.03em; margin-bottom: 4px; }
+.plan-type { font-size: 34px; font-weight: 800; letter-spacing: -.04em; margin-bottom: 4px; }
 .plan-sub { font-size: 14px; color: var(--text2); line-height: 1.6; }
 
 .vt-wrap { margin: 0 20px 20px; }
@@ -404,9 +405,10 @@ html, body {
 /* ── Settings sheet ── */
 .s-sheet { position: fixed; inset: 0; z-index: 300; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,0.65); backdrop-filter: blur(6px); }
 .s-sheet.open { display: flex; }
-.s-inner { background: #1c1c1e; border-radius: 22px 22px 0 0; width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto; padding-bottom: calc(20px + var(--safe-bottom)); }
-.s-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 12px auto 16px; }
-.s-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 16px; border-bottom: 1px solid var(--border); }
+.s-inner { background: #1c1c1e; border-radius: 22px 22px 0 0; width: 100%; max-width: 430px; max-height: 88vh; display: flex; flex-direction: column; }
+.s-scroll { overflow-y: auto; flex: 1; padding-bottom: calc(20px + var(--safe-bottom)); }
+.s-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 12px auto 0; }
+.s-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px 14px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #1c1c1e; z-index: 10; }
 .s-title { font-size: 18px; font-weight: 700; }
 .s-done { font-size: 16px; font-weight: 600; color: var(--green); cursor: pointer; }
 .s-section { padding: 20px 20px 0; }
@@ -484,7 +486,10 @@ html, body {
   <div id="main-app">
     <div class="content-layer">
       <div class="header">
-        <div class="logo">Somnus<span class="logo-dot">.</span></div>
+        <div>
+          <div class="logo">Somnus<span class="logo-dot">.</span></div>
+          <div class="ctx-copy" id="ctx-copy"></div>
+        </div>
         <div class="header-right">
           <div class="streak-pill" id="streak-pill"></div>
           <div class="icon-btn" onclick="openSettings()" title="Settings">⚙</div>
@@ -550,7 +555,7 @@ html, body {
       <div class="s-title">Settings</div>
       <div class="s-done" onclick="closeSettings()">Done</div>
     </div>
-    <div id="s-content"></div>
+    <div class="s-scroll"><div id="s-content"></div></div>
   </div>
 </div>
 
@@ -589,6 +594,90 @@ const TIPS=[
   {h:'Peak focus: {peak}',b:'This is when cortisol and body temperature align for optimal cognitive performance.'},
   {h:'A 20-min nap before 3pm helps',b:"Reduces today's debt ~0.4h without affecting tonight's sleep pressure."},
 ];
+
+// ── Contextual copy system ─────────────────────────────────────
+function getContextualCopy(){
+  const h=new Date().getHours();
+  const debt=getDebt();
+  const last=S.log[0]||null;
+  const streak=getStreak();
+  const ef=last?eff(last.hrs,last.quality||3,last.wakeups||0):null;
+  const def=ef!==null?S.need-ef:null;
+  const isWeekend=[0,6].includes(new Date().getDay());
+  const debtDelta=S.log.length>=2?
+    (eff(S.log[0].hrs,S.log[0].quality||3,S.log[0].wakeups||0)-S.need)+
+    (eff(S.log[1].hrs,S.log[1].quality||3,S.log[1].wakeups||0)-S.need):null;
+
+  // No data yet
+  if(!last){
+    if(h>=5&&h<12) return "Good morning. Log your first night to get started.";
+    if(h>=12&&h<17) return "Afternoon. Your sleep story starts with one log.";
+    if(h>=17&&h<21) return "Evening. Log tonight's sleep in the morning.";
+    return "Late night. Try to get to bed soon.";
+  }
+
+  const tb=targetBed();
+  const[th,tm]=tb.split(':').map(Number);
+  let tM=th*60+tm,nM=new Date().getHours()*60+new Date().getMinutes();
+  if(tM<720)tM+=1440;if(nM<720)nM+=1440;
+  const mLeft=tM-nM;
+
+  // First streak milestone
+  if(streak===7) return "7 days logged. You're building something real.";
+  if(streak===14) return "Two weeks of data. Patterns are starting to emerge.";
+  if(streak===30) return "30 days in. You know your sleep better than most people ever will.";
+
+  // Morning (5am-11am)
+  if(h>=5&&h<12){
+    if(isWeekend&&def===null) return "Weekend morning. No alarm?";
+    if(def!==null&&def<=-0.5) return "Solid night. You're ahead of your need.";
+    if(def!==null&&def<=0) return `Good morning. ${ef}h — right on target.`;
+    if(def!==null&&def<1.5) return "Decent night. A little short but manageable.";
+    if(def!==null&&def<3) return "Short night. Take it easy on yourself today.";
+    if(def!==null&&def>=3) return "Rough night. Your body needs recovery today.";
+    return "Good morning. How did you sleep?";
+  }
+
+  // Late morning / early afternoon (11am-2pm)
+  if(h>=11&&h<14){
+    if(debt>15) return `${debt}h of debt. That's a lot to carry — tonight matters.`;
+    if(debt>10) return "High debt. Every hour of good sleep chips away at it.";
+    if(debt<5) return "Debt is low. You're in a good place right now.";
+    if(debtDelta!==null&&debtDelta>0) return "Two short nights in a row. Don't make it three.";
+    return "Midday. Your energy peaks are just ahead.";
+  }
+
+  // Afternoon (2pm-6pm)
+  if(h>=14&&h<18){
+    if(def!==null&&def>=2) return "Afternoon dip hits harder on short sleep. Nap if you can.";
+    if(debt>10) return `${debt}h debt. The gap closes one good night at a time.`;
+    if(debtDelta!==null&&debtDelta<-1) return "You're recovering well. Keep the streak going.";
+    return "Afternoon. Your second wind is coming.";
+  }
+
+  // Evening pre-bedtime (6pm-bedtime window)
+  if(h>=18&&mLeft>120){
+    if(debt>10) return "Tonight is your best chance to start recovering.";
+    if(debt<5) return "Debt is under control. Keep the same bedtime.";
+    return `Aim for bed by ${fmt(tb)} tonight.`;
+  }
+
+  // Bedtime approaching (within 2h)
+  if(mLeft>0&&mLeft<=120){
+    if(mLeft<=30) return `${mLeft} minutes to bedtime. Start winding down.`;
+    if(mLeft<=60) return `About an hour to your target bedtime. Dim your screens.`;
+    return `Bedtime in ${cdown(mLeft)}. Don't stay up too late.`;
+  }
+
+  // Past bedtime
+  if(h>=21||h<5){
+    if(mLeft<0&&Math.abs(mLeft)>60) return `You're ${cdown(Math.abs(mLeft))} past your target bedtime.`;
+    if(debt>10) return "Late night adding to an already high debt.";
+    return "You should be asleep by now.";
+  }
+
+  return "Somnus.";
+}
 
 // ── Auth ──────────────────────────────────────────────────────
 auth.onAuthStateChanged(async user=>{
@@ -864,39 +953,59 @@ function cdown(m){if(m<60)return m+'min';return Math.floor(m/60)+'h'+(m%60>0?' '
 // Wake button: 5am–11am (05:00–11:00)
 
 function qlDateForBed(){
-  // If time is 0–5, bed date is yesterday
+  // Bed date = the calendar date the "night" started
+  // 8pm-11:59pm → tonight (today's date = the sleep date)
+  // midnight-5am → last night (yesterday's date = the sleep date)
   const h=new Date().getHours();
-  return h<5?yesterday():today();
+  return (h>=0&&h<5)?yesterday():today();
+}
+
+function sleepDateForLog(bedTime){
+  // Given a bedtime string like "03:45", return the correct sleep date
+  // Sleep date = the evening the person went to bed
+  // If bedtime is between midnight and noon, it belongs to previous calendar day
+  const[bh]=bedTime.split(':').map(Number);
+  if(bh<12) return yesterday(); // midnight–noon → previous evening's sleep
+  return today(); // pm → tonight's sleep
 }
 
 function getQLState(){
   const h=new Date().getHours();
   const td=today(),yd=yesterday();
-  const todayLogged=S.log.find(e=>e.date===td||e.date===yd);
 
-  // Wake button: 5am–11am
-  if(h>=5&&h<=11){
+  // Check if this night is already logged
+  const bedDate=qlDateForBed();
+  const alreadyLogged=S.log.find(e=>e.date===bedDate||e.date===yd);
+
+  // Morning window: 5am–11am — show wake button
+  if(h>=5&&h<12){
     const wDone=S.ql?.wakeDate===td;
-    return {
-      showWake:true, wakeDone:wDone,
-      showBed:false, bedDone:false
-    };
+    const bDone=S.ql?.bedDate===yd||S.ql?.bedDate===bedDate;
+    // Both recorded → show confirm option
+    if(wDone&&bDone&&!alreadyLogged){
+      return {showConfirm:true,showWake:false,showBed:false,wakeDone:true,bedDone:true};
+    }
+    return {showWake:true,wakeDone:wDone,showBed:bDone,bedDone:bDone,showConfirm:false};
   }
-  // Bed button: 8pm–5am (20–23 or 0–5)
+
+  // Evening/night: 8pm–5am
   if(h>=20||h<5){
-    const bedDate=qlDateForBed();
     const bDone=S.ql?.bedDate===bedDate;
-    // Also show wake pill if wake was recorded today
     const wDone=S.ql?.wakeDate===td;
-    return {
-      showBed:true, bedDone:bDone,
-      showWake:wDone, wakeDone:wDone
-    };
+    if(wDone&&bDone&&!alreadyLogged){
+      return {showConfirm:true,showWake:false,showBed:false,wakeDone:true,bedDone:true};
+    }
+    return {showBed:true,bedDone:bDone,showWake:wDone,wakeDone:wDone,showConfirm:false};
   }
-  // Show wake if recorded today even outside normal hours
-  const wDone=S.ql?.wakeDate===td;
-  if(wDone) return {showWake:true,wakeDone:true,showBed:false,bedDone:false};
-  return {showWake:false,wakeDone:false,showBed:false,bedDone:false};
+
+  // Daytime (12pm–8pm): only show if both recorded and not yet logged
+  const bDone=!!(S.ql?.bedDate);
+  const wDone=!!(S.ql?.wakeDate===td);
+  if(bDone&&wDone&&!alreadyLogged){
+    return {showConfirm:true,showWake:false,showBed:false,wakeDone:true,bedDone:true};
+  }
+  if(wDone) return {showWake:true,wakeDone:true,showBed:false,bedDone:false,showConfirm:false};
+  return {showWake:false,wakeDone:false,showBed:false,bedDone:false,showConfirm:false};
 }
 
 function renderQL(){
@@ -905,22 +1014,63 @@ function renderQL(){
   const st=getQLState();
   let html='';
 
-  if(st.showBed){
-    if(st.bedDone){
-      html+=`<div class="ql-pill ql-pill-done ql-pill-edit" onclick="openQLEdit('bed')">🛌 ${fmt(S.ql.bedTime)} · tap to edit</div>`;
-    } else {
-      html+=`<div class="ql-pill ql-pill-bed" onclick="recordBed()">🛌 Just went to bed</div>`;
+  if(st.showConfirm){
+    // Both times recorded — calculate sleep
+    const hrs=calcHrs(S.ql.bedTime,S.ql.wakeTime,15);
+    const ef2=eff(hrs,3,0);
+    html=`
+      <div style="width:100%;background:rgba(48,209,88,0.08);border:1px solid rgba(48,209,88,0.2);border-radius:16px;padding:12px 14px;">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Ready to log</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#fff">${fmt(S.ql.bedTime)} → ${fmt(S.ql.wakeTime)}</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px">${hrs.toFixed(1)}h raw · ~${ef2.toFixed(1)}h effective</div>
+          </div>
+          <button onclick="confirmQLLog()" style="background:var(--green);color:#000;border:none;border-radius:10px;padding:9px 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;flex-shrink:0">Confirm</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <div class="ql-pill ql-pill-done ql-pill-edit" style="flex:1" onclick="openQLEdit('bed')">🛌 ${fmt(S.ql.bedTime)}</div>
+          <div class="ql-pill ql-pill-done ql-pill-edit" style="flex:1" onclick="openQLEdit('wake')">☀️ ${fmt(S.ql.wakeTime)}</div>
+        </div>
+      </div>`;
+  } else {
+    if(st.showBed){
+      if(st.bedDone){
+        html+=`<div class="ql-pill ql-pill-done ql-pill-edit" onclick="openQLEdit('bed')">🛌 ${fmt(S.ql.bedTime)} · edit</div>`;
+      } else {
+        html+=`<div class="ql-pill ql-pill-bed" onclick="recordBed()">🛌 Just went to bed</div>`;
+      }
+    }
+    if(st.showWake){
+      if(st.wakeDone){
+        html+=`<div class="ql-pill ql-pill-done ql-pill-edit" onclick="openQLEdit('wake')">☀️ ${fmt(S.ql.wakeTime)} · edit</div>`;
+      } else {
+        html+=`<div class="ql-pill ql-pill-wake" onclick="recordWake()">☀️ Just woke up</div>`;
+      }
     }
   }
-  if(st.showWake){
-    if(st.wakeDone){
-      html+=`<div class="ql-pill ql-pill-done ql-pill-edit" onclick="openQLEdit('wake')">☀️ ${fmt(S.ql.wakeTime)} · tap to edit</div>`;
-    } else {
-      html+=`<div class="ql-pill ql-pill-wake" onclick="recordWake()">☀️ Just woke up</div>`;
-    }
-  }
+
+  const hasContent=st.showConfirm||st.showBed||st.showWake;
   el.innerHTML=html;
-  el.style.display=(st.showBed||st.showWake)?'flex':'none';
+  el.style.display=hasContent?'flex':'none';
+}
+
+function confirmQLLog(){
+  // Use the correct sleep date based on bed time
+  const date=sleepDateForLog(S.ql.bedTime);
+  const bed=S.ql.bedTime, wake=S.ql.wakeTime;
+  const hrs=calcHrs(bed,wake,15);
+  if(hrs<1||hrs>16){showToast('Check your times');return;}
+  S.log=S.log.filter(e=>e.date!==date);
+  S.log.push({date,bed,wake,hrs,onset:15,quality:3,wakeups:0,tags:[],note:''});
+  S.log.sort((a,b)=>b.date.localeCompare(a.date));
+  if(S.log.length>365)S.log=S.log.slice(0,365);
+  // Clear QL
+  S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};
+  saveFS();
+  showToast('Sleep logged ✓ — open Log to add quality & notes');
+  renderQL();
+  rHome();
 }
 
 function recordBed(){
@@ -974,6 +1124,8 @@ function rHome(){
   const n=new Date(),nowH=n.getHours()+n.getMinutes()/60;
 
   document.getElementById('streak-pill').textContent=streak>0?`${streak} day streak`:'start logging';
+  const copyEl=document.getElementById('ctx-copy');
+  if(copyEl) copyEl.textContent=getContextualCopy();
   updateGradient();
 
   const dC=debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)';
@@ -1244,8 +1396,8 @@ function rLog(){
       <div class="log-sec-title">Log a night</div>
       <div class="log-card">
         <div class="log-row">
-          <span class="log-lbl">Date</span>
-          <input type="date" class="log-inp" id="ld" value="${yd}" max="${today()}" oninput="updPrev()">
+          <span class="log-lbl">Date (sleep night)</span>
+          <input type="date" class="log-inp" id="ld" value="${sleepDateForLog(pf.bed||'03:00')}" max="${today()}" oninput="updPrev()">
         </div>
         <div class="log-row">
           <span class="log-lbl">Bedtime</span>
