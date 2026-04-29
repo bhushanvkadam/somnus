@@ -11,509 +11,257 @@
 <meta name="theme-color" content="#000000">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <style>
-:root {
-  --bg: #000000;
-  --bg2: #111111;
-  --bg3: #1c1c1e;
-  --bg4: #2c2c2e;
-  --surface: rgba(255,255,255,0.06);
-  --surface2: rgba(255,255,255,0.10);
-  --border: rgba(255,255,255,0.10);
-  --border2: rgba(255,255,255,0.16);
-  --text: #ffffff;
-  --text2: rgba(255,255,255,0.55);
-  --text3: rgba(255,255,255,0.30);
-  --green: #30d158;
-  --green-l: rgba(48,209,88,0.15);
-  --amber: #ff9f0a;
-  --amber-l: rgba(255,159,10,0.15);
-  --red: #ff453a;
-  --red-l: rgba(255,69,58,0.15);
-  --blue: #0a84ff;
-  --purple: #bf5af2;
-  --safe-top: env(safe-area-inset-top, 44px);
-  --safe-bottom: env(safe-area-inset-bottom, 20px);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-html, body {
-  height: 100%;
-  background: #000;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
-  color: #fff;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
-.app {
-  max-width: 430px;
-  margin: 0 auto;
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: #000;
-  position: relative;
-  overflow-x: hidden;
-}
-
-/* Gradient background */
-.gradient-bg {
-  position: fixed;
-  top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 430px;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;
-  transition: background 1.2s ease;
-}
-.content-layer {
-  position: relative;
-  z-index: 1;
-  padding-top: var(--safe-top);
-  padding-bottom: calc(100px + var(--safe-bottom));
-}
-
-/* ── Loading ── */
-#loading-screen {
-  position: fixed; inset: 0; z-index: 100;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 14px; background: #000;
-}
-.spinner {
-  width: 26px; height: 26px;
-  border: 2px solid rgba(255,255,255,0.12);
-  border-top-color: #fff; border-radius: 50%;
-  animation: spin .65s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── Auth ── */
-#auth-screen {
-  display: none; flex-direction: column; align-items: center; justify-content: center;
-  min-height: 100vh; padding: 40px 24px; text-align: center;
-  padding-top: calc(40px + var(--safe-top));
-}
-.auth-moon { font-size: 60px; margin-bottom: 20px; }
-.auth-logo { font-size: 34px; font-weight: 700; letter-spacing: -1px; margin-bottom: 6px; }
-.auth-logo span { color: var(--green); }
-.auth-tag { font-size: 15px; color: var(--text2); margin-bottom: 36px; line-height: 1.6; }
-.auth-field {
-  width: 100%; max-width: 320px; background: var(--bg3);
-  border: 1px solid var(--border2); border-radius: 14px;
-  padding: 14px 16px; font-size: 16px;
-  font-family: inherit; color: #fff; outline: none; margin-bottom: 10px;
-  transition: border .15s;
-}
-.auth-field:focus { border-color: rgba(255,255,255,0.4); }
-.auth-field::placeholder { color: var(--text3); }
-#auth-error { font-size: 13px; color: var(--red); margin-bottom: 10px; max-width: 320px; display: none; }
-.auth-btn-p {
-  width: 100%; max-width: 320px; background: #fff; color: #000;
-  border: none; border-radius: 14px; padding: 15px;
-  font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; margin-bottom: 10px;
-  transition: opacity .15s;
-}
-.auth-btn-p:active { opacity: .8; }
-.auth-btn-s {
-  width: 100%; max-width: 320px; background: transparent; color: #fff;
-  border: 1px solid var(--border2); border-radius: 14px; padding: 14px;
-  font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer;
-}
-.auth-note { font-size: 12px; color: var(--text3); margin-top: 16px; line-height: 1.5; max-width: 280px; }
-
-/* ── Header ── */
-.header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 20px 8px;
-}
-.logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
-.ctx-copy { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 3px; font-weight: 400; letter-spacing: -0.1px; max-width: 220px; line-height: 1.3; }
-.logo-dot { color: var(--green); }
-.header-right { display: flex; align-items: center; gap: 8px; }
-.streak-pill {
-  font-size: 11px; font-weight: 600; color: var(--green);
-  background: var(--green-l); border-radius: 20px; padding: 4px 10px;
-  border: 1px solid rgba(48,209,88,0.25);
-}
-.icon-btn {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(255,255,255,0.08); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; cursor: pointer; color: var(--text2);
-  transition: background .15s;
-}
-.icon-btn:active { background: rgba(255,255,255,0.15); }
-
-/* ── Quick log pills ── */
-.ql-bar {
-  padding: 0 20px 12px;
-  display: flex; gap: 8px;
-}
-.ql-pill {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 10px 14px; border-radius: 22px; border: 1px solid;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  transition: all .15s; white-space: nowrap;
-}
-.ql-pill:active { transform: scale(.97); }
-.ql-pill-bed {
-  background: rgba(191,90,242,0.12); border-color: rgba(191,90,242,0.25); color: var(--purple);
-}
-.ql-pill-wake {
-  background: rgba(255,214,10,0.10); border-color: rgba(255,214,10,0.25); color: #ffd60a;
-}
-.ql-pill-done {
-  background: rgba(48,209,88,0.10); border-color: rgba(48,209,88,0.25); color: var(--green);
-}
-.ql-pill-edit {
-  font-size: 11px; opacity: .8;
-}
-
-/* ── Floating pill nav ── */
-.nav {
-  position: fixed;
-  bottom: calc(12px + var(--safe-bottom));
-  left: 50%; transform: translateX(-50%);
-  width: calc(100% - 40px); max-width: 390px;
-  background: rgba(20,20,20,0.92);
-  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 36px; display: flex; padding: 6px; z-index: 100;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.05);
-}
-.nav-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  gap: 2px; cursor: pointer; padding: 8px 4px;
-  border-radius: 28px; transition: background .2s;
-}
-.nav-item.active { background: rgba(255,255,255,0.12); }
-.nav-icon { font-size: 18px; color: var(--text3); line-height: 1; transition: color .15s; }
-.nav-label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: .02em; transition: color .15s; }
-.nav-item.active .nav-icon, .nav-item.active .nav-label { color: #fff; }
-
-/* ── Pages ── */
-.page { display: none; }
-.page.active { display: block; }
-
-/* ── Section ── */
-.sec { margin-bottom: 28px; }
-.sec-label {
-  font-size: 13px; font-weight: 600; color: var(--text3);
-  padding: 0 20px; margin-bottom: 10px;
-  text-transform: uppercase; letter-spacing: .06em;
-}
-
-/* ── Hero debt ── */
-.debt-hero { padding: 8px 20px 24px; }
-.debt-status { font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
-.debt-num { font-size: 96px; font-weight: 800; line-height: .9; letter-spacing: -6px; }
-.debt-unit { font-size: 17px; font-weight: 400; color: var(--text2); margin-top: 6px; margin-bottom: 18px; }
-.debt-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
-.debt-bar-fill { height: 100%; border-radius: 2px; transition: width .8s cubic-bezier(.4,0,.2,1); }
-.debt-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
-.debt-meta-item { font-size: 13px; color: var(--text2); }
-.safe-badge {
-  font-size: 11px; font-weight: 600; color: var(--green);
-  background: var(--green-l); border: 1px solid rgba(48,209,88,0.2);
-  border-radius: 20px; padding: 3px 10px;
-}
-
-/* ── 2-col strip ── */
-.strip {
-  margin: 0 20px 20px;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-}
-.strip-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border); border-radius: 16px; padding: 14px;
-}
-.strip-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
-.strip-val { font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: -.04em; }
-.strip-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
-
-/* ── Detail rows ── */
-.d-rows { margin: 0 20px 20px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-.d-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
-.d-row:last-child { border-bottom: none; }
-.d-label { font-size: 14px; color: var(--text2); }
-.d-val { font-size: 14px; font-weight: 600; }
-
-/* ── Energy timeline ── */
-.energy-wrap { margin: 0 20px 20px; }
-.tl-row { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; position: relative; margin: 8px 0; }
-.tl-seg { height: 100%; }
-.tl-now { position: absolute; top: -2px; bottom: -2px; width: 2px; background: #fff; border-radius: 1px; box-shadow: 0 0 6px rgba(255,255,255,.6); }
-.zone-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.zone-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid; }
-
-/* ── Tip card ── */
-.tip-wrap { margin: 0 20px 20px; }
-.tip-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-.tip-head { font-size: 15px; font-weight: 600; line-height: 1.4; margin-bottom: 5px; }
-.tip-body { font-size: 13px; color: var(--text2); line-height: 1.55; }
-.tip-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
-.tip-dots { display: flex; gap: 4px; }
-.tip-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.15); }
-.tip-dot.on { background: #fff; }
-.tip-next { font-size: 12px; color: var(--text3); cursor: pointer; font-weight: 500; }
-
-/* ── Goal card ── */
-.goal-wrap { margin: 0 20px 20px; }
-.goal-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
-.goal-top { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
-.goal-arc-wrap { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
-.goal-arc-wrap svg { transform: rotate(-90deg); }
-.goal-arc-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.goal-arc-pct { font-size: 16px; font-weight: 700; line-height: 1; }
-.goal-arc-sub { font-size: 9px; color: var(--text3); margin-top: 1px; }
-.goal-info { flex: 1; }
-.goal-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-.goal-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
-.goal-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); padding-top: 10px; border-top: 1px solid var(--border); }
-
-/* ── Alert ── */
-.alert-bar { margin: 0 20px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 10px; }
-
-/* ── TODAY TAB ── */
-.plan-hero { padding: 0 20px 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
-.plan-type { font-size: 34px; font-weight: 800; letter-spacing: -.04em; margin-bottom: 4px; }
-.plan-sub { font-size: 14px; color: var(--text2); line-height: 1.6; }
-
-.vt-wrap { margin: 0 20px 20px; }
-.vt-strip { height: 40px; display: flex; border-radius: 12px; overflow: hidden; cursor: pointer; margin: 10px 0 8px; }
-.vt-seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
-.vt-detail { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.5; min-height: 48px; }
-
-.pills-row { display: flex; gap: 8px; margin: 0 20px 20px; }
-.pill-box { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; padding: 14px 8px; text-align: center; }
-.pill-val { font-size: 17px; font-weight: 700; margin-bottom: 3px; }
-.pill-lbl { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
-
-.nap-row { margin: 0 20px 20px; border-radius: 14px; padding: 13px 16px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; border: 1px solid; }
-
-.mood-wrap { margin: 0 20px 20px; }
-.mood-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-.mood-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.mood-sub { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
-.mood-row { display: flex; gap: 6px; }
-.mbtn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 10px 0; font-size: 20px; cursor: pointer; text-align: center; transition: all .15s; }
-.mbtn.sel { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); }
-
-/* ── LOG TAB ── */
-.log-sec { margin: 0 20px 20px; }
-.log-sec-title { font-size: 13px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
-.log-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-.log-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); min-height: 52px; }
-.log-row:last-child { border-bottom: none; }
-.log-lbl { font-size: 16px; color: #fff; }
-.log-inp {
-  background: transparent; border: none; color: #fff;
-  font-size: 16px; font-family: inherit; font-weight: 500;
-  text-align: right; outline: none; max-width: 150px;
-  -webkit-appearance: none;
-}
-.log-inp option { background: #1c1c1e; }
-.log-inp::placeholder { color: var(--text3); }
-
-/* More details toggle */
-.more-toggle {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; cursor: pointer;
-  background: rgba(255,255,255,0.03); border-top: 1px solid var(--border);
-}
-.more-toggle-lbl { font-size: 14px; color: var(--text2); font-weight: 500; }
-.more-toggle-icon { font-size: 13px; color: var(--text3); transition: transform .2s; }
-.more-toggle-icon.open { transform: rotate(180deg); }
-.more-details { display: none; }
-.more-details.open { display: block; }
-
-/* Quality */
-.qual-row { display: flex; gap: 5px; padding: 10px 16px; }
-.qbtn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 8px 2px; font-size: 10px; font-weight: 600; cursor: pointer; text-align: center; color: var(--text2); line-height: 1.4; transition: all .15s; }
-.qbtn .qi { font-size: 16px; display: block; margin-bottom: 2px; }
-.qbtn.sel { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; }
-.wakeup-row { display: flex; gap: 6px; padding: 10px 16px; }
-.wbtn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 9px 4px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; color: var(--text2); transition: all .15s; }
-.wbtn.sel { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; }
-.tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; padding: 10px 16px; }
-.tag { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text2); cursor: pointer; transition: all .15s; }
-.tag.sel { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; }
-.notes-area { width: 100%; background: transparent; border: none; color: #fff; font-size: 15px; font-family: inherit; padding: 12px 16px; resize: none; height: 72px; outline: none; }
-.notes-area::placeholder { color: var(--text3); }
-
-.preview-box { margin: 0 20px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.6; min-height: 44px; }
-
-.primary-btn { display: block; width: 100%; background: #fff; color: #000; border: none; border-radius: 14px; padding: 15px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; text-align: center; transition: opacity .15s; }
-.primary-btn:active { opacity: .85; }
-.secondary-btn { display: block; width: 100%; background: rgba(255,255,255,0.06); color: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; text-align: center; }
-
-/* History */
-.hist-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-.hist-entry { border-bottom: 1px solid var(--border); }
-.hist-entry:last-child { border-bottom: none; }
-.hist-main { display: flex; align-items: center; gap: 12px; padding: 13px 16px; cursor: pointer; }
-.hist-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.hist-info { flex: 1; min-width: 0; }
-.hist-date { font-size: 14px; font-weight: 600; }
-.hist-times { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.hist-tags { font-size: 10px; color: var(--green); margin-top: 2px; opacity: .8; }
-.hist-hrs { font-size: 16px; font-weight: 700; flex-shrink: 0; }
-.hist-expanded { display: none; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border); }
-.hist-exp-row { display: flex; justify-content: space-between; padding: 9px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
-.hist-exp-row:last-child { border-bottom: none; }
-.hist-exp-lbl { color: var(--text2); }
-.hist-exp-val { font-weight: 600; }
-.hist-actions { display: flex; border-top: 1px solid var(--border); }
-.hist-action { flex: 1; padding: 12px; font-size: 14px; font-weight: 600; background: none; border: none; cursor: pointer; font-family: inherit; }
-.hist-action.edit { color: var(--text2); border-right: 1px solid var(--border); }
-.hist-action.del { color: var(--red); }
-
-/* ── INSIGHTS TAB ── */
-.ptabs { display: flex; gap: 6px; margin: 0 20px 20px; }
-.ptab { flex: 1; padding: 9px; font-size: 12px; font-weight: 600; text-align: center; border: 1px solid var(--border); border-radius: 22px; cursor: pointer; color: var(--text3); background: transparent; transition: all .15s; }
-.ptab.on { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.2); }
-
-.ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 20px 20px; }
-.ps-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
-.ps-val { font-size: 24px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
-.ps-lbl { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
-
-.ins-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 8px; }
-.ins-icon { font-size: 18px; margin-bottom: 6px; }
-.ins-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-.ins-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
-
-.cons-ring { display: flex; align-items: center; gap: 16px; }
-.ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
-.ring-wrap svg { transform: rotate(-90deg); }
-.ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.ring-num { font-size: 18px; font-weight: 700; line-height: 1; }
-.ring-sub { font-size: 9px; color: var(--text3); font-weight: 500; }
-
-.dow-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.dow-lbl { font-size: 11px; font-weight: 600; color: var(--text2); width: 28px; }
-.dow-track { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
-.dow-fill { height: 100%; border-radius: 3px; }
-.dow-val { font-size: 11px; font-weight: 600; width: 32px; text-align: right; }
-
-.trend-wrap { height: 100px; position: relative; margin: 8px 0; }
-
-.proj-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-.proj-row:last-child { border-bottom: none; }
-
-/* ── Settings sheet ── */
-.s-sheet { position: fixed; inset: 0; z-index: 300; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,0.65); backdrop-filter: blur(6px); }
-.s-sheet.open { display: flex; }
-.s-inner { background: #1c1c1e; border-radius: 22px 22px 0 0; width: 100%; max-width: 430px; max-height: 88vh; display: flex; flex-direction: column; }
-.s-scroll { overflow-y: auto; flex: 1; padding-bottom: calc(20px + var(--safe-bottom)); }
-.s-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 12px auto 0; }
-.s-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px 14px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #1c1c1e; z-index: 10; }
-.s-title { font-size: 18px; font-weight: 700; }
-.s-done { font-size: 16px; font-weight: 600; color: var(--green); cursor: pointer; }
-.s-section { padding: 20px 20px 0; }
-.s-sec-title { font-size: 13px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
-.s-card { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
-.s-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid var(--border); min-height: 50px; }
-.s-row:last-child { border-bottom: none; }
-.s-row-lbl { font-size: 16px; color: #fff; }
-.s-row-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
-.s-input { background: transparent; border: none; color: #fff; font-size: 16px; font-family: inherit; font-weight: 600; text-align: right; outline: none; max-width: 100px; -webkit-appearance: none; }
-.s-input[type=number] { -moz-appearance: textfield; }
-.s-input[type=number]::-webkit-outer-spin-button,
-.s-input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-.s-input::placeholder { color: var(--text3); }
-.s-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.s-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; color: #fff; text-align: center; }
-.s-btn-full { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; color: #fff; margin-bottom: 8px; }
-.s-btn-danger { color: var(--red); background: rgba(255,69,58,0.08); border-color: rgba(255,69,58,0.2); }
-.s-note { font-size: 12px; color: var(--text3); padding: 8px 16px 4px; line-height: 1.5; }
-
-/* ── Modal ── */
-.modal-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 400; align-items: flex-end; justify-content: center; }
-.modal-ov.open { display: flex; }
-.modal { background: #1c1c1e; border-radius: 22px 22px 0 0; padding: 20px; width: 100%; max-width: 430px; max-height: 80vh; overflow-y: auto; padding-bottom: calc(20px + var(--safe-bottom)); }
-.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
-.modal-field { margin-bottom: 12px; }
-.modal-lbl { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 6px; }
-.modal-inp { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 16px; font-family: inherit; font-weight: 500; padding: 12px 14px; outline: none; -webkit-appearance: none; }
-.modal-inp:focus { border-color: rgba(255,255,255,.3); }
-.modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
-.modal-cancel { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 13px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; color: var(--text2); }
-.modal-save { background: #fff; border: none; border-radius: 12px; padding: 13px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; color: #000; }
-
-/* ── QL Edit modal ── */
-.ql-edit-time { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 20px; font-family: inherit; font-weight: 600; padding: 14px; outline: none; text-align: center; -webkit-appearance: none; margin-bottom: 14px; }
-
-/* ── Toast ── */
-.toast { position: fixed; top: calc(20px + var(--safe-top)); left: 50%; transform: translateX(-50%); background: rgba(28,28,30,0.96); color: #fff; font-size: 13px; font-weight: 500; padding: 10px 18px; border-radius: 22px; z-index: 500; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: nowrap; border: 1px solid var(--border2); backdrop-filter: blur(12px); }
-.toast.show { opacity: 1; }
-
-/* ── Empty ── */
-.empty { text-align: center; padding: 60px 20px; }
-.empty-icon { font-size: 52px; margin-bottom: 16px; }
-.empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-.empty-body { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+:root{--bg:#000;--bg2:#111;--bg3:#1c1c1e;--bg4:#2c2c2e;--surface:rgba(255,255,255,.06);--surface2:rgba(255,255,255,.1);--border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.16);--text:#fff;--text2:rgba(255,255,255,.55);--text3:rgba(255,255,255,.30);--green:#30d158;--green-l:rgba(48,209,88,.14);--amber:#ff9f0a;--amber-l:rgba(255,159,10,.14);--red:#ff453a;--red-l:rgba(255,69,58,.14);--blue:#0a84ff;--purple:#bf5af2;--safe-top:env(safe-area-inset-top,44px);--safe-bot:env(safe-area-inset-bottom,20px);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:#000;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;color:#fff;-webkit-font-smoothing:antialiased;}
+.app{max-width:430px;margin:0 auto;min-height:100vh;min-height:100dvh;background:#000;position:relative;}
+.grad{position:fixed;top:0;left:50%;transform:translateX(-50%);width:430px;height:50vh;z-index:0;pointer-events:none;transition:background 1.4s ease;}
+.layer{position:relative;z-index:1;padding-top:var(--safe-top);padding-bottom:calc(90px + var(--safe-bot));}
+#ls{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#000;}
+.spin{width:26px;height:26px;border:2px solid rgba(255,255,255,.12);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#as{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;text-align:center;padding-top:calc(40px + var(--safe-top));}
+.a-logo{font-size:34px;font-weight:700;letter-spacing:-1px;margin-bottom:6px;}.a-logo span{color:var(--green);}
+.a-tag{font-size:15px;color:var(--text2);margin-bottom:36px;line-height:1.6;}
+.a-field{width:100%;max-width:320px;background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:14px 16px;font-size:16px;font-family:inherit;color:#fff;outline:none;margin-bottom:10px;}
+.a-field::placeholder{color:var(--text3);}
+#a-err{font-size:13px;color:var(--red);margin-bottom:10px;max-width:320px;display:none;}
+.a-btn{width:100%;max-width:320px;background:#fff;color:#000;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:10px;}
+.a-btn2{width:100%;max-width:320px;background:transparent;color:#fff;border:1px solid var(--border2);border-radius:14px;padding:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;}
+.a-note{font-size:12px;color:var(--text3);margin-top:14px;line-height:1.5;max-width:280px;}
+#ma{display:none;}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 20px 8px;}
+.logo{font-size:20px;font-weight:700;letter-spacing:-.5px;}.logo span{color:var(--green);}
+.ctx{font-size:13px;color:var(--text3);margin-top:3px;max-width:200px;line-height:1.3;}
+.hdr-r{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.streak-p{font-size:11px;font-weight:600;border-radius:20px;padding:4px 10px;border:1px solid;}
+.ibtn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:var(--text2);}
+.nav{position:fixed;bottom:calc(10px + var(--safe-bot));left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:390px;background:rgba(18,18,18,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.12);border-radius:36px;display:flex;padding:6px;z-index:100;box-shadow:0 8px 40px rgba(0,0,0,.6);}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 4px;border-radius:28px;transition:background .2s;}
+.ni.on{background:rgba(255,255,255,.12);}
+.ni-ic{font-size:18px;color:var(--text3);line-height:1;}.ni-lb{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.02em;}
+.ni.on .ni-ic,.ni.on .ni-lb{color:#fff;}
+.pg{display:none;}.pg.on{display:block;}
+/* QL bar */
+.ql-bar{padding:0 20px 12px;display:flex;flex-direction:column;gap:8px;}
+.ql-confirm{background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.2);border-radius:16px;padding:14px 16px;}
+.ql-ctop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.ql-cinfo{flex:1;}.ql-ctitle{font-size:15px;font-weight:600;margin-bottom:2px;}.ql-csub{font-size:12px;color:var(--text3);}
+.ql-cbtn{background:var(--green);color:#000;border:none;border-radius:10px;padding:9px 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;flex-shrink:0;}
+.ql-qrow{display:flex;gap:5px;margin-bottom:8px;}
+.ql-qbtn{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;padding:8px 2px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);}
+.ql-qbtn .qi{font-size:16px;display:block;margin-bottom:2px;}.ql-qbtn.sel{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;}
+.ql-erow{display:flex;gap:6px;}
+.ql-pill{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:20px;border:1px solid;font-size:13px;font-weight:600;cursor:pointer;}
+.ql-bed{background:rgba(191,90,242,.1);border-color:rgba(191,90,242,.25);color:var(--purple);}
+.ql-wake{background:rgba(255,214,10,.08);border-color:rgba(255,214,10,.25);color:#ffd60a;}
+.ql-done{background:rgba(48,209,88,.08);border-color:rgba(48,209,88,.2);color:var(--green);font-size:12px;}
+/* Home */
+.debt-block{padding:8px 20px 20px;}
+.debt-state{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.debt-big{font-size:96px;font-weight:800;line-height:.9;letter-spacing:-6px;margin-bottom:6px;}
+.debt-unit{font-size:16px;color:var(--text2);margin-bottom:14px;}
+.debt-bar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-bottom:12px;overflow:hidden;}
+.debt-fill{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+.ms-strip{display:flex;margin:0 20px 20px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.ms-item{flex:1;padding:10px 6px;text-align:center;border-right:1px solid var(--border);}
+.ms-item:last-child{border-right:none;}.ms-item.cur{background:rgba(255,255,255,.07);}
+.ms-dot{font-size:13px;margin-bottom:2px;}.ms-lbl{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;}
+.ms-val{font-size:9px;color:var(--text3);margin-top:1px;}
+.rec-row{margin:0 20px 14px;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;}
+.rec-main{font-size:14px;font-weight:600;margin-bottom:3px;}
+.rec-sub{font-size:12px;color:var(--text3);line-height:1.5;}
+.insight-line{margin:0 20px 14px;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;font-size:14px;color:var(--text2);line-height:1.5;}
+.eve-block{padding:20px 20px 16px;}
+.eve-lbl{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.eve-big{font-size:72px;font-weight:800;line-height:.9;letter-spacing:-4px;color:#fff;margin-bottom:6px;}
+.eve-unit{font-size:16px;color:var(--text2);margin-bottom:16px;}
+.eve-nudge{font-size:15px;color:var(--text2);line-height:1.5;margin-bottom:16px;}
+.eve-debt{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;}
+/* Log */
+.log-sec{padding:0 20px;margin-bottom:24px;}
+.log-sec-title{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.log-sec-action{font-size:13px;color:var(--green);cursor:pointer;font-weight:500;text-transform:none;letter-spacing:0;}
+.qlog-step{padding:0 20px;min-height:40vh;display:flex;flex-direction:column;justify-content:center;margin-bottom:20px;}
+.qlog-dots{display:flex;gap:5px;justify-content:center;margin-bottom:20px;}
+.qlog-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);}
+.qlog-dot.on{background:#fff;}
+.qlog-q{font-size:26px;font-weight:700;letter-spacing:-.03em;margin-bottom:20px;line-height:1.2;}
+.qlog-opts{display:flex;flex-direction:column;gap:8px;}
+.qlog-opt{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:16px;padding:16px 18px;font-size:16px;font-weight:600;cursor:pointer;text-align:left;transition:all .15s;}
+.qlog-opt.sel{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1);}
+.qlog-opt-sub{font-size:12px;color:var(--text3);font-weight:400;margin-top:2px;}
+.qlog-time-row{display:flex;flex-direction:column;gap:10px;}
+.qlog-tf{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.qlog-tf-lbl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:12px 16px 4px;}
+.qlog-tf-inp{width:100%;background:transparent;border:none;color:#fff;font-size:28px;font-weight:700;font-family:inherit;padding:4px 16px 14px;outline:none;-webkit-appearance:none;letter-spacing:-.03em;}
+.qlog-prev{font-size:13px;color:var(--text3);margin-top:10px;text-align:center;}
+.qlog-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+.qlog-back{background:none;border:none;color:var(--text3);font-size:15px;font-family:inherit;cursor:pointer;padding:8px 0;}
+.qlog-next{background:#fff;color:#000;border:none;border-radius:12px;padding:12px 28px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;}
+.qlog-skip{text-align:center;margin-top:14px;}
+.qlog-skip-btn{font-size:14px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:inherit;padding:6px;}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:7px;}
+.tag{padding:7px 13px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text2);cursor:pointer;transition:all .15s;}
+.tag.sel{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;}
+.tag-add{padding:7px 13px;border-radius:20px;font-size:13px;font-weight:500;border:1px dashed var(--border2);background:transparent;color:var(--text3);cursor:pointer;}
+.notes-inp{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:14px;color:#fff;font-size:15px;font-family:inherit;padding:14px 16px;resize:none;height:76px;outline:none;margin-top:10px;}
+.notes-inp::placeholder{color:var(--text3);}
+.nap-card{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:10px;}
+.nap-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);}
+.nap-row:last-child{border-bottom:none;}
+.nap-lbl{font-size:16px;color:#fff;}
+.nap-inp{background:transparent;border:none;color:#fff;font-size:16px;font-family:inherit;font-weight:500;text-align:right;outline:none;max-width:150px;-webkit-appearance:none;}
+.nap-inp option{background:#1c1c1e;}
+.nap-dur-btns{display:flex;gap:5px;padding:10px 16px;}
+.nap-dur-btn{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;padding:8px 4px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);transition:all .15s;}
+.nap-dur-btn.sel{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;}
+.nap-entry{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--border);font-size:14px;}
+.nap-entry:last-child{border-bottom:none;}
+.nap-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;font-family:inherit;padding:4px 8px;}
+.past-form-card{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px;}
+.past-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);min-height:50px;}
+.past-row:last-child{border-bottom:none;}
+.past-lbl{font-size:16px;color:#fff;}
+.past-inp{background:transparent;border:none;color:#fff;font-size:16px;font-family:inherit;font-weight:500;text-align:right;outline:none;max-width:150px;-webkit-appearance:none;}
+.past-inp option{background:#1c1c1e;}
+.past-more{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;background:rgba(255,255,255,.03);border-top:1px solid var(--border);font-size:14px;color:var(--text2);}
+.past-more-body{display:none;}.past-more-body.open{display:block;}
+.prev-box{margin:0 20px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.6;min-height:42px;}
+.hist-week-hdr{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.hist-card{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+.hist-entry{border-bottom:1px solid var(--border);}.hist-entry:last-child{border-bottom:none;}
+.hist-main{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;}
+.hist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.hist-info{flex:1;min-width:0;}
+.hist-date{font-size:14px;font-weight:600;}
+.hist-times{font-size:11px;color:var(--text3);margin-top:2px;}
+.hist-tags-l{font-size:10px;color:rgba(48,209,88,.8);margin-top:2px;}
+.hist-hrs{font-size:16px;font-weight:700;flex-shrink:0;}
+.hist-exp{display:none;background:rgba(0,0,0,.3);border-top:1px solid var(--border);}
+.hist-exp-row{display:flex;justify-content:space-between;padding:9px 16px;border-bottom:1px solid var(--border);font-size:13px;}
+.hist-exp-row:last-child{border-bottom:none;}
+.hist-exp-lbl{color:var(--text2);}.hist-exp-val{font-weight:600;}
+.hist-acts{display:flex;border-top:1px solid var(--border);}
+.hist-act{flex:1;padding:12px;font-size:14px;font-weight:600;background:none;border:none;cursor:pointer;font-family:inherit;}
+.hist-act.edit{color:var(--text2);border-right:1px solid var(--border);}.hist-act.del{color:var(--red);}
+/* Insights */
+.ins-hero{margin:0 20px 20px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:16px;padding:18px;}
+.ins-hero-lbl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.ins-hero-text{font-size:16px;font-weight:600;line-height:1.5;margin-bottom:4px;}
+.ins-hero-sub{font-size:13px;color:var(--text3);line-height:1.5;}
+.ptabs{display:flex;gap:6px;margin:0 20px 20px;}
+.ptab{flex:1;padding:9px;font-size:12px;font-weight:600;text-align:center;border:1px solid var(--border);border-radius:22px;cursor:pointer;color:var(--text3);background:transparent;}
+.ptab.on{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.2);}
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 20px 20px;}
+.ps-card{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.ps-val{font-size:24px;font-weight:700;line-height:1;margin-bottom:4px;}
+.ps-lbl{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.ins-sec{padding:0 20px;margin-bottom:20px;}
+.ins-sec-title{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.ins-box{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:16px;padding:16px;}
+.ins-card-item{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:8px;}
+.ins-card-item:last-child{margin-bottom:0;}
+.ins-icon{font-size:18px;margin-bottom:6px;}
+.ins-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.ins-body{font-size:12px;color:var(--text2);line-height:1.6;}
+.cons-wrap{display:flex;align-items:center;gap:16px;}
+.ring-wrap{position:relative;width:72px;height:72px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-num{font-size:18px;font-weight:700;line-height:1;}.ring-sub{font-size:9px;color:var(--text3);font-weight:500;}
+.dow-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.dow-lbl{font-size:11px;font-weight:600;color:var(--text2);width:28px;}
+.dow-track{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;}
+.dow-fill{height:100%;border-radius:3px;}
+.dow-val{font-size:11px;font-weight:600;width:32px;text-align:right;}
+.trend-wrap{height:100px;position:relative;margin:8px 0;}
+.proj-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.proj-row:last-child{border-bottom:none;}
+/* Settings */
+.s-sheet{position:fixed;inset:0;z-index:300;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);}
+.s-sheet.open{display:flex;}
+.s-inner{background:#1c1c1e;border-radius:22px 22px 0 0;width:100%;max-width:430px;max-height:88vh;display:flex;flex-direction:column;}
+.s-top{flex-shrink:0;}
+.s-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:12px auto 0;}
+.s-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 14px;border-bottom:1px solid var(--border);}
+.s-title{font-size:18px;font-weight:700;}.s-done{font-size:16px;font-weight:600;color:var(--green);cursor:pointer;}
+.s-scroll{flex:1;overflow-y:auto;padding-bottom:calc(20px + var(--safe-bot));}
+.s-sec{padding:20px 20px 0;}
+.s-sec-title{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.s-card{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.s-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);min-height:50px;}
+.s-row:last-child{border-bottom:none;}.s-row-lbl{font-size:16px;color:#fff;}.s-row-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.s-inp{background:transparent;border:none;color:#fff;font-size:16px;font-family:inherit;font-weight:600;text-align:right;outline:none;max-width:100px;-webkit-appearance:none;}
+.s-inp[type=number]{-moz-appearance:textfield;}.s-inp[type=number]::-webkit-outer-spin-button,.s-inp[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+.s-inp::placeholder{color:var(--text3);}
+.s-note{font-size:12px;color:var(--text3);padding:0 16px 12px;line-height:1.5;}
+.s-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.s-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;color:#fff;text-align:center;}
+.s-btn-full{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;color:#fff;margin-bottom:8px;display:block;}
+.s-btn-danger{color:var(--red);background:rgba(255,69,58,.08);border-color:rgba(255,69,58,.2);}
+/* Modals */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;align-items:flex-end;justify-content:center;}
+.modal-ov.open{display:flex;}
+.modal{background:#1c1c1e;border-radius:22px 22px 0 0;padding:20px;width:100%;max-width:430px;max-height:80vh;overflow-y:auto;padding-bottom:calc(20px + var(--safe-bot));}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:16px;}
+.modal-field{margin-bottom:12px;}
+.modal-lbl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px;}
+.modal-inp{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px;color:#fff;font-size:16px;font-family:inherit;font-weight:500;padding:12px 14px;outline:none;-webkit-appearance:none;}
+.modal-inp:focus{border-color:rgba(255,255,255,.3);}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.modal-cancel{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--text2);}
+.modal-save{background:#fff;border:none;border-radius:12px;padding:13px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;color:#000;}
+.ql-time-big{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px;color:#fff;font-size:24px;font-family:inherit;font-weight:700;padding:16px;outline:none;text-align:center;-webkit-appearance:none;margin-bottom:14px;}
+.tag-inp-field{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px;color:#fff;font-size:18px;font-family:inherit;padding:14px;outline:none;margin-bottom:14px;-webkit-appearance:none;}
+.tag-inp-field:focus{border-color:rgba(255,255,255,.3);}
+.toast{position:fixed;top:calc(14px + var(--safe-top));left:50%;transform:translateX(-50%);background:rgba(28,28,30,.96);color:#fff;font-size:13px;font-weight:500;padding:10px 18px;border-radius:22px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;border:1px solid var(--border2);backdrop-filter:blur(12px);}
+.toast.show{opacity:1;}
+.empty{text-align:center;padding:50px 20px;}
+.empty-icon{font-size:48px;margin-bottom:14px;}.empty-title{font-size:17px;font-weight:700;margin-bottom:8px;}.empty-body{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
+.primary-btn{display:block;width:100%;background:#fff;color:#000;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;text-align:center;}
+.secondary-btn{display:block;width:100%;background:rgba(255,255,255,.06);color:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;text-align:center;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .25s ease;}
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- Gradient background -->
-  <div class="gradient-bg" id="grad-bg"></div>
-
-  <!-- Loading -->
-  <div id="loading-screen">
-    <div class="spinner"></div>
-    <div style="font-size:13px;color:rgba(255,255,255,0.3)">Loading Somnus…</div>
-  </div>
-
-  <!-- Auth -->
-  <div id="auth-screen">
-    <div class="auth-moon">🌙</div>
-    <div class="auth-logo">Somnus<span>.</span></div>
-    <div class="auth-tag">Your personal sleep debt tracker.<br>Science-backed. Beautifully simple.</div>
-    <input type="email" id="auth-email" class="auth-field" placeholder="Email address" onkeydown="if(event.key==='Enter')document.getElementById('auth-pass').focus()">
-    <input type="password" id="auth-pass" class="auth-field" placeholder="Password" onkeydown="if(event.key==='Enter')doSignIn()">
-    <div id="auth-error"></div>
-    <button class="auth-btn-p" onclick="doSignIn()">Sign in</button>
-    <button class="auth-btn-s" onclick="doRegister()">Create account</button>
-    <div class="auth-note">Stays signed in permanently. Works on all browsers.</div>
-  </div>
-
-  <!-- Main app -->
-  <div id="main-app">
-    <div class="content-layer">
-      <div class="header">
-        <div>
-          <div class="logo">Somnus<span class="logo-dot">.</span></div>
-          <div class="ctx-copy" id="ctx-copy"></div>
-        </div>
-        <div class="header-right">
-          <div class="streak-pill" id="streak-pill"></div>
-          <div class="icon-btn" onclick="openSettings()" title="Settings">⚙</div>
-        </div>
+<div class="grad" id="grad"></div>
+<div id="ls"><div class="spin"></div><div style="font-size:13px;color:rgba(255,255,255,.3)">Loading…</div></div>
+<div id="as">
+  <div style="font-size:56px;margin-bottom:20px">🌙</div>
+  <div class="a-logo">Somnus<span>.</span></div>
+  <div class="a-tag">Your personal sleep debt tracker.<br>Science-backed. Beautifully simple.</div>
+  <input type="email" id="a-em" class="a-field" placeholder="Email address" onkeydown="if(event.key==='Enter')document.getElementById('a-pw').focus()">
+  <input type="password" id="a-pw" class="a-field" placeholder="Password" onkeydown="if(event.key==='Enter')doSignIn()">
+  <div id="a-err"></div>
+  <button class="a-btn" onclick="doSignIn()">Sign in</button>
+  <button class="a-btn2" onclick="doRegister()">Create account</button>
+  <div class="a-note">Stays signed in permanently on all browsers.</div>
+</div>
+<div id="ma">
+  <div class="layer">
+    <div class="hdr">
+      <div><div class="logo">Somnus<span>.</span></div><div class="ctx" id="ctx"></div></div>
+      <div class="hdr-r">
+        <div class="streak-p" id="sp1" style="display:none"></div>
+        <div class="streak-p" id="sp2" style="display:none"></div>
+        <div class="ibtn" onclick="openSettings()">⚙</div>
       </div>
-
-      <!-- Quick log bar -->
-      <div class="ql-bar" id="ql-bar"></div>
-
-      <div id="page-home" class="page active"></div>
-      <div id="page-plan" class="page"></div>
-      <div id="page-log" class="page"></div>
-      <div id="page-insights" class="page"></div>
-
-      <div class="nav">
-        <div class="nav-item active" onclick="go('home',this)"><div class="nav-icon">◑</div><div class="nav-label">Home</div></div>
-        <div class="nav-item" onclick="go('plan',this)"><div class="nav-icon">◈</div><div class="nav-label">Today</div></div>
-        <div class="nav-item" onclick="go('log',this)"><div class="nav-icon">⊕</div><div class="nav-label">Log</div></div>
-        <div class="nav-item" onclick="go('insights',this)"><div class="nav-icon">◉</div><div class="nav-label">Insights</div></div>
-      </div>
+    </div>
+    <div class="ql-bar" id="ql-bar" style="display:none"></div>
+    <div id="pg-home" class="pg on"></div>
+    <div id="pg-log" class="pg"></div>
+    <div id="pg-insights" class="pg"></div>
+    <div class="nav">
+      <div class="ni on" onclick="go('home',this)"><div class="ni-ic">◑</div><div class="ni-lb">Home</div></div>
+      <div class="ni" onclick="go('log',this)"><div class="ni-ic">⊕</div><div class="ni-lb">Log</div></div>
+      <div class="ni" onclick="go('insights',this)"><div class="ni-ic">◉</div><div class="ni-lb">Insights</div></div>
     </div>
   </div>
 </div>
-
+</div>
 <!-- Edit modal -->
 <div class="modal-ov" id="edit-modal">
   <div class="modal">
@@ -521,1194 +269,623 @@ html, body {
     <input type="hidden" id="edit-date">
     <div class="modal-field"><label class="modal-lbl">Bedtime</label><input type="time" id="edit-bed" class="modal-inp"></div>
     <div class="modal-field"><label class="modal-lbl">Wake time</label><input type="time" id="edit-wake" class="modal-inp"></div>
-    <div class="modal-field"><label class="modal-lbl">Quality</label>
-      <select id="edit-quality" class="modal-inp">
-        <option value="1">😵 Terrible</option><option value="2">😩 Poor</option>
-        <option value="3" selected>😐 Okay</option><option value="4">🙂 Good</option><option value="5">⚡ Great</option>
-      </select>
-    </div>
-    <div class="modal-btns">
-      <button class="modal-cancel" onclick="closeEdit()">Cancel</button>
-      <button class="modal-save" onclick="saveEdit()">Save</button>
-    </div>
+    <div class="modal-field"><label class="modal-lbl">How was it?</label>
+      <select id="edit-q" class="modal-inp"><option value="1">😵 Rough</option><option value="3" selected>😐 Okay</option><option value="4">🙂 Good</option><option value="5">⚡ Great</option></select></div>
+    <div class="modal-field"><label class="modal-lbl">Broken sleep?</label>
+      <select id="edit-wu" class="modal-inp"><option value="0">No — slept through</option><option value="2">Yes — woke up a few times</option></select></div>
+    <div class="modal-field"><label class="modal-lbl">Tags</label><div id="edit-tags-wrap" class="tags-wrap" style="margin-top:4px"></div></div>
+    <div class="modal-field"><label class="modal-lbl">Notes</label><textarea id="edit-note" class="modal-inp" style="height:68px;resize:none;font-size:15px"></textarea></div>
+    <div class="modal-btns"><button class="modal-cancel" onclick="closeEdit()">Cancel</button><button class="modal-save" onclick="saveEdit()">Save</button></div>
   </div>
 </div>
-
-<!-- QL Edit modal -->
+<!-- QL edit -->
 <div class="modal-ov" id="ql-modal">
   <div class="modal">
     <div class="modal-title" id="ql-modal-title">Edit time</div>
-    <input type="time" id="ql-edit-time" class="ql-edit-time">
-    <div style="font-size:13px;color:var(--text3);margin-bottom:16px;text-align:center">Adjust the recorded time if needed</div>
-    <div class="modal-btns">
-      <button class="modal-cancel" onclick="closeQLModal()">Cancel</button>
-      <button class="modal-save" onclick="saveQLTime()">Save</button>
-    </div>
+    <input type="time" id="ql-time-inp" class="ql-time-big">
+    <div style="font-size:13px;color:var(--text3);margin-bottom:16px;text-align:center">Adjust if needed</div>
+    <div class="modal-btns"><button class="modal-cancel" onclick="closeQLModal()">Cancel</button><button class="modal-save" onclick="saveQLTime()">Save</button></div>
   </div>
 </div>
-
-<!-- Settings sheet -->
+<!-- Tag modal -->
+<div class="modal-ov" id="tag-modal">
+  <div class="modal">
+    <div class="modal-title">Add custom tag</div>
+    <input type="text" id="tag-inp" class="tag-inp-field" placeholder="e.g. Cricket, Late flight…" maxlength="20">
+    <div class="modal-btns"><button class="modal-cancel" onclick="document.getElementById('tag-modal').classList.remove('open')">Cancel</button><button class="modal-save" onclick="addCustomTag()">Add</button></div>
+  </div>
+</div>
+<!-- Settings -->
 <div class="s-sheet" id="s-sheet" onclick="closeSettingsOutside(event)">
-  <div class="s-inner" id="s-inner">
-    <div class="s-handle"></div>
-    <div class="s-header">
-      <div class="s-title">Settings</div>
-      <div class="s-done" onclick="closeSettings()">Done</div>
-    </div>
+  <div class="s-inner">
+    <div class="s-top"><div class="s-handle"></div><div class="s-hdr"><div class="s-title">Settings</div><div class="s-done" onclick="closeSettings()">Done</div></div></div>
     <div class="s-scroll"><div id="s-content"></div></div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-firebase.initializeApp({
-  apiKey:"AIzaSyBN-35_PsP1gUIk3cthPzWtP3-xk-TfJt4",
-  authDomain:"somnus-4373f.firebaseapp.com",
-  projectId:"somnus-4373f",
-  storageBucket:"somnus-4373f.firebasestorage.app",
-  messagingSenderId:"853350236027",
-  appId:"1:853350236027:web:74812e033d376b93f847de"
-});
-const auth=firebase.auth(), db=firebase.firestore();
+firebase.initializeApp({apiKey:"AIzaSyBN-35_PsP1gUIk3cthPzWtP3-xk-TfJt4",authDomain:"somnus-4373f.firebaseapp.com",projectId:"somnus-4373f",storageBucket:"somnus-4373f.firebasestorage.app",messagingSenderId:"853350236027",appId:"1:853350236027:web:74812e033d376b93f847de"});
+const auth=firebase.auth(),db=firebase.firestore();
+const DEF_TAGS=['Alcohol','Stress','Travel','Illness','Cinema','Football','Late work','Exercise'];
+let S={need:9.5,wakeTime:'07:00',log:[],naps:[],startingDebt:0,checkins:[],goal:{targetDebt:5,targetDays:60,startDate:null,startDebt:null},ql:{bedTime:null,bedDate:null,wakeTime:null,wakeDate:null},customTags:[],recentTags:[]};
+let CU=null,tChart=null,insPeriod='month',qlEditType=null,editTagsSel=[],napDurSel=30,qlConfirmQ=3;
+let qlogStep=0,qlogData={quality:3,wakeups:0,tags:[],note:'',bed:'',wake:'',date:''};
+let pastMoreOpen=false,napFormOpen=false,showAllHist=false;
 
-// ── State ──────────────────────────────────────────────────────
-let S={
-  need:9.5, wakeTime:'07:00', log:[], naps:[], startingDebt:0,
-  checkins:[], goal:{targetDebt:5,targetDays:60,startDate:null,startDebt:null},
-  ql:{bedTime:null,bedDate:null,wakeTime:null,wakeDate:null}
-};
-let CU=null, tChart=null, insPeriod='month', tipIdx=0;
-let logQ=3, logWU=0, logTags=[];
-let qlEditType=null;
-
-const TAGS=['Alcohol','Stress','Travel','Illness','Cinema','Football','Late work','Exercise'];
-const TIPS=[
-  {h:'Avoid caffeine after {cutoff}',b:"Caffeine's 6h half-life means late coffee significantly delays sleep onset."},
-  {h:'Target bedtime: {bed} tonight',b:'Hitting your full {need} every night is the most powerful thing you can do for your health.'},
-  {h:'Sleep debt compounds quietly',b:'A 1h nightly deficit adds 7h of debt per week. Small consistent improvements matter most.'},
-  {h:'Peak focus: {peak}',b:'This is when cortisol and body temperature align for optimal cognitive performance.'},
-  {h:'A 20-min nap before 3pm helps',b:"Reduces today's debt ~0.4h without affecting tonight's sleep pressure."},
-];
-
-// ── Contextual copy system ─────────────────────────────────────
-function getContextualCopy(){
-  const h=new Date().getHours();
-  const debt=getDebt();
-  const last=S.log[0]||null;
-  const streak=getStreak();
-  const ef=last?eff(last.hrs,last.quality||3,last.wakeups||0):null;
-  const def=ef!==null?S.need-ef:null;
-  const isWeekend=[0,6].includes(new Date().getDay());
-  const debtDelta=S.log.length>=2?
-    (eff(S.log[0].hrs,S.log[0].quality||3,S.log[0].wakeups||0)-S.need)+
-    (eff(S.log[1].hrs,S.log[1].quality||3,S.log[1].wakeups||0)-S.need):null;
-
-  // No data yet
-  if(!last){
-    if(h>=5&&h<12) return "Good morning. Log your first night to get started.";
-    if(h>=12&&h<17) return "Afternoon. Your sleep story starts with one log.";
-    if(h>=17&&h<21) return "Evening. Log tonight's sleep in the morning.";
-    return "Late night. Try to get to bed soon.";
-  }
-
-  const tb=targetBed();
-  const[th,tm]=tb.split(':').map(Number);
-  let tM=th*60+tm,nM=new Date().getHours()*60+new Date().getMinutes();
-  if(tM<720)tM+=1440;if(nM<720)nM+=1440;
-  const mLeft=tM-nM;
-
-  // First streak milestone
-  if(streak===7) return "7 days logged. You're building something real.";
-  if(streak===14) return "Two weeks of data. Patterns are starting to emerge.";
-  if(streak===30) return "30 days in. You know your sleep better than most people ever will.";
-
-  // Morning (5am-11am)
-  if(h>=5&&h<12){
-    if(isWeekend&&def===null) return "Weekend morning. No alarm?";
-    if(def!==null&&def<=-0.5) return "Solid night. You're ahead of your need.";
-    if(def!==null&&def<=0) return `Good morning. ${ef}h — right on target.`;
-    if(def!==null&&def<1.5) return "Decent night. A little short but manageable.";
-    if(def!==null&&def<3) return "Short night. Take it easy on yourself today.";
-    if(def!==null&&def>=3) return "Rough night. Your body needs recovery today.";
-    return "Good morning. How did you sleep?";
-  }
-
-  // Late morning / early afternoon (11am-2pm)
-  if(h>=11&&h<14){
-    if(debt>15) return `${debt}h of debt. That's a lot to carry — tonight matters.`;
-    if(debt>10) return "High debt. Every hour of good sleep chips away at it.";
-    if(debt<5) return "Debt is low. You're in a good place right now.";
-    if(debtDelta!==null&&debtDelta>0) return "Two short nights in a row. Don't make it three.";
-    return "Midday. Your energy peaks are just ahead.";
-  }
-
-  // Afternoon (2pm-6pm)
-  if(h>=14&&h<18){
-    if(def!==null&&def>=2) return "Afternoon dip hits harder on short sleep. Nap if you can.";
-    if(debt>10) return `${debt}h debt. The gap closes one good night at a time.`;
-    if(debtDelta!==null&&debtDelta<-1) return "You're recovering well. Keep the streak going.";
-    return "Afternoon. Your second wind is coming.";
-  }
-
-  // Evening pre-bedtime (6pm-bedtime window)
-  if(h>=18&&mLeft>120){
-    if(debt>10) return "Tonight is your best chance to start recovering.";
-    if(debt<5) return "Debt is under control. Keep the same bedtime.";
-    return `Aim for bed by ${fmt(tb)} tonight.`;
-  }
-
-  // Bedtime approaching (within 2h)
-  if(mLeft>0&&mLeft<=120){
-    if(mLeft<=30) return `${mLeft} minutes to bedtime. Start winding down.`;
-    if(mLeft<=60) return `About an hour to your target bedtime. Dim your screens.`;
-    return `Bedtime in ${cdown(mLeft)}. Don't stay up too late.`;
-  }
-
-  // Past bedtime
-  if(h>=21||h<5){
-    if(mLeft<0&&Math.abs(mLeft)>60) return `You're ${cdown(Math.abs(mLeft))} past your target bedtime.`;
-    if(debt>10) return "Late night adding to an already high debt.";
-    return "You should be asleep by now.";
-  }
-
-  return "Somnus.";
-}
-
-// ── Auth ──────────────────────────────────────────────────────
 auth.onAuthStateChanged(async user=>{
-  document.getElementById('loading-screen').style.display='none';
-  if(user){
-    CU=user;
-    document.getElementById('auth-screen').style.display='none';
-    document.getElementById('main-app').style.display='block';
-    await loadFS();
-    updateGradient();
-    go('home',document.querySelector('.nav-item'));
-  } else {
-    CU=null;
-    document.getElementById('auth-screen').style.display='flex';
-    document.getElementById('main-app').style.display='none';
-  }
+  document.getElementById('ls').style.display='none';
+  if(user){CU=user;document.getElementById('as').style.display='none';document.getElementById('ma').style.display='block';await loadFS();updateGrad();renderStreaks();renderQL();go('home',document.querySelector('.ni'));}
+  else{CU=null;document.getElementById('as').style.display='flex';document.getElementById('ma').style.display='none';}
 });
-
-function showAuthErr(m){const e=document.getElementById('auth-error');e.textContent=m;e.style.display='block';}
-
+function showErr(m){const e=document.getElementById('a-err');e.textContent=m;e.style.display='block';}
 async function doSignIn(){
-  const em=document.getElementById('auth-email').value.trim();
-  const pw=document.getElementById('auth-pass').value;
-  if(!em||!pw){showAuthErr('Please enter email and password.');return;}
-  document.getElementById('auth-error').style.display='none';
+  const em=document.getElementById('a-em').value.trim(),pw=document.getElementById('a-pw').value;
+  if(!em||!pw){showErr('Please enter email and password.');return;}
+  document.getElementById('a-err').style.display='none';
   try{await auth.signInWithEmailAndPassword(em,pw);}
-  catch(e){
-    const m={'auth/user-not-found':'No account found.','auth/wrong-password':'Wrong password.','auth/invalid-credential':'Wrong email or password.','auth/invalid-email':'Invalid email.'};
-    showAuthErr(m[e.code]||'Sign in failed. Try again.');
-  }
+  catch(e){const m={'auth/user-not-found':'No account found.','auth/wrong-password':'Wrong password.','auth/invalid-credential':'Wrong email or password.'};showErr(m[e.code]||'Sign in failed.');}
 }
-
 async function doRegister(){
-  const em=document.getElementById('auth-email').value.trim();
-  const pw=document.getElementById('auth-pass').value;
-  if(!em||!pw){showAuthErr('Please enter email and password.');return;}
-  if(pw.length<6){showAuthErr('Password must be at least 6 characters.');return;}
-  document.getElementById('auth-error').style.display='none';
+  const em=document.getElementById('a-em').value.trim(),pw=document.getElementById('a-pw').value;
+  if(!em||!pw){showErr('Please enter email and password.');return;}
+  if(pw.length<6){showErr('Password must be at least 6 characters.');return;}
+  document.getElementById('a-err').style.display='none';
   try{await auth.createUserWithEmailAndPassword(em,pw);}
-  catch(e){
-    const m={'auth/email-already-in-use':'Account exists. Sign in instead.','auth/weak-password':'Password too weak.','auth/invalid-email':'Invalid email.'};
-    showAuthErr(m[e.code]||'Could not create account.');
-  }
+  catch(e){showErr(e.code==='auth/email-already-in-use'?'Account exists. Sign in instead.':'Could not create account.');}
 }
-
 async function doSignOut(){closeSettings();await auth.signOut();}
-
-// ── Firestore ──────────────────────────────────────────────────
 const uDoc=()=>db.collection('users').doc(CU.uid);
 async function loadFS(){
-  try{
-    const d=await uDoc().get();
-    if(d.exists){
-      const data=d.data();
-      S={...S,...data};
-      if(!Array.isArray(S.log))S.log=[];
-      if(!Array.isArray(S.naps))S.naps=[];
-      if(!Array.isArray(S.checkins))S.checkins=[];
-      if(!S.goal)S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};
-      if(!S.ql)S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};
-    }
-  }catch(e){console.error(e);}
+  try{const d=await uDoc().get();if(d.exists){S={...S,...d.data()};if(!Array.isArray(S.log))S.log=[];if(!Array.isArray(S.naps))S.naps=[];if(!Array.isArray(S.checkins))S.checkins=[];if(!Array.isArray(S.customTags))S.customTags=[];if(!Array.isArray(S.recentTags))S.recentTags=[];if(!S.goal)S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};if(!S.ql)S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};}}catch(e){console.error(e);}
 }
 let saveTimer;
-function saveFS(){
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(async()=>{
-    if(!CU)return;
-    try{await uDoc().set(S,{merge:true});showToast('Saved ✓');}
-    catch(e){showToast('Save failed');}
-  },800);
-}
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2000);}
+function saveFS(){clearTimeout(saveTimer);saveTimer=setTimeout(async()=>{if(!CU)return;try{await uDoc().set(S,{merge:true});showToast('Saved ✓');}catch(e){showToast('Save failed');}},800);}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
 
-// ── Gradient ──────────────────────────────────────────────────
-function updateGradient(){
-  const debt=getDebt();
-  const el=document.getElementById('grad-bg');
-  if(!el)return;
-  let glow;
-  if(debt<5) glow='rgba(48,209,88,0.12)';
-  else if(debt<10) glow='rgba(255,159,10,0.10)';
-  else glow='rgba(255,69,58,0.10)';
-  el.style.background=`radial-gradient(ellipse 80% 40% at 50% 0%, ${glow}, transparent 70%)`;
-}
-
-// ── Nav ───────────────────────────────────────────────────────
 function go(p,el){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  document.getElementById('page-'+p).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-  if(el)el.classList.add('active');
+  document.querySelectorAll('.pg').forEach(x=>x.classList.remove('on'));
+  document.getElementById('pg-'+p).classList.add('on');
+  document.querySelectorAll('.ni').forEach(x=>x.classList.remove('on'));
+  if(el)el.classList.add('on');
   window.scrollTo(0,0);
-  renderQL();
-  ({home:rHome,plan:rPlan,log:rLog,insights:rInsights})[p]?.();
+  ({home:rHome,log:rLog,insights:rInsights})[p]?.();
 }
 
-// ── Settings ──────────────────────────────────────────────────
+// Settings
 function openSettings(){renderSettings();document.getElementById('s-sheet').classList.add('open');}
 function closeSettings(){document.getElementById('s-sheet').classList.remove('open');}
 function closeSettingsOutside(e){if(e.target===document.getElementById('s-sheet'))closeSettings();}
-
 function renderSettings(){
   document.getElementById('s-content').innerHTML=`
-    <div class="s-section">
-      <div class="s-sec-title">Sleep profile</div>
-      <div class="s-card">
-        <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:8px">
-          <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
-            <span class="s-row-lbl">Sleep need</span>
-            <div style="display:flex;align-items:center;gap:4px">
-              <input type="number" class="s-input" id="s-need-h" value="${Math.floor(S.need)}" min="4" max="12" step="1" style="width:45px;text-align:right" oninput="updateNeed()"> h
-              <select class="s-input" id="s-need-m" style="width:58px;text-align:right" onchange="updateNeed()">
-                <option value="0" ${Math.round((S.need%1)*60)<8?'selected':''}>0 min</option>
-                <option value="0.25" ${Math.round((S.need%1)*60)>=8&&Math.round((S.need%1)*60)<23?'selected':''}>15 min</option>
-                <option value="0.5" ${Math.round((S.need%1)*60)>=23&&Math.round((S.need%1)*60)<53?'selected':''}>30 min</option>
-                <option value="0.75" ${Math.round((S.need%1)*60)>=53?'selected':''}>45 min</option>
-              </select>
-            </div>
-          </div>
-          <div class="s-note" style="padding:0;font-size:12px;color:var(--text3)">Rise-calculated: 9h 30min</div>
-        </div>
-        <div class="s-row">
-          <span class="s-row-lbl">Wake time</span>
-          <input type="time" class="s-input" value="${S.wakeTime}" oninput="S.wakeTime=this.value;saveFS();">
+  <div class="s-sec"><div class="s-sec-title">Sleep profile</div><div class="s-card">
+    <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center"><span class="s-row-lbl">Sleep need</span>
+        <div style="display:flex;align-items:center;gap:4px">
+          <input type="number" class="s-inp" id="s-nh" value="${Math.floor(S.need)}" min="4" max="12" step="1" style="width:45px" oninput="updateNeed()">h
+          <select class="s-inp" id="s-nm" style="width:62px" onchange="updateNeed()">
+            <option value="0" ${Math.round((S.need%1)*60)<8?'selected':''}>0 min</option>
+            <option value="0.25" ${Math.round((S.need%1)*60)>=8&&Math.round((S.need%1)*60)<23?'selected':''}>15 min</option>
+            <option value="0.5" ${Math.round((S.need%1)*60)>=23&&Math.round((S.need%1)*60)<53?'selected':''}>30 min</option>
+            <option value="0.75" ${Math.round((S.need%1)*60)>=53?'selected':''}>45 min</option>
+          </select>
         </div>
       </div>
+      <div style="font-size:12px;color:var(--text3)">Rise-calculated: 9h 30min</div>
     </div>
-
-    <div class="s-section">
-      <div class="s-sec-title">Current sleep debt</div>
-      <div class="s-card">
-        <div class="s-row">
-          <div>
-            <div class="s-row-lbl">Debt baseline</div>
-            <div class="s-row-sub">Type any value e.g. 12.8h</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:4px">
-            <input type="number" class="s-input" id="s-debt" value="${S.startingDebt}" min="0" max="100" step="0.1" style="width:70px" oninput="S.startingDebt=parseFloat(this.value)||0;saveFS();">
-            <span style="color:var(--text3);font-size:15px">h</span>
-          </div>
-        </div>
-      </div>
-      <div class="s-btn-row">
-        <button class="s-btn" onclick="S.startingDebt=0;document.getElementById('s-debt').value=0;saveFS();showToast('Reset to 0');">Reset to 0</button>
-        <button class="s-btn" onclick="const v=parseFloat(document.getElementById('s-debt').value)||0;S.startingDebt=v;saveFS();showToast('Debt set to '+v+'h');">Confirm current</button>
-      </div>
+    <div class="s-row"><span class="s-row-lbl">Wake time</span><input type="time" class="s-inp" value="${S.wakeTime}" oninput="S.wakeTime=this.value;saveFS();"></div>
+  </div></div>
+  <div class="s-sec"><div class="s-sec-title">Sleep debt baseline</div><div class="s-card">
+    <div class="s-row"><div><div class="s-row-lbl">Starting debt</div><div class="s-row-sub">Type any value e.g. 12.8</div></div>
+      <div style="display:flex;align-items:center;gap:4px"><input type="number" class="s-inp" id="s-debt" value="${S.startingDebt}" min="0" max="100" step="0.1" style="width:70px" oninput="S.startingDebt=parseFloat(this.value)||0;saveFS();"><span style="color:var(--text3);font-size:15px">h</span></div>
     </div>
-
-    <div class="s-section">
-      <div class="s-sec-title">Debt goal</div>
-      <div class="s-card">
-        <div class="s-row">
-          <span class="s-row-lbl">Target debt</span>
-          <div style="display:flex;align-items:center;gap:4px">
-            <input type="number" class="s-input" id="s-gtarget" value="${S.goal?.targetDebt||5}" min="0" max="20" step="0.5" style="width:60px">
-            <span style="color:var(--text3);font-size:15px">h</span>
-          </div>
-        </div>
-        <div class="s-row">
-          <span class="s-row-lbl">Days to achieve</span>
-          <div style="display:flex;align-items:center;gap:4px">
-            <input type="number" class="s-input" id="s-gdays" value="${S.goal?.targetDays||60}" min="7" max="365" step="7" style="width:70px">
-            <span style="color:var(--text3);font-size:14px">days</span>
-          </div>
-        </div>
-      </div>
-      <button class="s-btn-full" onclick="setGoal()">Set goal & start tracking</button>
-      ${S.goal?.startDate?`<div class="s-note">Goal started ${fmtDate(S.goal.startDate)}</div>`:''}
-    </div>
-
-    <div class="s-section">
-      <div class="s-sec-title">Account</div>
-      <div class="s-card">
-        <div class="s-row"><span class="s-row-lbl">Signed in as</span><span style="font-size:13px;color:var(--text2)">${CU?.email||''}</span></div>
-      </div>
-      <button class="s-btn-full" onclick="doSignOut()" style="color:var(--red);border-color:rgba(255,69,58,0.2);background:rgba(255,69,58,0.06)">Sign out</button>
-    </div>
-
-    <div class="s-section" style="padding-bottom:20px">
-      <div class="s-sec-title">Data</div>
-      <button class="s-btn-full s-btn-danger" onclick="clearAll()">Delete all data permanently</button>
-    </div>`;
+  </div>
+  <div class="s-btn-row">
+    <button class="s-btn" onclick="S.startingDebt=0;document.getElementById('s-debt').value=0;saveFS();showToast('Reset to 0');">Reset to 0</button>
+    <button class="s-btn" onclick="const v=parseFloat(document.getElementById('s-debt').value)||0;S.startingDebt=v;saveFS();showToast('Confirmed: '+v+'h');">Confirm</button>
+  </div></div>
+  <div class="s-sec"><div class="s-sec-title">Debt goal</div><div class="s-card">
+    <div class="s-row"><span class="s-row-lbl">Target debt</span><div style="display:flex;align-items:center;gap:4px"><input type="number" class="s-inp" id="s-gt" value="${S.goal?.targetDebt||5}" min="0" max="20" step="0.5" style="width:60px"><span style="color:var(--text3)">h</span></div></div>
+    <div class="s-row"><span class="s-row-lbl">Days to achieve</span><div style="display:flex;align-items:center;gap:4px"><input type="number" class="s-inp" id="s-gd" value="${S.goal?.targetDays||60}" min="7" max="365" step="7" style="width:70px"><span style="color:var(--text3);font-size:14px">days</span></div></div>
+  </div><button class="s-btn-full" onclick="setGoal()">Set goal</button></div>
+  <div class="s-sec"><div class="s-sec-title">Account</div><div class="s-card">
+    <div class="s-row"><span class="s-row-lbl">Signed in as</span><span style="font-size:13px;color:var(--text2)">${CU?.email||''}</span></div>
+  </div><button class="s-btn-full" onclick="doSignOut()" style="color:var(--red);border-color:rgba(255,69,58,.2);background:rgba(255,69,58,.06)">Sign out</button></div>
+  <div class="s-sec" style="padding-bottom:20px"><div class="s-sec-title">Data</div>
+    <button class="s-btn-full s-btn-danger" onclick="clearAll()">Delete all data permanently</button>
+  </div>`;
 }
+function updateNeed(){const h=parseFloat(document.getElementById('s-nh')?.value)||9,m=parseFloat(document.getElementById('s-nm')?.value)||0;S.need=Math.round((h+m)*100)/100;saveFS();}
+function setGoal(){const td=parseFloat(document.getElementById('s-gt')?.value)||5,td2=parseInt(document.getElementById('s-gd')?.value)||60;S.goal={targetDebt:td,targetDays:td2,startDate:today(),startDebt:getDebt()};saveFS();showToast('Goal set ✓');}
+async function clearAll(){if(!confirm('Delete all Somnus data permanently?'))return;S.log=[];S.naps=[];S.checkins=[];S.startingDebt=0;S.customTags=[];S.recentTags=[];S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};await uDoc().set(S);closeSettings();rHome();}
 
-function updateNeed(){
-  const h=parseFloat(document.getElementById('s-need-h')?.value)||9;
-  const m=parseFloat(document.getElementById('s-need-m')?.value)||0;
-  S.need=Math.round((h+m)*100)/100;
-  saveFS();
-}
-
-function setGoal(){
-  const td=parseFloat(document.getElementById('s-gtarget')?.value)||5;
-  const tdays=parseInt(document.getElementById('s-gdays')?.value)||60;
-  S.goal={targetDebt:td,targetDays:tdays,startDate:today(),startDebt:getDebt()};
-  saveFS();showToast('Goal set ✓');renderSettings();
-}
-
-async function clearAll(){
-  if(!confirm('Delete all Somnus data permanently?'))return;
-  S.log=[];S.naps=[];S.checkins=[];S.startingDebt=0;
-  S.goal={targetDebt:5,targetDays:60,startDate:null,startDebt:null};
-  S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};
-  await uDoc().set(S);closeSettings();rHome();
-}
-
-// ── Math ──────────────────────────────────────────────────────
-function calcHrs(bed,wake,onset=15){
-  let[bh,bm]=bed.split(':').map(Number),[wh,wm]=wake.split(':').map(Number);
-  let b=bh*60+bm+onset,w=wh*60+wm;
-  if(w<=bh*60+bm)w+=1440;
-  return Math.max(0,Math.round((w-b)/60*10)/10);
-}
-function eff(hrs,q=3,wu=0){return Math.round(Math.max(0,hrs*([0,.75,.85,1,1.05,1.1][q]||1)-wu*.15)*10)/10;}
-function targetBed(){
-  const[wh,wm]=S.wakeTime.split(':').map(Number);
-  const m=((wh*60+wm-S.need*60)%1440+1440)%1440;
-  return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(Math.round(m%60)).padStart(2,'0')}`;
-}
+// Math
+function calcHrs(bed,wake){let[bh,bm]=bed.split(':').map(Number),[wh,wm]=wake.split(':').map(Number),b=bh*60+bm,w=wh*60+wm;if(w<=b)w+=1440;return Math.max(0,Math.round((w-b)/60*10)/10);}
+function eff(hrs,q=3,wu=0){return Math.round(Math.max(0,hrs*([0,.75,.85,1,1.05,1.1][q]||1)-wu*.2)*10)/10;}
+function targetBed(){const[wh,wm]=S.wakeTime.split(':').map(Number),m=((wh*60+wm-S.need*60)%1440+1440)%1440;return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(Math.round(m%60)).padStart(2,'0')}`;}
 function fmt(t){let[h,m]=t.split(':').map(Number);const ap=h<12?'am':'pm';if(h===0)h=12;else if(h>12)h-=12;return `${h}:${String(m).padStart(2,'0')}${ap}`;}
-function fmtH(h){return `${h===0?12:h>12?h-12:h}${h<12?'am':'pm'}`;}
+function fmtMins(m){if(m<60)return `${Math.round(m)} min`;if(m%60===0)return `${Math.floor(m/60)}h`;return `${Math.floor(m/60)}h ${Math.round(m%60)}min`;}
+function fmtH(h){const m=Math.round(Math.abs(h)*60);return fmtMins(m);}
 function fmtDate(d){return new Date(d+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});}
 function today(){return new Date().toISOString().slice(0,10);}
 function yesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
-function nowTimeStr(){const n=new Date();return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}
-
-function bedDef(bed){
-  const tb=targetBed(),[th,tm]=tb.split(':').map(Number);
-  let[ah,am]=bed.split(':').map(Number);
-  let tM=th*60+tm,aM=ah*60+am;
-  if(aM<720)aM+=1440;if(tM<720)tM+=1440;
-  return Math.max(0,Math.round((aM-tM)/60*10)/10);
-}
+function nowStr(){const n=new Date();return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}
+function cdown(m){const a=Math.abs(Math.round(m));if(a<60)return `${a}min`;if(a%60===0)return `${Math.floor(a/60)}h`;return `${Math.floor(a/60)}h ${a%60}min`;}
+function sleepDate(bed){const[bh]=bed.split(':').map(Number);return bh<12?yesterday():today();}
+function qlBedDate(){return new Date().getHours()<5?yesterday():today();}
+function bedDef(bed){const tb=targetBed(),[th,tm]=tb.split(':').map(Number);let[ah,am]=bed.split(':').map(Number),tM=th*60+tm,aM=ah*60+am;if(aM<720)aM+=1440;if(tM<720)tM+=1440;return Math.max(0,Math.round((aM-tM)/60*10)/10);}
 function recov(x){return x<=0?0:Math.round(Math.log(1+x*2)*.8*10)/10;}
 function napCredit(date){return(S.naps||[]).filter(n=>n.date===date).reduce((s,n)=>s+n.mins/60*.55,0);}
-
 function getDebt(){
-  const r=S.log.slice(0,14);
-  if(!r.length)return Math.round(S.startingDebt*10)/10;
-  let net=S.startingDebt;
-  r.forEach(e=>{
-    const d=S.need-eff(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);
-    if(d>0)net+=d;else net-=recov(-d);
-  });
+  const r=S.log.slice(0,14);if(!r.length)return Math.round(S.startingDebt*10)/10;
+  let net=S.startingDebt;r.forEach(e=>{const d=S.need-eff(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);if(d>0)net+=d;else net-=recov(-d);});
   return Math.round(Math.max(0,net)*10)/10;
 }
-function getStreak(){
-  let s=0;const t=new Date();
-  for(let i=0;i<S.log.length;i++){
-    if(Math.round((t-new Date(S.log[i].date+'T12:00:00'))/86400000)===i)s++;else break;
-  }
-  return s;
-}
-function eLevel(nowH,wH){
-  const e=(nowH-wH+24)%24,pi=Math.PI;let v;
-  if(e<1.5)v=.3+(e/1.5)*.4;else if(e<5)v=.7+Math.sin((e-1.5)/3.5*pi)*.3;
-  else if(e<7)v=1-(e-5)/2*.35;else if(e<9)v=.65+Math.sin((e-7)/2*pi)*.2;
-  else if(e<11)v=.85-(e-9)/2*.3;else if(e<14)v=.55-(e-11)/3*.25;
-  else v=Math.max(.1,.3-(e-14)*.03);
-  return Math.max(.05,Math.min(1,v*Math.max(.6,1-getDebt()/30*.35)));
-}
-function bedAlert(){
-  const tb=targetBed(),[th,tm]=tb.split(':').map(Number),n=new Date();
-  let tM=th*60+tm,nM=n.getHours()*60+n.getMinutes();
-  if(tM<720)tM+=1440;if(nM<720)nM+=1440;
-  const d=tM-nM;return(d>0&&d<=180)?d:null;
-}
-function cdown(m){if(m<60)return m+'min';return Math.floor(m/60)+'h'+(m%60>0?' '+m%60+'min':'');}
+function getStreak(){let s=0;const t=new Date();for(let i=0;i<S.log.length;i++){if(Math.round((t-new Date(S.log[i].date+'T12:00:00'))/86400000)===i)s++;else break;}return s;}
+function getGoodStreak(){let s=0;const t=new Date();for(let i=0;i<S.log.length;i++){const e=S.log[i];if(Math.round((t-new Date(e.date+'T12:00:00'))/86400000)!==i)break;if(eff(e.hrs,e.quality||3,e.wakeups||0)>=S.need*.85)s++;else break;}return s;}
+function getMilestone(d){if(d>=15)return{emoji:'🔴',label:'Critical',color:'var(--red)'};if(d>=8)return{emoji:'🟠',label:'High',color:'var(--amber)'};if(d>=3)return{emoji:'🟡',label:'Moderate',color:'var(--amber)'};return{emoji:'🟢',label:'Safe zone',color:'var(--green)'};}
+function bedMinsLeft(){const tb=targetBed(),[th,tm]=tb.split(':').map(Number),n=new Date();let tM=th*60+tm,nM=n.getHours()*60+n.getMinutes();if(tM<720)tM+=1440;if(nM<720)nM+=1440;return tM-nM;}
 
-// ── Quick Log ─────────────────────────────────────────────────
-// Bed button: 8pm–5am (20:00–05:00)
-// Wake button: 5am–11am (05:00–11:00)
+function updateGrad(){const debt=getDebt(),el=document.getElementById('grad');if(!el)return;let g=debt<5?'rgba(48,209,88,.10)':debt<8?'rgba(255,159,10,.09)':'rgba(255,69,58,.09)';el.style.background=`radial-gradient(ellipse 80% 45% at 50% 0%,${g},transparent 70%)`;}
 
-function qlDateForBed(){
-  // Bed date = the calendar date the "night" started
-  // 8pm-11:59pm → tonight (today's date = the sleep date)
-  // midnight-5am → last night (yesterday's date = the sleep date)
-  const h=new Date().getHours();
-  return (h>=0&&h<5)?yesterday():today();
+function renderStreaks(){
+  const s=getStreak(),g=getGoodStreak();
+  const p1=document.getElementById('sp1'),p2=document.getElementById('sp2');
+  if(s>0){p1.textContent=`${s} day streak`;p1.style.cssText='display:block;color:var(--green);background:var(--green-l);border-color:rgba(48,209,88,.25)';}else p1.style.display='none';
+  if(g>=2){p2.textContent=`${g} good nights`;p2.style.cssText='display:block;color:var(--amber);background:var(--amber-l);border-color:rgba(255,159,10,.25)';}else p2.style.display='none';
 }
 
-function sleepDateForLog(bedTime){
-  // Given a bedtime string like "03:45", return the correct sleep date
-  // Sleep date = the evening the person went to bed
-  // If bedtime is between midnight and noon, it belongs to previous calendar day
-  const[bh]=bedTime.split(':').map(Number);
-  if(bh<12) return yesterday(); // midnight–noon → previous evening's sleep
-  return today(); // pm → tonight's sleep
-}
-
-function getQLState(){
-  const h=new Date().getHours();
-  const td=today(),yd=yesterday();
-
-  // Check if this night is already logged
-  const bedDate=qlDateForBed();
-  const alreadyLogged=S.log.find(e=>e.date===bedDate||e.date===yd);
-
-  // Morning window: 5am–11am — show wake button
+// Contextual copy
+function getCtx(){
+  const h=new Date().getHours(),debt=getDebt(),last=S.log[0]||null;
+  const good=getGoodStreak(),streak=getStreak(),mLeft=bedMinsLeft();
+  const ef=last?eff(last.hrs,last.quality||3,last.wakeups||0):null;
+  const def=ef!==null?S.need-ef:null;
+  if(!last){if(h>=5&&h<12)return "Log your first night to get started.";if(h>=21||h<5)return "First bedtime coming up. Log it in the morning.";return "Your sleep story starts with one log.";}
+  if(good>=7)return `${good} good nights in a row. You're on a roll.`;
+  if(good>=3)return `${good} solid nights. Debt is moving down.`;
   if(h>=5&&h<12){
-    const wDone=S.ql?.wakeDate===td;
-    const bDone=S.ql?.bedDate===yd||S.ql?.bedDate===bedDate;
-    // Both recorded → show confirm option
-    if(wDone&&bDone&&!alreadyLogged){
-      return {showConfirm:true,showWake:false,showBed:false,wakeDone:true,bedDone:true};
-    }
-    return {showWake:true,wakeDone:wDone,showBed:bDone,bedDone:bDone,showConfirm:false};
+    if(def!==null&&def<=-0.5)return `Slept ${fmtH(Math.abs(def))} over your need. Solid night.`;
+    if(def!==null&&def<=0)return `${ef}h effective — right on target.`;
+    if(def!==null&&def<1.5)return "Decent night. A little short but manageable.";
+    if(def!==null&&def<3)return "Short night. Your body will feel it today.";
+    if(def!==null&&def>=3)return "Rough night. Rest when you can today.";
   }
-
-  // Evening/night: 8pm–5am
-  if(h>=20||h<5){
-    const bDone=S.ql?.bedDate===bedDate;
-    const wDone=S.ql?.wakeDate===td;
-    if(wDone&&bDone&&!alreadyLogged){
-      return {showConfirm:true,showWake:false,showBed:false,wakeDone:true,bedDone:true};
-    }
-    return {showBed:true,bedDone:bDone,showWake:wDone,wakeDone:wDone,showConfirm:false};
-  }
-
-  // Daytime (12pm–8pm): only show if both recorded and not yet logged
-  const bDone=!!(S.ql?.bedDate);
-  const wDone=!!(S.ql?.wakeDate===td);
-  if(bDone&&wDone&&!alreadyLogged){
-    return {showConfirm:true,showWake:false,showBed:false,wakeDone:true,bedDone:true};
-  }
-  if(wDone) return {showWake:true,wakeDone:true,showBed:false,bedDone:false,showConfirm:false};
-  return {showWake:false,wakeDone:false,showBed:false,bedDone:false,showConfirm:false};
+  if(h>=11&&h<14){if(debt>15)return `${debt}h debt. Tonight is your best chance to start recovering.`;if(debt>8)return "High debt. Consistent nights chip away at it fast.";if(debt<5)return "Debt is low. Keep the rhythm going.";return "Midday. Focus peak is coming.";}
+  if(h>=14&&h<18){if(def!==null&&def>=2)return "Afternoon dip hits harder today. Nap if you can.";if(streak>=5)return `${streak} days logged. Good habit forming.`;return "Afternoon. Second wind ahead.";}
+  if(mLeft>120)return `Debt at ${debt}h. Bed by ${fmt(targetBed())} starts the recovery.`;
+  if(mLeft>60&&mLeft<=120)return `${cdown(mLeft)} to bedtime. Start winding down.`;
+  if(mLeft>0&&mLeft<=60)return `${cdown(mLeft)} to bedtime. Put the phone down soon.`;
+  if(mLeft<=0&&mLeft>-90)return `${cdown(mLeft)} past your target bedtime.`;
+  if(h>=21||h<5)return `Late night. Every extra hour adds to ${debt}h debt.`;
+  return `${debt}h debt. Tonight counts.`;
 }
 
+// QL
+function getQLState(){
+  const h=new Date().getHours(),td=today(),yd=yesterday(),bedDate=qlBedDate();
+  const alreadyLogged=S.log.find(e=>e.date===yd||e.date===bedDate);
+  const bDone=!!(S.ql?.bedDate&&(S.ql.bedDate===bedDate||S.ql.bedDate===yd));
+  const wDone=S.ql?.wakeDate===td;
+  if(bDone&&wDone&&!alreadyLogged)return{confirm:true,bDone,wDone};
+  if(h>=5&&h<12)return{confirm:false,showBed:bDone,showWake:true,bDone,wDone};
+  if(h>=20||h<5)return{confirm:false,showBed:true,showWake:wDone,bDone,wDone};
+  if(wDone)return{confirm:false,showBed:false,showWake:true,bDone,wDone};
+  return null;
+}
 function renderQL(){
-  const el=document.getElementById('ql-bar');
-  if(!el)return;
+  const el=document.getElementById('ql-bar');if(!el)return;
   const st=getQLState();
-  let html='';
-
-  if(st.showConfirm){
-    // Both times recorded — calculate sleep
-    const hrs=calcHrs(S.ql.bedTime,S.ql.wakeTime,15);
-    const ef2=eff(hrs,3,0);
-    html=`
-      <div style="width:100%;background:rgba(48,209,88,0.08);border:1px solid rgba(48,209,88,0.2);border-radius:16px;padding:12px 14px;">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Ready to log</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-          <div>
-            <div style="font-size:15px;font-weight:600;color:#fff">${fmt(S.ql.bedTime)} → ${fmt(S.ql.wakeTime)}</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:2px">${hrs.toFixed(1)}h raw · ~${ef2.toFixed(1)}h effective</div>
-          </div>
-          <button onclick="confirmQLLog()" style="background:var(--green);color:#000;border:none;border-radius:10px;padding:9px 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;flex-shrink:0">Confirm</button>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <div class="ql-pill ql-pill-done ql-pill-edit" style="flex:1" onclick="openQLEdit('bed')">🛌 ${fmt(S.ql.bedTime)}</div>
-          <div class="ql-pill ql-pill-done ql-pill-edit" style="flex:1" onclick="openQLEdit('wake')">☀️ ${fmt(S.ql.wakeTime)}</div>
-        </div>
-      </div>`;
+  if(!st){el.style.display='none';el.innerHTML='';return;}
+  el.style.display='flex';
+  if(st.confirm){
+    const hrs=calcHrs(S.ql.bedTime,S.ql.wakeTime),ef2=eff(hrs,qlConfirmQ,0);
+    el.innerHTML=`<div class="ql-confirm fu" style="width:100%">
+      <div class="ql-ctop">
+        <div class="ql-cinfo"><div class="ql-ctitle">${fmt(S.ql.bedTime)} → ${fmt(S.ql.wakeTime)}</div><div class="ql-csub">${hrs.toFixed(1)}h · ~${ef2.toFixed(1)}h effective</div></div>
+        <button class="ql-cbtn" onclick="confirmQLLog()">Log</button>
+      </div>
+      <div class="ql-qrow">
+        ${[['😵','Rough',1],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic,lb,v])=>`<button class="ql-qbtn${v===qlConfirmQ?' sel':''}" onclick="setQLQ(${v},this)"><span class="qi">${ic}</span>${lb}</button>`).join('')}
+      </div>
+      <div class="ql-erow">
+        <div class="ql-pill ql-done" onclick="openQLEdit('bed')">🛌 ${fmt(S.ql.bedTime)}</div>
+        <div class="ql-pill ql-done" onclick="openQLEdit('wake')">☀️ ${fmt(S.ql.wakeTime)}</div>
+      </div>
+    </div>`;
   } else {
-    if(st.showBed){
-      if(st.bedDone){
-        html+=`<div class="ql-pill ql-pill-done ql-pill-edit" onclick="openQLEdit('bed')">🛌 ${fmt(S.ql.bedTime)} · edit</div>`;
-      } else {
-        html+=`<div class="ql-pill ql-pill-bed" onclick="recordBed()">🛌 Just went to bed</div>`;
-      }
-    }
-    if(st.showWake){
-      if(st.wakeDone){
-        html+=`<div class="ql-pill ql-pill-done ql-pill-edit" onclick="openQLEdit('wake')">☀️ ${fmt(S.ql.wakeTime)} · edit</div>`;
-      } else {
-        html+=`<div class="ql-pill ql-pill-wake" onclick="recordWake()">☀️ Just woke up</div>`;
-      }
-    }
+    let html='<div style="display:flex;gap:8px;width:100%">';
+    if(st.showBed)html+=st.bDone?`<div class="ql-pill ql-done" style="flex:1" onclick="openQLEdit('bed')">🛌 ${fmt(S.ql.bedTime)} · edit</div>`:`<div class="ql-pill ql-bed" style="flex:1" onclick="recordBed()">🛌 Just went to bed</div>`;
+    if(st.showWake)html+=st.wDone?`<div class="ql-pill ql-done" style="flex:1" onclick="openQLEdit('wake')">☀️ ${fmt(S.ql.wakeTime)} · edit</div>`:`<div class="ql-pill ql-wake" style="flex:1" onclick="recordWake()">☀️ Just woke up</div>`;
+    html+='</div>';
+    el.innerHTML=html;
   }
-
-  const hasContent=st.showConfirm||st.showBed||st.showWake;
-  el.innerHTML=html;
-  el.style.display=hasContent?'flex':'none';
 }
-
+function setQLQ(v,el){qlConfirmQ=v;document.querySelectorAll('.ql-qbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function recordBed(){if(!S.ql)S.ql={};S.ql.bedTime=nowStr();S.ql.bedDate=qlBedDate();saveFS();renderQL();showToast('Bedtime recorded: '+fmt(S.ql.bedTime));}
+function recordWake(){if(!S.ql)S.ql={};S.ql.wakeTime=nowStr();S.ql.wakeDate=today();saveFS();renderQL();showToast('Wake recorded: '+fmt(S.ql.wakeTime));}
+function openQLEdit(type){qlEditType=type;document.getElementById('ql-modal-title').textContent=type==='bed'?'Edit bedtime':'Edit wake time';document.getElementById('ql-time-inp').value=type==='bed'?S.ql.bedTime:S.ql.wakeTime;document.getElementById('ql-modal').classList.add('open');}
+function closeQLModal(){document.getElementById('ql-modal').classList.remove('open');}
+function saveQLTime(){const t=document.getElementById('ql-time-inp').value;if(!S.ql)S.ql={};if(qlEditType==='bed'){S.ql.bedTime=t;S.ql.bedDate=sleepDate(t);}else{S.ql.wakeTime=t;S.ql.wakeDate=today();}saveFS();closeQLModal();renderQL();showToast('Updated: '+fmt(t));}
 function confirmQLLog(){
-  // Use the correct sleep date based on bed time
-  const date=sleepDateForLog(S.ql.bedTime);
-  const bed=S.ql.bedTime, wake=S.ql.wakeTime;
-  const hrs=calcHrs(bed,wake,15);
+  const date=sleepDate(S.ql.bedTime),hrs=calcHrs(S.ql.bedTime,S.ql.wakeTime);
   if(hrs<1||hrs>16){showToast('Check your times');return;}
   S.log=S.log.filter(e=>e.date!==date);
-  S.log.push({date,bed,wake,hrs,onset:15,quality:3,wakeups:0,tags:[],note:''});
+  S.log.push({date,bed:S.ql.bedTime,wake:S.ql.wakeTime,hrs,onset:0,quality:qlConfirmQ,wakeups:0,tags:[],note:''});
   S.log.sort((a,b)=>b.date.localeCompare(a.date));
   if(S.log.length>365)S.log=S.log.slice(0,365);
-  // Clear QL
-  S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};
-  saveFS();
-  showToast('Sleep logged ✓ — open Log to add quality & notes');
-  renderQL();
-  rHome();
+  S.ql={bedTime:null,bedDate:null,wakeTime:null,wakeDate:null};qlConfirmQ=3;
+  saveFS();renderQL();renderStreaks();updateGrad();showToast('Logged ✓');rHome();
 }
 
-function recordBed(){
-  const t=nowTimeStr();
-  const d=qlDateForBed();
-  if(!S.ql)S.ql={};
-  S.ql.bedTime=t; S.ql.bedDate=d;
-  saveFS(); renderQL();
-  showToast('Bedtime recorded: '+fmt(t));
+// Tags
+function getAllTags(){return[...DEF_TAGS,...(S.customTags||[])];}
+function getDisplayTags(){const all=getAllTags(),recent=S.recentTags||[];return[...new Set([...recent,...all])].slice(0,8);}
+function addCustomTag(){
+  const v=document.getElementById('tag-inp').value.trim();if(!v)return;
+  if(getAllTags().map(t=>t.toLowerCase()).includes(v.toLowerCase())){showToast('Tag already exists');return;}
+  if((S.customTags||[]).length>=12){showToast('Max 12 custom tags');return;}
+  if(!S.customTags)S.customTags=[];S.customTags.push(v);saveFS();
+  document.getElementById('tag-modal').classList.remove('open');document.getElementById('tag-inp').value='';showToast(`"${v}" added`);
 }
-function recordWake(){
-  const t=nowTimeStr();
-  const d=today();
-  if(!S.ql)S.ql={};
-  S.ql.wakeTime=t; S.ql.wakeDate=d;
-  saveFS(); renderQL();
-  showToast('Wake time recorded: '+fmt(t));
-}
+function updateRecentTags(sel){if(!sel.length)return;S.recentTags=[...sel,...(S.recentTags||[]).filter(t=>!sel.includes(t))].slice(0,10);}
 
-function openQLEdit(type){
-  qlEditType=type;
-  const title=type==='bed'?'Edit bedtime':'Edit wake time';
-  const current=type==='bed'?S.ql?.bedTime:S.ql?.wakeTime;
-  document.getElementById('ql-modal-title').textContent=title;
-  document.getElementById('ql-edit-time').value=current||nowTimeStr();
-  document.getElementById('ql-modal').classList.add('open');
-}
-function closeQLModal(){document.getElementById('ql-modal').classList.remove('open');}
-function saveQLTime(){
-  const t=document.getElementById('ql-edit-time').value;
-  if(!S.ql)S.ql={};
-  if(qlEditType==='bed'){S.ql.bedTime=t;}
-  else{S.ql.wakeTime=t;}
-  saveFS(); closeQLModal(); renderQL();
-  showToast('Time updated: '+fmt(t));
-}
-
-// Pre-fill log from QL
-function getQLPrefill(){
-  const yd=yesterday();
-  const bed=(S.ql?.bedDate===yd||S.ql?.bedDate===today())?S.ql.bedTime:null;
-  const wake=S.ql?.wakeDate===today()?S.ql.wakeTime:null;
-  return {bed,wake};
-}
-
-// ── HOME PAGE ─────────────────────────────────────────────────
+// HOME
 function rHome(){
-  const debt=getDebt(),last=S.log[0]||null,streak=getStreak(),tb=targetBed();
-  const mins=bedAlert();
-  const[wh]=S.wakeTime.split(':').map(Number);
-  const n=new Date(),nowH=n.getHours()+n.getMinutes()/60;
-
-  document.getElementById('streak-pill').textContent=streak>0?`${streak} day streak`:'start logging';
-  const copyEl=document.getElementById('ctx-copy');
-  if(copyEl) copyEl.textContent=getContextualCopy();
-  updateGradient();
-
-  const dC=debt<5?'var(--green)':debt<10?'var(--amber)':'var(--red)';
-  const dPct=Math.min(100,Math.round(debt/20*100));
-  const lEff=last?eff(last.hrs,last.quality||3,last.wakeups||0):null;
-  const lDef=last?bedDef(last.bed):0;
-
-  // Bed countdown
-  let tM=parseInt(tb.split(':')[0])*60+parseInt(tb.split(':')[1]);
-  let nM=n.getHours()*60+n.getMinutes();
-  if(tM<720)tM+=1440;if(nM<720)nM+=1440;
-  const mLeft=tM-nM;
-  const bedC=mLeft<60?'var(--red)':mLeft<120?'var(--amber)':'var(--green)';
-
-  // Energy
-  const elapsedH=(nowH-wh+24)%24;
-  const zones=[
-    {l:'Rise',h:0,len:1.5,c:'rgba(139,92,246,0.7)'},
-    {l:'Focus',h:1.5,len:3.5,c:'rgba(48,209,88,0.75)'},
-    {l:'Dip',h:5,len:2,c:'rgba(255,159,10,0.7)'},
-    {l:'Wind',h:7,len:2,c:'rgba(10,132,255,0.7)'},
-    {l:'Peak',h:9,len:2,c:'rgba(48,209,88,0.75)'},
-    {l:'Down',h:11,len:5,c:'rgba(255,69,58,0.65)'},
-  ];
-  const zColors=['rgba(139,92,246,1)','rgba(48,209,88,1)','rgba(255,159,10,1)','rgba(10,132,255,1)','rgba(48,209,88,1)','rgba(255,69,58,0.9)'];
-  let curZone=zones[zones.length-1],curIdx=5;
-  for(let i=0;i<zones.length;i++){if(elapsedH>=zones[i].h&&elapsedH<zones[i].h+zones[i].len){curZone=zones[i];curIdx=i;break;}}
-  const markerPct=Math.min(100,Math.max(0,elapsedH/16*100));
-  const segsH=zones.map(z=>`<div class="tl-seg" style="flex:${z.len};background:${z.c}"></div>`).join('');
-  const pillsH=zones.map((z,i)=>`<div class="zone-pill${i===curIdx?' zone-now':''}" style="background:${zColors[i]}18;border-color:${zColors[i]}40;color:${zColors[i]}">${fmtH((wh+z.h)%24)} ${z.l}</div>`).join('');
-
-  // Tip
-  const tipR=TIPS[tipIdx%TIPS.length];
-  const tipH2=tipR.h.replace('{cutoff}',fmtH((wh+10)%24)).replace('{bed}',fmt(tb)).replace('{need}',S.need+'h').replace('{peak}',fmtH(wh+2)+'–'+fmtH(wh+5));
-  const tipDots=TIPS.map((_,i)=>`<div class="tip-dot${i===tipIdx%TIPS.length?' on':''}"></div>`).join('');
-
-  // Goal
-  let goalH='';
-  if(S.goal?.startDate){
-    const elapsed=Math.max(0,Math.round((new Date()-new Date(S.goal.startDate))/86400000));
-    const dLeft=Math.max(0,S.goal.targetDays-elapsed);
-    const reduced=Math.max(0,(S.goal.startDebt||0)-debt);
-    const targetR=Math.max(0.01,(S.goal.startDebt||0)-S.goal.targetDebt);
-    const pct=Math.min(100,Math.round(reduced/targetR*100));
-    const arcLen=Math.round(pct/100*150.8);
-    const gC=pct>=100?'var(--green)':pct>=50?'var(--amber)':'var(--text3)';
-    const dailyNeed=dLeft>0?Math.round((debt-S.goal.targetDebt)/dLeft*10)/10:0;
-    goalH=`<div class="goal-wrap"><div class="goal-card">
-      <div class="goal-top">
-        <div class="goal-arc-wrap">
-          <svg width="64" height="64" viewBox="0 0 64 64">
-            <circle cx="32" cy="32" r="24" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
-            <circle cx="32" cy="32" r="24" fill="none" stroke="${gC}" stroke-width="6"
-              stroke-dasharray="${arcLen} 150.8" stroke-linecap="round"/>
-          </svg>
-          <div class="goal-arc-label">
-            <div class="goal-arc-pct" style="color:${gC}">${pct}%</div>
-            <div class="goal-arc-sub">done</div>
-          </div>
-        </div>
-        <div class="goal-info">
-          <div class="goal-title">Debt goal</div>
-          <div class="goal-desc">${debt.toFixed(1)}h → ${S.goal.targetDebt}h<br>${dLeft} days remaining</div>
-        </div>
-      </div>
-      <div class="goal-row">
-        <span>Started at ${S.goal.startDebt}h debt</span>
-        <span>${debt>S.goal.targetDebt&&dLeft>0?`+${dailyNeeded2(debt,S.goal.targetDebt,dLeft)}h sleep/night needed`:'🎉 Goal reached!'}</span>
-      </div>
-    </div></div>`;
-  }
-
-  const alertH=mins!==null?`<div class="alert-bar">🌙 <span>Bedtime in <strong>${cdown(mins)}</strong> — target ${fmt(tb)}</span></div>`:'';
-
-  document.getElementById('page-home').innerHTML=alertH+`
-
-    <div class="debt-hero">
-      <div class="debt-status" style="color:${dC}">${debt<5?'Safe zone':debt<10?'Significant debt':'Critical debt'}</div>
-      <div class="debt-num" style="color:${dC}">${debt}</div>
+  const debt=getDebt(),last=S.log[0]||null,h=new Date().getHours(),ms=getMilestone(debt);
+  const mLeft=bedMinsLeft(),dC=debt<5?'var(--green)':debt<8?'var(--amber)':'var(--red)';
+  document.getElementById('ctx').textContent=getCtx();
+  renderStreaks();updateGrad();renderQL();
+  const isEve=(h>=21||h<5)&&mLeft>-120;
+  let html='';
+  if(isEve){
+    const mAbs=Math.abs(Math.round(mLeft));
+    html+=`<div class="eve-block">
+      <div class="eve-lbl">${mLeft>0?'Bedtime in':'Past bedtime by'}</div>
+      <div class="eve-big" style="color:${mLeft>0?(mLeft>60?'#fff':'var(--amber)'):'var(--red)'}">${cdown(mLeft)}</div>
+      <div class="eve-unit">${fmt(targetBed())} target</div>
+      <div class="eve-nudge">${mLeft>60?'Going to bed on time tonight starts the recovery.':mLeft>0?'Start winding down. Phone down soon.':'Every extra minute adds to your debt.'}</div>
+      <div class="eve-debt"><span style="color:var(--text2);font-size:14px">Current debt</span><span style="font-size:22px;font-weight:700;color:${dC}">${debt}h</span></div>
+    </div>`;
+  } else {
+    html+=`<div class="debt-block">
+      <div class="debt-state" style="color:${dC}">${ms.label}</div>
+      <div class="debt-big" style="color:${dC}">${debt}</div>
       <div class="debt-unit">hrs owed</div>
-      <div class="debt-bar"><div class="debt-bar-fill" style="width:${dPct}%;background:${dC}"></div></div>
-      <div class="debt-meta">
-        <span class="debt-meta-item">${S.need}h need</span>
-        <span class="debt-meta-item">·</span>
-        <span class="debt-meta-item">bed ${fmt(tb)}</span>
-        <span class="safe-badge">Safe: under 5h</span>
-      </div>
-    </div>
-
-    <div class="strip">
-      <div class="strip-card">
-        <div class="strip-label">Last night</div>
-        <div class="strip-val" style="color:${last&&lEff>=S.need?'var(--green)':last&&lEff>=S.need*.85?'var(--amber)':'var(--red)'}">${last?lEff+'h':'—'}</div>
-        <div class="strip-sub">${last?last.hrs+'h raw':''}</div>
-      </div>
-      <div class="strip-card">
-        <div class="strip-label">Target bed</div>
-        <div class="strip-val">${fmt(tb)}</div>
-        <div class="strip-sub" style="color:${bedC}">${mLeft>0?'in '+cdown(mLeft):'now'}</div>
-      </div>
-    </div>
-
-    ${last?`<div class="sec">
-      <div class="sec-label">Last night detail</div>
-      <div class="d-rows">
-        <div class="d-row"><span class="d-label">Slept at</span><span class="d-val">${fmt(last.bed)}</span></div>
-        <div class="d-row"><span class="d-label">Woke at</span><span class="d-val">${fmt(last.wake)}</span></div>
-        <div class="d-row"><span class="d-label">Bedtime deficit</span><span class="d-val" style="color:${lDef>0?'var(--amber)':'var(--green)'}">${lDef>0?'+'+lDef+'h late':'On target'}</span></div>
-        <div class="d-row"><span class="d-label">vs need</span><span class="d-val" style="color:${lEff>=S.need?'var(--green)':'var(--red)'}">${lEff>=S.need?'+':''}${Math.round((lEff-S.need)*10)/10}h</span></div>
-        <div class="d-row"><span class="d-label">Quality</span><span class="d-val">${['','Terrible','Poor','Okay','Good','Great'][last.quality||3]}</span></div>
-        ${last.wakeups?`<div class="d-row"><span class="d-label">Wakeups</span><span class="d-val">${last.wakeups}x</span></div>`:''}
-        ${last.tags?.length?`<div class="d-row"><span class="d-label">Tags</span><span class="d-val" style="color:var(--green);font-size:12px">${last.tags.join(' · ')}</span></div>`:''}
-        ${last.note?`<div class="d-row"><span class="d-label">Note</span><span class="d-val" style="color:var(--text2);font-style:italic;font-size:13px">"${last.note}"</span></div>`:''}
-      </div>
-    </div>`:''}
-
-    <div class="sec">
-      <div class="sec-label">Energy · ${curZone.l} zone now</div>
-      <div class="energy-wrap">
-        <div class="tl-row">
-          ${segsH}
-          <div class="tl-now" style="left:${markerPct}%"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:8px">
-          <span>${fmtH(wh%24)}</span><span>${fmtH((wh+4)%24)}</span><span>${fmtH((wh+8)%24)}</span><span>${fmtH((wh+12)%24)}</span><span>${fmtH((wh+16)%24)}</span>
-        </div>
-        <div class="zone-pills">${pillsH}</div>
-      </div>
-    </div>
-
-    <div class="tip-wrap">
-      <div class="tip-card">
-        <div class="tip-head">${tipH2}</div>
-        <div class="tip-body">${tipR.b.replace('{need}',S.need+'h')}</div>
-        <div class="tip-footer">
-          <div class="tip-dots">${tipDots}</div>
-          <span class="tip-next" onclick="tipIdx++;rHome()">Next →</span>
-        </div>
-      </div>
-    </div>
-
-    ${goalH}`;
-}
-
-function dailyNeeded2(debt,target,daysLeft){
-  if(daysLeft<=0)return 0;
-  return Math.round((debt-target)/daysLeft*10)/10;
-}
-
-// ── PLAN PAGE ─────────────────────────────────────────────────
-function rPlan(){
-  const last=S.log[0]||null;
-  const[wh]=S.wakeTime.split(':').map(Number);
-  const td=today();
-  const ci=S.checkins?.find(c=>c.date===td);
-  const now=new Date(),isMorn=now.getHours()>=6&&now.getHours()<=11;
-
-  let ciH='';
-  if(isMorn&&!ci){
-    ciH=`<div class="mood-wrap"><div class="mood-card">
-      <div class="mood-title">Morning check-in</div>
-      <div class="mood-sub">How are you feeling today?</div>
-      <div class="mood-row">${['😵','😩','😐','🙂','⚡'].map((e,i)=>`<button class="mbtn" onclick="logMood(${i+1},'${e}')">${e}</button>`).join('')}</div>
-    </div></div>`;
-  }else if(ci){
-    ciH=`<div class="mood-wrap"><div class="mood-card">
-      <div class="mood-title">Today's mood</div>
-      <div style="font-size:30px;margin-top:6px">${ci.emoji}</div>
-    </div></div>`;
-  }
-
-  if(!last){
-    document.getElementById('page-plan').innerHTML=ciH+`<div class="empty">
-      <div class="empty-icon">🌙</div>
-      <div class="empty-title">Log last night first</div>
-      <div class="empty-body">Your personalised day plan appears after logging sleep.</div>
-      <button class="primary-btn" onclick="go('log',document.querySelectorAll('.nav-item')[2])">Log sleep →</button>
+      <div class="debt-bar"><div class="debt-fill" style="width:${Math.min(100,debt/20*100)}%;background:${dC}"></div></div>
     </div>`;
-    return;
   }
-
-  const ef=eff(last.hrs,last.quality||3,last.wakeups||0),need=S.need,def=need-ef;
-  let dtype,dc,dsub;
-  if(def<=0){dtype='Well rested';dc='var(--green)';dsub=`${ef}h effective — at your need. Expect a sharp, focused day.`;}
-  else if(def<1.5){dtype='Mildly short';dc='rgba(48,209,88,0.9)';dsub=`${ef}h effective (${def.toFixed(1)}h short). Mostly good — dip expected mid-afternoon.`;}
-  else if(def<3){dtype='Underslept';dc='var(--amber)';dsub=`${ef}h effective (${def.toFixed(1)}h short). Some fog and slower reactions today.`;}
-  else{dtype='Significantly short';dc='var(--red)';dsub=`${ef}h effective (${def.toFixed(1)}h short). Protect your schedule today.`;}
-
-  const p1s=wh+2,p1e=wh+5,d1s=wh+6,d1e=wh+8,p2s=wh+8,p2e=wh+10,d2s=wh+11,d2e=wh+14;
-  const vzones=[
-    {bg:'rgba(48,209,88,0.25)',tc:'var(--green)',l:'Focus',d:def<1.5?'Best focus window. Deep work, hard decisions, creative tasks.':'Reduced focus. Tackle important work early before energy drops further.',s:p1s,e:p1e},
-    def>=1.5?{bg:'rgba(255,69,58,0.2)',tc:'var(--red)',l:'Crash',d:'Post-lunch crash hits harder today. Avoid critical decisions if possible.',s:d1s,e:d1e}
-    :{bg:'rgba(139,92,246,0.2)',tc:var_purple(),l:'Dip',d:'Natural afternoon dip. Emails, admin, routine tasks.',s:d1s,e:d1e},
-    def<3?{bg:'rgba(10,132,255,0.2)',tc:'var(--blue)',l:'Wind 2',d:'Second wind. Good for meetings, calls, collaborative work.',s:p2s,e:p2e}
-    :{bg:'rgba(255,159,10,0.2)',tc:'var(--amber)',l:'Blunted',d:'Second wind blunted. Light tasks only.',s:p2s,e:p2e},
-    {bg:'rgba(139,92,246,0.15)',tc:var_purple(),l:'Wind down',d:'Energy dropping. Begin wind-down. Dim screens.',s:d2s,e:d2e},
-  ];
-
-  const tb=targetBed();
-  const n2=new Date();
-  let tM2=parseInt(tb.split(':')[0])*60+parseInt(tb.split(':')[1]);
-  let nM2=n2.getHours()*60+n2.getMinutes();
-  if(tM2<720)tM2+=1440;if(nM2<720)nM2+=1440;
-  const mLeft2=tM2-nM2;
-
-  const napRec=def>=3?{show:true,txt:`Nap recommended — ${fmtH((wh+6)%24)} to ${fmtH((wh+8)%24)}`,bg:'rgba(255,69,58,0.1)',bc:'rgba(255,69,58,0.25)',tc:'var(--red)'}
-    :def>=1.5?{show:true,txt:`Optional nap before ${fmtH((wh+8)%24)} if you feel the dip`,bg:'rgba(255,159,10,0.1)',bc:'rgba(255,159,10,0.25)',tc:'var(--amber)'}
-    :{show:false,txt:"No nap needed — skip to protect tonight's sleep",bg:'rgba(48,209,88,0.08)',bc:'rgba(48,209,88,0.2)',tc:'var(--green)'};
-
-  document.getElementById('page-plan').innerHTML=ciH+`
-    <div class="plan-hero">
-      <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Today's outlook</div>
-      <div class="plan-type" style="color:${dc}">${dtype}</div>
-      <div style="font-size:13px;color:var(--text3);margin-top:3px">${ef}h effective · ${need}h needed</div>
-      <div style="font-size:14px;color:var(--text2);margin-top:10px;line-height:1.6">${dsub}</div>
-    </div>
-
-    <div class="vt-wrap">
-      <div class="sec-label" style="padding:0;margin-bottom:8px">Hour by hour — tap a zone</div>
-      <div class="vt-strip" id="vt-strip">${vzones.map((z,i)=>`<div class="vt-seg" style="flex:${z.e-z.s};background:${z.bg};color:${z.tc};" onclick="showVZ(${i})">${z.l}</div>`).join('')}</div>
-      <div class="vt-detail" id="vt-d">Tap a zone to see what to do during that time.</div>
-    </div>
-
-    <div class="pills-row">
-      <div class="pill-box"><div class="pill-val">${fmtH((wh+10)%24)}</div><div class="pill-lbl">Last coffee</div></div>
-      <div class="pill-box"><div class="pill-val">${fmt(tb)}</div><div class="pill-lbl">Target bed</div></div>
-      <div class="pill-box"><div class="pill-val" style="color:${mLeft2<60?'var(--red)':mLeft2<120?'var(--amber)':'var(--green)'}">${mLeft2>0?cdown(mLeft2):'Now'}</div><div class="pill-lbl">Bed in</div></div>
-    </div>
-
-    <div class="nap-row" style="background:${napRec.bg};border-color:${napRec.bc};color:${napRec.tc}">
-      <span style="font-size:18px">${napRec.show?'💤':'✓'}</span>
-      <span>${napRec.txt}</span>
-    </div>
-
-    <div class="sec">
-      <div class="sec-label">Tonight</div>
-      <div class="d-rows">
-        <div class="d-row"><span class="d-label">Target bedtime</span><span class="d-val">${fmt(tb)}</span></div>
-        <div class="d-row"><span class="d-label">Sleep needed</span><span class="d-val">${need}h</span></div>
-        ${mLeft2>0&&mLeft2<120?`<div class="d-row"><span class="d-label">Wind-down</span><span class="d-val" style="color:var(--amber)">In ${cdown(mLeft2)}</span></div>`:''}
+  // Milestone strip
+  const mils=[{e:'🔴',l:'Critical',at:'15h+'},{e:'🟠',l:'High',at:'8–15h'},{e:'🟡',l:'Moderate',at:'3–8h'},{e:'🟢',l:'Safe',at:'<3h'}];
+  html+=`<div class="ms-strip">${mils.map(m=>`<div class="ms-item${m.l===ms.label?' cur':''}"><div class="ms-dot">${m.e}</div><div class="ms-lbl">${m.l}</div><div class="ms-val">${m.at}</div></div>`).join('')}</div>`;
+  // Recovery row
+  if(last){
+    const ef=eff(last.hrs,last.quality||3,last.wakeups||0),delta=ef-S.need,isRec=delta>=-0.3;
+    html+=`<div class="rec-row"><div class="rec-main" style="color:${isRec?'var(--green)':'var(--red)'}">${isRec?`↓ Recovered ${fmtH(ef-S.need>0?ef-S.need:0)} last night`:`↑ Added ${fmtH(S.need-ef)} to debt last night`}</div><div class="rec-sub">${ef}h effective · ${fmt(last.bed)} → ${fmt(last.wake)}${last.quality>=4?' · slept well':last.quality<=2?' · rough night':''}</div></div>`;
+  } else {
+    html+=`<div class="rec-row"><div class="rec-main" style="color:var(--text3)">No sleep logged yet</div><div class="rec-sub">Log your first night to start tracking recovery.</div></div>`;
+  }
+  // Daily insight
+  const ins=getDailyInsight();
+  if(ins)html+=`<div class="insight-line">${ins}</div>`;
+  // Goal
+  if(S.goal?.startDate){
+    const elapsed=Math.max(0,Math.round((new Date()-new Date(S.goal.startDate))/86400000)),dLeft=Math.max(0,S.goal.targetDays-elapsed);
+    const reduced=Math.max(0,(S.goal.startDebt||0)-debt),targetR=Math.max(0.01,(S.goal.startDebt||0)-S.goal.targetDebt);
+    const pct=Math.min(100,Math.round(reduced/targetR*100)),arcLen=Math.round(pct/100*150.8);
+    const gC=pct>=100?'var(--green)':dC;
+    const dailyMins=dLeft>0&&debt>S.goal.targetDebt?Math.round((debt-S.goal.targetDebt)/dLeft*60):0;
+    html+=`<div class="insight-line" style="display:flex;align-items:center;gap:14px">
+      <div style="position:relative;width:56px;height:56px;flex-shrink:0">
+        <svg width="56" height="56" viewBox="0 0 56 56" style="transform:rotate(-90deg)"><circle cx="28" cy="28" r="23" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="5"/><circle cx="28" cy="28" r="23" fill="none" stroke="${gC}" stroke-width="5" stroke-dasharray="${arcLen} 150.8" stroke-linecap="round"/></svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${gC}">${pct}%</div>
+      </div>
+      <div><div style="font-size:14px;font-weight:600;margin-bottom:3px">Debt goal · ${dLeft} days left</div>
+        <div style="font-size:12px;color:var(--text3)">${debt>S.goal.targetDebt&&dLeft>0?`Sleep ${fmtMins(dailyMins)} more per night to reach ${S.goal.targetDebt}h`:'🎉 Goal reached!'}</div>
       </div>
     </div>`;
-
-  window._vz=vzones;
+  }
+  document.getElementById('pg-home').innerHTML=html;
 }
 
-function var_purple(){return 'rgba(191,90,242,0.9)';}
-function showVZ(i){
-  const z=window._vz?.[i];if(!z)return;
-  const[wh]=S.wakeTime.split(':').map(Number);
-  document.getElementById('vt-d').innerHTML=`<span style="font-weight:700;color:${z.tc}">${fmtH(z.s%24)}–${fmtH(z.e%24)} · ${z.l}</span><br><span style="color:var(--text2)">${z.d}</span>`;
-}
-function logMood(score,emoji){
-  const td=today();if(!S.checkins)S.checkins=[];
-  S.checkins=S.checkins.filter(c=>c.date!==td);
-  S.checkins.push({date:td,score,emoji});
-  saveFS();rPlan();
+function getDailyInsight(){
+  if(S.log.length<7)return null;
+  const ae=S.log.map(e=>({...e,ef:eff(e.hrs,e.quality||3,e.wakeups||0)}));
+  const r3=ae.slice(0,3);
+  if(r3.length===3){if(r3.every(e=>e.ef<S.need-1))return 'Three short nights in a row. Tonight really matters.';if(r3.every(e=>e.ef>=S.need*.9))return 'Three solid nights in a row. Keep this going.';}
+  const buckets=Array(7).fill(null).map(()=>[]);ae.forEach(e=>{const d=new Date(e.date+'T12:00:00').getDay();buckets[d].push(e.ef);});
+  const avgs=buckets.map(b=>b.length>=2?b.reduce((s,v)=>s+v,0)/b.length:null),valid=avgs.map((v,i)=>({v,i})).filter(x=>x.v!==null);
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  if(valid.length>=3){const worst=valid.reduce((a,b)=>a.v<b.v?a:b);if(worst.v<S.need-1)return `Your ${days[worst.i]} nights average ${Math.round(worst.v*10)/10}h — your weakest night of the week.`;}
+  const we=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d===0||d===6;}),wd=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d>0&&d<6;});
+  if(we.length>=2&&wd.length>=3){const weA=we.reduce((s,e)=>s+e.ef,0)/we.length,wdA=wd.reduce((s,e)=>s+e.ef,0)/wd.length;if(weA>wdA+.8)return `You sleep ${fmtH(weA-wdA)} more on weekends. Using them to recover debt.`;}
+  return null;
 }
 
-// ── LOG PAGE ──────────────────────────────────────────────────
+// LOG PAGE
 function rLog(){
-  logQ=3;logWU=0;logTags=[];
-  const yd=yesterday();
+  qlogStep=0;
   const pf=getQLPrefill();
-
-  document.getElementById('page-log').innerHTML=`
+  qlogData={quality:3,wakeups:0,tags:[],note:'',bed:pf.bed||'01:00',wake:pf.wake||'07:00',date:pf.bed?sleepDate(pf.bed):yesterday()};
+  pastMoreOpen=false;napFormOpen=false;showAllHist=false;
+  buildLogPage();
+}
+function getQLPrefill(){const yd=yesterday(),td=today();return{bed:(S.ql?.bedDate===yd||S.ql?.bedDate===td)?S.ql.bedTime:null,wake:S.ql?.wakeDate===td?S.ql.wakeTime:null};}
+function buildLogPage(){
+  const todayNaps=(S.naps||[]).filter(n=>n.date===today());
+  document.getElementById('pg-log').innerHTML=`
+    <div id="qlog-area"></div>
     <div class="log-sec">
-      <div class="log-sec-title">Log a night</div>
-      <div class="log-card">
-        <div class="log-row">
-          <span class="log-lbl">Date (sleep night)</span>
-          <input type="date" class="log-inp" id="ld" value="${sleepDateForLog(pf.bed||'03:00')}" max="${today()}" oninput="updPrev()">
-        </div>
-        <div class="log-row">
-          <span class="log-lbl">Bedtime</span>
-          <input type="time" class="log-inp" id="lb" value="${pf.bed||'01:00'}" oninput="updPrev()">
-        </div>
-        <div class="log-row">
-          <span class="log-lbl">Wake time</span>
-          <input type="time" class="log-inp" id="lw" value="${pf.wake||'07:00'}" oninput="updPrev()">
-        </div>
-        <div class="more-toggle" onclick="toggleMore(this)" id="more-toggle-btn">
-          <span class="more-toggle-lbl">More details</span>
-          <span class="more-toggle-icon" id="more-icon">▼</span>
-        </div>
-        <div class="more-details" id="more-details">
-          <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding-bottom:6px">
-            <span class="log-lbl" style="font-size:13px;color:var(--text3);padding-top:4px">Sleep quality</span>
-            <div class="qual-row" style="width:100%">
-              ${[['😵','Terrible',1],['😩','Poor',2],['😐','Okay',3],['🙂','Good',4],['⚡','Great',5]].map(([ic,lb,v])=>
-                `<button class="qbtn${v===3?' sel':''}" onclick="setQ(${v},this)"><span class="qi">${ic}</span>${lb}</button>`).join('')}
-            </div>
-          </div>
-          <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding-bottom:6px">
-            <span class="log-lbl" style="font-size:13px;color:var(--text3)">Times woken up</span>
-            <div class="wakeup-row" style="width:100%">
-              ${[0,1,2,3,'4+'].map((v,i)=>`<button class="wbtn${i===0?' sel':''}" onclick="setWU(${i===4?4:v},this)">${v}</button>`).join('')}
-            </div>
-          </div>
-          <div class="log-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding-bottom:6px">
-            <span class="log-lbl" style="font-size:13px;color:var(--text3)">Tags</span>
-            <div class="tags-wrap" style="padding:4px 0">${TAGS.map(t=>`<div class="tag" onclick="toggleTag('${t}',this)">${t}</div>`).join('')}</div>
-          </div>
-          <div style="border-top:1px solid var(--border)">
-            <textarea class="notes-area" id="ln" placeholder="Notes — stress, travel, anything different…"></textarea>
+      <div class="log-sec-title"><span>Nap</span><span class="log-sec-action" onclick="toggleNapForm()">+ Log nap</span></div>
+      <div id="nap-form-wrap" style="${napFormOpen?'':'display:none'}">
+        <div class="nap-card">
+          <div class="nap-row"><span class="nap-lbl">Start time</span><input type="time" class="nap-inp" id="nap-start" value="13:00"></div>
+          <div class="nap-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding-bottom:8px">
+            <span class="nap-lbl">Duration</span>
+            <div class="nap-dur-btns">${[20,30,45,60,90].map(v=>`<div class="nap-dur-btn${napDurSel===v?' sel':''}" onclick="setNapDur(${v},this)">${v}m</div>`).join('')}</div>
           </div>
         </div>
+        <div style="margin-bottom:12px"><button class="primary-btn" onclick="doNap()">Save nap</button></div>
       </div>
+      ${todayNaps.length?`<div class="nap-card">${todayNaps.map((n,i)=>`<div class="nap-entry"><span>${fmt(n.start)} · ${n.mins}min (${Math.round(n.mins*.55)}min credit)</span><button class="nap-del" onclick="delNap(${i},'${today()}')">Remove</button></div>`).join('')}</div>`:todayNaps.length===0&&!napFormOpen?'<div style="font-size:13px;color:var(--text3);padding:4px 0">No naps today</div>':''}
     </div>
-
-    <div class="preview-box" id="prev">Enter your times above</div>
-
-    <div style="padding:0 20px;margin-bottom:20px">
-      <button class="primary-btn" onclick="doLog()">Save sleep</button>
-    </div>
-
     <div class="log-sec">
-      <div class="log-sec-title" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Log a nap</span>
-        <span style="font-size:13px;color:var(--green);cursor:pointer" onclick="toggleNap()">+ Add</span>
-      </div>
-      <div id="nap-form" style="display:none">
-        <div class="log-card" style="margin-bottom:12px">
-          <div class="log-row"><span class="log-lbl">Date</span><input type="date" class="log-inp" id="nd-date" value="${yd}" max="${today()}"></div>
-          <div class="log-row"><span class="log-lbl">Start time</span><input type="time" class="log-inp" id="ns" value="13:00"></div>
-          <div class="log-row"><span class="log-lbl">Duration</span>
-            <select class="log-inp" id="ndur">
-              <option value="20">20 min</option><option value="30">30 min</option>
-              <option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option>
-            </select>
-          </div>
-        </div>
-        <div style="margin-bottom:16px"><button class="secondary-btn" onclick="doNap()">Save nap</button></div>
-      </div>
+      <div class="log-sec-title"><span>Log a past night</span><span class="log-sec-action" onclick="togglePastForm()">+ Add</span></div>
+      <div id="past-form-wrap" style="${pastMoreOpen?'':'display:none'}">${buildPastForm()}</div>
     </div>
-
     <div class="log-sec">
-      <div class="log-sec-title">History</div>
-      <div class="hist-card" id="hist"></div>
+      <div class="log-sec-title"><span>History</span>${S.log.length>7?`<span class="log-sec-action" onclick="showAllHist=!showAllHist;buildLogPage()">${showAllHist?'Show less':'View all'}</span>`:''}</div>
+      ${buildHistory()}
     </div>`;
-
-  updPrev();rHist();
+  renderQlogStep();
 }
-
-function toggleMore(btn){
-  const d=document.getElementById('more-details');
-  const ic=document.getElementById('more-icon');
-  const open=d.classList.toggle('open');
-  ic.textContent=open?'▲':'▼';
-}
-function toggleNap(){const f=document.getElementById('nap-form');f.style.display=f.style.display==='none'?'block':'none';}
-function setQ(v,el){logQ=v;document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
-function setWU(v,el){logWU=v;document.querySelectorAll('.wbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');updPrev();}
-function toggleTag(t,el){
-  if(logTags.includes(t)){logTags=logTags.filter(x=>x!==t);el.classList.remove('sel');}
-  else{logTags.push(t);el.classList.add('sel');}
-}
-
-function updPrev(){
-  const bed=document.getElementById('lb')?.value;
-  const wake=document.getElementById('lw')?.value;
-  const date=document.getElementById('ld')?.value;
-  if(!bed||!wake)return;
-  const raw=calcHrs(bed,wake,15),ef2=eff(raw,logQ,logWU),bd=bedDef(bed),tb=targetBed();
-  const ex=S.log.find(e=>e.date===date);
-  const el=document.getElementById('prev');
-  if(el)el.innerHTML=`${raw.toFixed(1)}h raw · <strong style="color:#fff">${ef2.toFixed(1)}h effective</strong><br><span style="font-size:12px;color:${bd>0?'var(--amber)':'var(--green)'}">${bd>0?`Bedtime ${bd}h past target ${fmt(tb)}`:'Bedtime on target ✓'}</span>${ex?`<br><span style="font-size:12px;color:var(--green)">Updates entry for ${fmtDate(date)}</span>`:''}`;
-}
-
-function doLog(){
-  const bed=document.getElementById('lb').value,wake=document.getElementById('lw').value;
-  const date=document.getElementById('ld').value;
-  const note=document.getElementById('ln')?.value?.trim()||'';
-  const hrs=calcHrs(bed,wake,15);
-  if(hrs<1||hrs>16){alert('Check your times');return;}
-  S.log=S.log.filter(e=>e.date!==date);
-  S.log.push({date,bed,wake,hrs,onset:15,quality:logQ,wakeups:logWU,tags:[...logTags],note});
-  S.log.sort((a,b)=>b.date.localeCompare(a.date));
-  if(S.log.length>365)S.log=S.log.slice(0,365);
-  // Clear QL for logged date
-  if(S.ql){S.ql.bedDate=null;S.ql.wakeDate=null;}
-  saveFS();
-  go('plan',document.querySelectorAll('.nav-item')[1]);
-}
-
+function toggleNapForm(){napFormOpen=!napFormOpen;buildLogPage();}
+function togglePastForm(){pastMoreOpen=!pastMoreOpen;buildLogPage();}
+function setNapDur(v,el){napDurSel=v;document.querySelectorAll('.nap-dur-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
 function doNap(){
-  const start=document.getElementById('ns').value,mins=parseInt(document.getElementById('ndur').value),date=document.getElementById('nd-date').value;
-  if(!S.naps)S.naps=[];
-  S.naps.push({date,start,mins});
-  saveFS();showToast('Nap saved ✓');
-  document.getElementById('nap-form').style.display='none';
+  const start=document.getElementById('nap-start')?.value||'13:00';
+  if(!S.naps)S.naps=[];S.naps.push({date:today(),start,mins:napDurSel});
+  saveFS();showToast(`Nap saved · ${napDurSel}min · ${Math.round(napDurSel*.55)}min credit`);napFormOpen=false;buildLogPage();
+}
+function delNap(idx,date){S.naps=S.naps.filter((n,i)=>!(n.date===date&&i===idx));saveFS();buildLogPage();}
+
+function buildPastForm(){
+  const tags=getDisplayTags();
+  return `<div class="past-form-card">
+    <div class="past-row"><span class="past-lbl">Date</span><input type="date" class="past-inp" id="pf-date" value="${yesterday()}" max="${today()}" oninput="updPastPrev()"></div>
+    <div class="past-row"><span class="past-lbl">Bedtime</span><input type="time" class="past-inp" id="pf-bed" value="01:00" oninput="updPastPrev()"></div>
+    <div class="past-row"><span class="past-lbl">Wake time</span><input type="time" class="past-inp" id="pf-wake" value="07:00" oninput="updPastPrev()"></div>
+    <div class="past-row"><span class="past-lbl">How was it?</span>
+      <select class="past-inp" id="pf-q" oninput="updPastPrev()"><option value="1">😵 Rough</option><option value="3" selected>😐 Okay</option><option value="4">🙂 Good</option><option value="5">⚡ Great</option></select>
+    </div>
+    <div class="past-row"><span class="past-lbl">Broken sleep?</span>
+      <select class="past-inp" id="pf-wu"><option value="0">No</option><option value="2">Yes</option></select>
+    </div>
+    <div class="past-more" onclick="pastMoreOpen=!pastMoreOpen;buildLogPage()">
+      <span>Tags & notes</span><span>${pastMoreOpen?'▲':'▼'}</span>
+    </div>
+    <div class="past-more-body${pastMoreOpen?' open':''}">
+      <div style="padding:10px 16px"><div class="tags-wrap" id="pf-tags">${tags.map(t=>`<div class="tag" onclick="togglePFTag('${t}',this)">${t}</div>`).join('')}<div class="tag-add" onclick="document.getElementById('tag-modal').classList.add('open')">+ New</div></div>
+      <textarea class="notes-inp" id="pf-note" placeholder="Optional note…"></textarea></div>
+    </div>
+  </div>
+  <div class="prev-box" id="past-prev">Enter times above</div>
+  <div style="margin-bottom:16px"><button class="primary-btn" onclick="savePastLog()">Save</button></div>`;
+}
+let pfTagsSel=[];
+function togglePFTag(t,el){if(pfTagsSel.includes(t)){pfTagsSel=pfTagsSel.filter(x=>x!==t);el.classList.remove('sel');}else{pfTagsSel.push(t);el.classList.add('sel');}}
+function updPastPrev(){
+  const bed=document.getElementById('pf-bed')?.value,wake=document.getElementById('pf-wake')?.value,q=parseInt(document.getElementById('pf-q')?.value||3);
+  if(!bed||!wake)return;
+  const hrs=calcHrs(bed,wake),ef2=eff(hrs,q,0),bd=bedDef(bed);
+  const el=document.getElementById('past-prev');
+  if(el)el.innerHTML=`${hrs.toFixed(1)}h · <strong style="color:#fff">${ef2.toFixed(1)}h effective</strong> · <span style="color:${bd>0?'var(--amber)':'var(--green)'}">${bd>0?`${bd}h past target`:'On time'}</span>`;
+}
+function savePastLog(){
+  const bed=document.getElementById('pf-bed')?.value,wake=document.getElementById('pf-wake')?.value;
+  const date=document.getElementById('pf-date')?.value,q=parseInt(document.getElementById('pf-q')?.value||3);
+  const wu=parseInt(document.getElementById('pf-wu')?.value||0),note=document.getElementById('pf-note')?.value?.trim()||'';
+  if(!bed||!wake){showToast('Enter bedtime and wake time');return;}
+  const hrs=calcHrs(bed,wake);if(hrs<1||hrs>16){showToast('Check your times');return;}
+  S.log=S.log.filter(e=>e.date!==date);
+  S.log.push({date,bed,wake,hrs,onset:0,quality:q,wakeups:wu,tags:[...pfTagsSel],note});
+  S.log.sort((a,b)=>b.date.localeCompare(a.date));if(S.log.length>365)S.log=S.log.slice(0,365);
+  updateRecentTags(pfTagsSel);pfTagsSel=[];saveFS();pastMoreOpen=false;showToast('Saved');buildLogPage();
 }
 
-function rHist(){
-  const el=document.getElementById('hist');if(!el)return;
-  if(!S.log.length){el.innerHTML='<div style="padding:24px;text-align:center;font-size:14px;color:var(--text3)">No entries yet</div>';return;}
-  const qI=['','😵','😩','😐','🙂','⚡'];
-  el.innerHTML=S.log.slice(0,21).map(e=>{
-    const ef2=eff(e.hrs,e.quality||3,e.wakeups||0),good=ef2>=S.need-.5,c=good?'var(--green)':'var(--red)';
-    return `<div class="hist-entry" id="he-${e.date}">
-      <div class="hist-main" onclick="toggleHist('${e.date}')">
-        <div class="hist-dot" style="background:${c}"></div>
-        <div class="hist-info">
-          <div class="hist-date">${fmtDate(e.date)}</div>
-          <div class="hist-times">${e.bed}→${e.wake} · ${qI[e.quality||3]}${e.wakeups?` · ${e.wakeups}x`:''}</div>
-          ${e.tags?.length?`<div class="hist-tags">${e.tags.join(' · ')}</div>`:''}
-        </div>
-        <div class="hist-hrs" style="color:${c}">${ef2}h</div>
+// Qlog flow
+function renderQlogStep(){
+  const el=document.getElementById('qlog-area');if(!el)return;
+  const dots=[0,1,2].map(i=>`<div class="qlog-dot${i===qlogStep?' on':''}"></div>`).join('');
+  if(qlogStep===0){
+    el.innerHTML=`<div class="qlog-step fu"><div class="qlog-dots">${dots}</div>
+      <div class="qlog-q">How was last night?</div>
+      <div class="qlog-opts">
+        ${[['😵','Rough','Short, broken, or restless.',1],['😐','Okay','Average — felt normal.',3],['🙂','Good','Slept well, feel rested.',4],['⚡','Great','Slept through, feel sharp.',5]].map(([ic,lb,sub,v])=>
+          `<div class="qlog-opt${qlogData.quality===v?' sel':''}" onclick="qlS0(${v})">${ic} ${lb}<div class="qlog-opt-sub">${sub}</div></div>`).join('')}
+      </div></div>`;
+  } else if(qlogStep===1){
+    el.innerHTML=`<div class="qlog-step fu"><div class="qlog-dots">${dots}</div>
+      <div class="qlog-q">When did you sleep?</div>
+      <div class="qlog-time-row">
+        <div class="qlog-tf"><div class="qlog-tf-lbl">Went to bed</div><input type="time" class="qlog-tf-inp" id="ql-bed" value="${qlogData.bed}" oninput="qlogData.bed=this.value;qlogData.date=sleepDate(this.value);updQLPrev()"></div>
+        <div class="qlog-tf"><div class="qlog-tf-lbl">Woke up</div><input type="time" class="qlog-tf-inp" id="ql-wake" value="${qlogData.wake}" oninput="qlogData.wake=this.value;updQLPrev()"></div>
       </div>
-      <div class="hist-expanded" id="hx-${e.date}">
-        <div class="hist-exp-row"><span class="hist-exp-lbl">Raw sleep</span><span class="hist-exp-val">${e.hrs}h</span></div>
-        <div class="hist-exp-row"><span class="hist-exp-lbl">Effective</span><span class="hist-exp-val">${ef2}h</span></div>
-        <div class="hist-exp-row"><span class="hist-exp-lbl">vs need</span><span class="hist-exp-val" style="color:${ef2>=S.need?'var(--green)':'var(--red)'}">${ef2>=S.need?'+':''}${Math.round((ef2-S.need)*10)/10}h</span></div>
-        <div class="hist-exp-row"><span class="hist-exp-lbl">Bedtime</span><span class="hist-exp-val" style="color:${bedDef(e.bed)>0?'var(--amber)':'var(--green)'}">${bedDef(e.bed)>0?'+'+bedDef(e.bed)+'h late':'On target'}</span></div>
-        ${e.note?`<div class="hist-exp-row"><span class="hist-exp-lbl">Note</span><span class="hist-exp-val" style="color:var(--text2);font-style:italic">"${e.note}"</span></div>`:''}
-        <div class="hist-actions">
-          <button class="hist-action edit" onclick="openEdit('${e.date}')">Edit</button>
-          <button class="hist-action del" onclick="delEntry('${e.date}')">Delete</button>
-        </div>
-      </div>
+      <div class="qlog-prev" id="ql-prev"></div>
+      <div class="qlog-nav"><button class="qlog-back" onclick="qlogStep=0;renderQlogStep()">← Back</button><button class="qlog-next" onclick="qlS1Next()">Next →</button></div>
     </div>`;
+    updQLPrev();
+  } else if(qlogStep===2){
+    const tags=getDisplayTags();
+    el.innerHTML=`<div class="qlog-step fu"><div class="qlog-dots">${dots}</div>
+      <div class="qlog-q">Anything different?</div>
+      <div class="tags-wrap">${tags.map(t=>`<div class="tag${qlogData.tags.includes(t)?' sel':''}" onclick="toggleQlTag('${t}',this)">${t}</div>`).join('')}<div class="tag-add" onclick="document.getElementById('tag-modal').classList.add('open')">+ New</div></div>
+      <textarea class="notes-inp" id="ql-note" placeholder="Optional note…">${qlogData.note||''}</textarea>
+      <div class="qlog-nav"><button class="qlog-back" onclick="qlogStep=1;renderQlogStep()">← Back</button><button class="qlog-next" onclick="saveQlog()">Save</button></div>
+      <div class="qlog-skip"><button class="qlog-skip-btn" onclick="saveQlog()">Skip & save</button></div>
+    </div>`;
+  }
+}
+function qlS0(v){qlogData.quality=v;qlogStep=1;renderQlogStep();}
+function qlS1Next(){if(!qlogData.bed||!qlogData.wake){showToast('Enter both times');return;}const hrs=calcHrs(qlogData.bed,qlogData.wake);if(hrs<1||hrs>16){showToast('Check your times');return;}qlogStep=2;renderQlogStep();}
+function updQLPrev(){const el=document.getElementById('ql-prev');if(!el)return;const hrs=calcHrs(qlogData.bed||'01:00',qlogData.wake||'07:00'),ef2=eff(hrs,qlogData.quality,0);el.textContent=`${hrs.toFixed(1)}h · ~${ef2.toFixed(1)}h effective`;}
+function toggleQlTag(t,el){if(qlogData.tags.includes(t)){qlogData.tags=qlogData.tags.filter(x=>x!==t);el.classList.remove('sel');}else{qlogData.tags.push(t);el.classList.add('sel');}}
+function saveQlog(){
+  qlogData.note=document.getElementById('ql-note')?.value?.trim()||'';
+  const date=qlogData.date||yesterday(),hrs=calcHrs(qlogData.bed,qlogData.wake);
+  if(hrs<1||hrs>16){showToast('Check your times');return;}
+  S.log=S.log.filter(e=>e.date!==date);
+  S.log.push({date,bed:qlogData.bed,wake:qlogData.wake,hrs,onset:0,quality:qlogData.quality,wakeups:qlogData.wakeups||0,tags:[...qlogData.tags],note:qlogData.note});
+  S.log.sort((a,b)=>b.date.localeCompare(a.date));if(S.log.length>365)S.log=S.log.slice(0,365);
+  updateRecentTags(qlogData.tags);
+  if(S.ql){S.ql.bedDate=null;S.ql.wakeDate=null;}
+  saveFS();showToast('Logged ✓');
+  qlogStep=0;qlogData={quality:3,wakeups:0,tags:[],note:'',bed:'',wake:'',date:yesterday()};
+  buildLogPage();go('home',document.querySelector('.ni'));
+}
+
+function buildHistory(){
+  if(!S.log.length)return '<div style="font-size:13px;color:var(--text3)">No entries yet</div>';
+  const qI=['','😵','😩','😐','🙂','⚡'];
+  // Group by week
+  const weeks={};
+  const displayLog=showAllHist?S.log:S.log.slice(0,7);
+  displayLog.forEach(e=>{
+    const d=new Date(e.date+'T12:00:00'),wk=new Date(d);wk.setDate(d.getDate()-d.getDay());
+    const wkKey=wk.toISOString().slice(0,10);
+    if(!weeks[wkKey])weeks[wkKey]={key:wkKey,entries:[]};weeks[wkKey].entries.push(e);
+  });
+  return Object.values(weeks).map(wk=>{
+    const effs=wk.entries.map(e=>eff(e.hrs,e.quality||3,e.wakeups||0));
+    const avg=Math.round(effs.reduce((s,v)=>s+v,0)/effs.length*10)/10;
+    const wkLabel=new Date(wk.key+'T12:00:00').toLocaleDateString('en-IN',{month:'short',day:'numeric'});
+    return `<div class="hist-week-hdr"><span>Week of ${wkLabel}</span><span style="color:${avg>=S.need?'var(--green)':'var(--amber)'}">avg ${avg}h</span></div>
+    <div class="hist-card">${wk.entries.map(e=>{
+      const ef2=eff(e.hrs,e.quality||3,e.wakeups||0),good=ef2>=S.need-.5,c=good?'var(--green)':'var(--red)';
+      return `<div class="hist-entry" id="he-${e.date}">
+        <div class="hist-main" onclick="toggleHist('${e.date}')">
+          <div class="hist-dot" style="background:${c}"></div>
+          <div class="hist-info"><div class="hist-date">${fmtDate(e.date)}</div>
+            <div class="hist-times">${e.bed}→${e.wake} · ${qI[e.quality||3]}${e.wakeups?' · broken':''}</div>
+            ${e.tags?.length?`<div class="hist-tags-l">${e.tags.join(' · ')}</div>`:''}
+          </div>
+          <div class="hist-hrs" style="color:${c}">${ef2}h</div>
+        </div>
+        <div class="hist-exp" id="hx-${e.date}">
+          <div class="hist-exp-row"><span class="hist-exp-lbl">Effective sleep</span><span class="hist-exp-val">${ef2}h</span></div>
+          <div class="hist-exp-row"><span class="hist-exp-lbl">vs need</span><span class="hist-exp-val" style="color:${ef2>=S.need?'var(--green)':'var(--red)'}">${ef2>=S.need?'+':''}${Math.round((ef2-S.need)*10)/10}h</span></div>
+          <div class="hist-exp-row"><span class="hist-exp-lbl">Bedtime deficit</span><span class="hist-exp-val" style="color:${bedDef(e.bed)>0?'var(--amber)':'var(--green)'}">${bedDef(e.bed)>0?`+${bedDef(e.bed)}h late`:'On target'}</span></div>
+          ${e.note?`<div class="hist-exp-row"><span class="hist-exp-lbl">Note</span><span class="hist-exp-val" style="color:var(--text2);font-style:italic">"${e.note}"</span></div>`:''}
+          <div class="hist-acts">
+            <button class="hist-act edit" onclick="openEdit('${e.date}')">Edit</button>
+            <button class="hist-act del" onclick="delEntry('${e.date}')">Delete</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
   }).join('');
 }
 
 function toggleHist(d){const x=document.getElementById('hx-'+d);if(x)x.style.display=x.style.display==='block'?'none':'block';}
-function delEntry(d){if(!confirm(`Delete entry for ${fmtDate(d)}?`))return;S.log=S.log.filter(e=>e.date!==d);saveFS();rLog();}
+function delEntry(d){if(!confirm(`Delete entry for ${fmtDate(d)}?`))return;S.log=S.log.filter(e=>e.date!==d);saveFS();buildLogPage();}
 function openEdit(d){
   const e=S.log.find(e=>e.date===d);if(!e)return;
+  editTagsSel=[...(e.tags||[])];
   document.getElementById('edit-date').value=d;
-  document.getElementById('edit-bed').value=e.bed;
-  document.getElementById('edit-wake').value=e.wake;
-  document.getElementById('edit-quality').value=e.quality||3;
+  document.getElementById('edit-bed').value=e.bed;document.getElementById('edit-wake').value=e.wake;
+  document.getElementById('edit-q').value=e.quality||3;document.getElementById('edit-wu').value=e.wakeups||0;
+  document.getElementById('edit-note').value=e.note||'';
+  const tw=document.getElementById('edit-tags-wrap');
+  if(tw)tw.innerHTML=getDisplayTags().map(t=>`<div class="tag${editTagsSel.includes(t)?' sel':''}" onclick="toggleEditTag('${t}',this)">${t}</div>`).join('')+`<div class="tag-add" onclick="document.getElementById('tag-modal').classList.add('open')">+ New</div>`;
   document.getElementById('edit-modal').classList.add('open');
 }
+function toggleEditTag(t,el){if(editTagsSel.includes(t)){editTagsSel=editTagsSel.filter(x=>x!==t);el.classList.remove('sel');}else{editTagsSel.push(t);el.classList.add('sel');}}
 function closeEdit(){document.getElementById('edit-modal').classList.remove('open');}
 function saveEdit(){
-  const d=document.getElementById('edit-date').value;
-  const bed=document.getElementById('edit-bed').value,wake=document.getElementById('edit-wake').value;
-  const quality=parseInt(document.getElementById('edit-quality').value);
-  const hrs=calcHrs(bed,wake,15);
-  S.log=S.log.map(e=>e.date===d?{...e,bed,wake,hrs,quality}:e);
-  saveFS();closeEdit();rLog();
+  const d=document.getElementById('edit-date').value,bed=document.getElementById('edit-bed').value,wake=document.getElementById('edit-wake').value;
+  const q=parseInt(document.getElementById('edit-q').value),wu=parseInt(document.getElementById('edit-wu').value),note=document.getElementById('edit-note').value.trim();
+  const hrs=calcHrs(bed,wake);
+  S.log=S.log.map(e=>e.date===d?{...e,bed,wake,hrs,quality:q,wakeups:wu,tags:[...editTagsSel],note}:e);
+  saveFS();closeEdit();buildLogPage();
 }
 
-// ── INSIGHTS PAGE ─────────────────────────────────────────────
+// INSIGHTS
 function rInsights(){
   if(S.log.length<3){
-    document.getElementById('page-insights').innerHTML=`
-      <div class="ptabs">${['week','month','year','all'].map(p=>`<div class="ptab${insPeriod===p?' on':''}" onclick="setP('${p}')">${p==='all'?'All':p.charAt(0).toUpperCase()+p.slice(1)}</div>`).join('')}</div>
-      <div class="empty">
-        <div class="empty-icon">📊</div>
-        <div class="empty-title">Insights unlock soon</div>
+    document.getElementById('pg-insights').innerHTML=`
+      <div class="ptabs">${['week','month','year','all'].map(p=>`<div class="ptab${insPeriod===p?' on':''}" onclick="setP('${p}')">${p==='all'?'All':p[0].toUpperCase()+p.slice(1)}</div>`).join('')}</div>
+      <div class="empty"><div class="empty-icon">📊</div><div class="empty-title">Insights unlock soon</div>
         <div class="empty-body">Log ${3-S.log.length} more night${3-S.log.length===1?'':'s'} to unlock patterns.</div>
       </div>
       <div style="padding:0 20px">
-        ${[
-          {icon:'🗓️',t:'Sleep heatmap',b:'16 weeks of colour-coded squares. See patterns at a glance.'},
-          {icon:'⏰',t:'Bedtime consistency',b:'Scores how regular your sleep timing is.'},
-          {icon:'📅',t:'Day of week patterns',b:'Your best and worst sleep days revealed.'},
-          {icon:'🔗',t:'Mood vs sleep',b:'Correlation between how you sleep and how you feel.'},
-          {icon:'📈',t:'Debt trend',b:'How your sleep debt moves over time.'},
-        ].map(i=>`<div class="ins-card" style="opacity:.35"><div class="ins-icon">${i.icon}</div><div class="ins-title">${i.t}</div><div class="ins-body">${i.b}</div></div>`).join('')}
+        ${[['🗓️','Sleep heatmap','16 weeks of colour-coded squares. See patterns at a glance.'],['⏰','Bedtime consistency','How regular your sleep timing is.'],['📅','Day of week','Your best and worst sleep days.'],['🔗','Mood correlation','How sleep quality affects how you feel.'],['📈','Debt trend','How your debt moves over time.']].map(([ic,t,b])=>`<div class="ins-card-item" style="opacity:.35"><div class="ins-icon">${ic}</div><div class="ins-title">${t}</div><div class="ins-body">${b}</div></div>`).join('')}
       </div>`;
     return;
   }
-
   const pl=getPL(insPeriod),effs=pl.map(e=>eff(e.hrs,e.quality||3,e.wakeups||0));
   const avg=effs.length?Math.round(effs.reduce((s,v)=>s+v,0)/effs.length*10)/10:0;
   const best=effs.length?Math.max(...effs):0,worst=effs.length?Math.min(...effs):0;
   const cons=calcCons(pl),ins=genInsights();
-  const debt=getDebt(),nightly=avg-S.need;
-  let running=debt;
-
-  document.getElementById('page-insights').innerHTML=`
-    <div class="ptabs">${['week','month','year','all'].map(p=>`<div class="ptab${insPeriod===p?' on':''}" onclick="setP('${p}')">${p==='all'?'All':p.charAt(0).toUpperCase()+p.slice(1)}</div>`).join('')}</div>
-
+  const debt=getDebt(),nightly=avg-S.need;let running=debt;
+  const keyIns=ins[0]||null;
+  document.getElementById('pg-insights').innerHTML=`
+    ${keyIns?`<div class="ins-hero"><div class="ins-hero-lbl">Key insight</div><div class="ins-hero-text">${keyIns.title}</div><div class="ins-hero-sub">${keyIns.body}</div></div>`:''}
+    <div class="ptabs">${['week','month','year','all'].map(p=>`<div class="ptab${insPeriod===p?' on':''}" onclick="setP('${p}')">${p==='all'?'All':p[0].toUpperCase()+p.slice(1)}</div>`).join('')}</div>
     <div class="ps-grid">
       <div class="ps-card"><div class="ps-val" style="color:${avg>=S.need?'var(--green)':'var(--red)'}">${avg}h</div><div class="ps-lbl">Avg effective</div></div>
       <div class="ps-card"><div class="ps-val">${pl.length}</div><div class="ps-lbl">Nights logged</div></div>
       <div class="ps-card"><div class="ps-val" style="color:var(--green)">${best}h</div><div class="ps-lbl">Best night</div></div>
       <div class="ps-card"><div class="ps-val" style="color:var(--red)">${worst}h</div><div class="ps-lbl">Worst night</div></div>
     </div>
-
-    <div style="padding:0 20px;margin-bottom:20px">
-      <div class="log-sec-title">Sleep heatmap</div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:14px">
-        <div id="hm"></div>
-        <div style="display:flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;color:var(--text3);flex-wrap:wrap">
-          <span>Less</span>${['#222','#4a1515','#4a3010','#0f3320','#0f4a20'].map(c=>`<div style="width:11px;height:11px;border-radius:2px;background:${c};flex-shrink:0"></div>`).join('')}<span>More</span>
+    <div class="ins-sec"><div class="ins-sec-title">Sleep heatmap</div>
+      <div class="ins-box"><div id="hm"></div>
+        <div style="display:flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;color:var(--text3)"><span>Less</span>${['#1a1a1a','#4a1515','#4a3010','#0f3320','#0f4a20'].map(c=>`<div style="width:11px;height:11px;border-radius:2px;background:${c};flex-shrink:0"></div>`).join('')}<span>More</span></div>
+      </div>
+    </div>
+    <div class="ins-sec"><div class="ins-sec-title">Bedtime consistency</div>
+      <div class="ins-box"><div class="cons-wrap">
+        <div class="ring-wrap"><svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/><circle cx="36" cy="36" r="30" fill="none" stroke="${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}" stroke-width="6" stroke-dasharray="${Math.round(cons/100*188.5)} 188.5" stroke-linecap="round"/></svg>
+          <div class="ring-inner"><div class="ring-num" style="color:${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}">${cons}</div><div class="ring-sub">/ 100</div></div>
         </div>
-      </div>
-    </div>
-
-    <div style="padding:0 20px;margin-bottom:20px">
-      <div class="log-sec-title">Bedtime consistency</div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:16px">
-        <div class="cons-ring">
-          <div class="ring-wrap">
-            <svg width="72" height="72" viewBox="0 0 72 72">
-              <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
-              <circle cx="36" cy="36" r="30" fill="none" stroke="${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}" stroke-width="6"
-                stroke-dasharray="${Math.round(cons/100*188.5)} 188.5" stroke-linecap="round"/>
-            </svg>
-            <div class="ring-inner"><div class="ring-num" style="color:${cons>=80?'var(--green)':cons>=60?'var(--amber)':'var(--red)'}">${cons}</div><div class="ring-sub">/ 100</div></div>
-          </div>
-          <div>
-            <div style="font-size:15px;font-weight:700;margin-bottom:4px">${cons>=80?'Very consistent':cons>=60?'Fairly consistent':'Inconsistent'}</div>
-            <div style="font-size:13px;color:var(--text2);line-height:1.6">Based on bedtime variance. Timing matters as much as duration.</div>
-          </div>
+        <div><div style="font-size:15px;font-weight:700;margin-bottom:4px">${cons>=80?'Very consistent':cons>=60?'Fairly consistent':'Inconsistent'}</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.6">Based on bedtime variance. Timing matters as much as duration.</div>
         </div>
+      </div></div>
+    </div>
+    <div class="ins-sec"><div class="ins-sec-title">Sleep by day of week</div>
+      <div class="ins-box"><div id="dow"></div><div style="font-size:11px;color:var(--text3);margin-top:8px">avg effective · need: ${S.need}h</div></div>
+    </div>
+    <div class="ins-sec"><div class="ins-sec-title">Debt trend</div>
+      <div class="ins-box"><div class="trend-wrap"><canvas id="tc"></canvas></div></div>
+    </div>
+    ${ins.length>1?`<div class="ins-sec"><div class="ins-sec-title">All insights</div>${ins.slice(1).map(i=>`<div class="ins-card-item"><div class="ins-icon">${i.icon}</div><div class="ins-title">${i.title}</div><div class="ins-body">${i.body}</div></div>`).join('')}</div>`:''}
+    <div class="ins-sec"><div class="ins-sec-title">Debt projection</div>
+      <div class="ins-box" style="padding:4px 16px">
+        <div style="font-size:13px;color:var(--text2);padding:10px 0;border-bottom:1px solid var(--border)">${nightly>=0?`Recovering ${fmtH(nightly)}/night avg`:`Adding ${fmtH(Math.abs(nightly))}/night avg`}</div>
+        ${['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{running=Math.max(0,running+nightly*(i<3?7:28));const rv=Math.round(running*10)/10,c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';return `<div class="proj-row"><span style="color:var(--text2)">${w}</span><span style="font-weight:700;color:${c}">${rv}h debt</span></div>`;}).join('')}
       </div>
     </div>
-
-    <div style="padding:0 20px;margin-bottom:20px">
-      <div class="log-sec-title">Sleep by day of week</div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:16px">
-        <div id="dow"></div>
-        <div style="font-size:11px;color:var(--text3);margin-top:8px">avg effective · need: ${S.need}h</div>
-      </div>
-    </div>
-
-    <div style="padding:0 20px;margin-bottom:20px">
-      <div class="log-sec-title">Debt trend</div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:16px">
-        <div class="trend-wrap"><canvas id="tc"></canvas></div>
-      </div>
-    </div>
-
-    ${ins.length?`<div style="padding:0 20px;margin-bottom:20px">
-      <div class="log-sec-title">Insights</div>
-      ${ins.map(i=>`<div class="ins-card"><div class="ins-icon">${i.icon}</div><div class="ins-title">${i.title}</div><div class="ins-body">${i.body}</div></div>`).join('')}
-    </div>`:''}
-
-    <div style="padding:0 20px;margin-bottom:20px">
-      <div class="log-sec-title">Debt projection</div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:16px;padding:4px 16px">
-        <div style="font-size:13px;color:var(--text2);padding:10px 0;border-bottom:1px solid var(--border)">${nightly>=0?`Recovering ${Math.round(nightly*10)/10}h/night avg`:`Adding ${Math.round(Math.abs(nightly)*10)/10}h debt/night avg`}</div>
-        ${['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{
-          running=Math.max(0,running+nightly*(i<3?7:28));
-          const rv=Math.round(running*10)/10,c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';
-          return `<div class="proj-row"><span style="color:var(--text2)">${w}</span><span style="font-weight:700;color:${c}">${rv}h debt</span></div>`;
-        }).join('')}
-      </div>
-    </div>
-
-    <div style="padding:0 20px;margin-bottom:20px">
-      <button class="secondary-btn" onclick="doExport()">Export CSV</button>
-    </div>`;
-
+    <div class="ins-sec"><button class="secondary-btn" onclick="doExport()">Export CSV</button></div>`;
   buildHM();buildDOW();buildTrend(pl);
 }
-
 function setP(p){insPeriod=p;rInsights();}
-function getPL(period){
-  const now=new Date(),cutoff=new Date(now);
-  if(period==='week')cutoff.setDate(cutoff.getDate()-7);
-  else if(period==='month')cutoff.setDate(cutoff.getDate()-30);
-  else if(period==='year')cutoff.setFullYear(cutoff.getFullYear()-1);
-  else return S.log;
-  return S.log.filter(e=>new Date(e.date+'T12:00:00')>=cutoff);
-}
-function calcCons(logs){
-  if(logs.length<3)return 0;
-  const mins=logs.map(e=>{let[h,m]=e.bed.split(':').map(Number),v=h*60+m;if(v<720)v+=1440;return v;});
-  const mean=mins.reduce((s,v)=>s+v,0)/mins.length;
-  const std=Math.sqrt(mins.reduce((s,v)=>s+(v-mean)**2,0)/mins.length);
-  return Math.max(0,Math.round(100-std/.9));
-}
+function getPL(p){const now=new Date(),cut=new Date(now);if(p==='week')cut.setDate(cut.getDate()-7);else if(p==='month')cut.setDate(cut.getDate()-30);else if(p==='year')cut.setFullYear(cut.getFullYear()-1);else return S.log;return S.log.filter(e=>new Date(e.date+'T12:00:00')>=cut);}
+function calcCons(logs){if(logs.length<3)return 0;const mins=logs.map(e=>{let[h,m]=e.bed.split(':').map(Number),v=h*60+m;if(v<720)v+=1440;return v;});const mean=mins.reduce((s,v)=>s+v,0)/mins.length,std=Math.sqrt(mins.reduce((s,v)=>s+(v-mean)**2,0)/mins.length);return Math.max(0,Math.round(100-std/.9));}
 function buildHM(){
   const c=document.getElementById('hm');if(!c)return;
   const logMap={};S.log.forEach(e=>{logMap[e.date]=eff(e.hrs,e.quality||3,e.wakeups||0);});
-  const now=new Date(),start=new Date(now);
-  start.setDate(start.getDate()-111);start.setDate(start.getDate()-start.getDay());
+  const now=new Date(),start=new Date(now);start.setDate(start.getDate()-111);start.setDate(start.getDate()-start.getDay());
   const weeks=[];let cur=new Date(start);
   while(cur<=now){const week=[];for(let d=0;d<7;d++){const ds=cur.toISOString().slice(0,10);week.push({date:ds,v:logMap[ds]??null,f:cur>now});cur.setDate(cur.getDate()+1);}weeks.push(week);}
-  function cc(v){if(v===null)return '#1a1a1a';const r=v/S.need;return r>=1?'#0f4a20':r>=.85?'#0f3320':r>=.7?'#4a3010':r>=.5?'#4a1515':'#3a0a0a';}
+  const cc=v=>{if(v===null)return '#1a1a1a';const r=v/S.need;return r>=1?'#0f4a20':r>=.85?'#0f3320':r>=.7?'#4a3010':r>=.5?'#4a1515':'#3a0a0a';};
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],days=['S','M','T','W','T','F','S'];
   let mH='<div style="display:flex;margin-left:22px;margin-bottom:4px;gap:3px;">',lm=-1;
-  weeks.forEach(w=>{const d=new Date(w[0].date+'T12:00:00');if(d.getMonth()!==lm){mH+=`<div style="font-size:9px;color:var(--text3);min-width:13px">${months[d.getMonth()]}</div>`;lm=d.getMonth();}else{mH+='<div style="min-width:13px"></div>';}});
-  mH+='</div>';
+  weeks.forEach(w=>{const d=new Date(w[0].date+'T12:00:00');if(d.getMonth()!==lm){mH+=`<div style="font-size:9px;color:var(--text3);min-width:13px">${months[d.getMonth()]}</div>`;lm=d.getMonth();}else mH+='<div style="min-width:13px"></div>';});mH+='</div>';
   let gH=`<div style="display:flex;gap:3px"><div style="display:flex;flex-direction:column;gap:3px;margin-right:4px">${days.map(d=>`<div style="font-size:9px;color:var(--text3);height:13px;display:flex;align-items:center">${d}</div>`).join('')}</div>`;
-  weeks.forEach(w=>{gH+='<div style="display:flex;flex-direction:column;gap:3px">';w.forEach(day=>{gH+=`<div style="width:13px;height:13px;border-radius:2px;background:${day.f?'transparent':cc(day.v)};flex-shrink:0" title="${day.v!==null?`${day.date}: ${day.v}h`:day.date}"></div>`;});gH+='</div>';});
-  gH+='</div>';
+  weeks.forEach(w=>{gH+='<div style="display:flex;flex-direction:column;gap:3px">';w.forEach(day=>{gH+=`<div style="width:13px;height:13px;border-radius:2px;background:${day.f?'transparent':cc(day.v)};flex-shrink:0" title="${day.v!==null?`${day.date}: ${day.v}h`:day.date}"></div>`;});gH+='</div>';});gH+='</div>';
   c.innerHTML=`<div style="overflow-x:auto">${mH}${gH}</div>`;
 }
 function buildDOW(){
@@ -1717,72 +894,43 @@ function buildDOW(){
   S.log.forEach(e=>{const d=new Date(e.date+'T12:00:00').getDay();b[d].push(eff(e.hrs,e.quality||3,e.wakeups||0));});
   const avgs=b.map(bk=>bk.length?Math.round(bk.reduce((s,v)=>s+v,0)/bk.length*10)/10:null);
   const mx=Math.max(...avgs.filter(v=>v!==null),S.need+1);
-  el.innerHTML=dn.map((d,i)=>{
-    if(!avgs[i])return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"></div><div class="dow-val" style="color:var(--text3)">—</div></div>`;
-    const p=Math.round(avgs[i]/mx*100),c=avgs[i]>=S.need?'var(--green)':avgs[i]>=S.need*.85?'var(--amber)':'var(--red)';
-    return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"><div class="dow-fill" style="width:${p}%;background:${c}"></div></div><div class="dow-val" style="color:${c}">${avgs[i]}h</div></div>`;
-  }).join('');
+  el.innerHTML=dn.map((d,i)=>{if(!avgs[i])return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"></div><div class="dow-val" style="color:var(--text3)">—</div></div>`;const p=Math.round(avgs[i]/mx*100),c=avgs[i]>=S.need?'var(--green)':avgs[i]>=S.need*.85?'var(--amber)':'var(--red)';return `<div class="dow-row"><div class="dow-lbl">${d}</div><div class="dow-track"><div class="dow-fill" style="width:${p}%;background:${c}"></div></div><div class="dow-val" style="color:${c}">${avgs[i]}h</div></div>`;}).join('');
 }
 function buildTrend(logs){
   const c=document.getElementById('tc');if(!c)return;
-  const sorted=[...S.log].sort((a,b)=>a.date.localeCompare(b.date));
-  if(sorted.length<2)return;
-  let net=S.startingDebt;const dm={};
-  sorted.forEach(e=>{const d=S.need-eff(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);if(d>0)net+=d;else net-=recov(-d);net=Math.max(0,net);dm[e.date]=Math.round(net*10)/10;});
-  const r=sorted.slice(-30);
-  const labels=r.map(e=>new Date(e.date+'T12:00:00').toLocaleDateString('en-IN',{month:'short',day:'numeric'}));
-  const data=r.map(e=>dm[e.date]||0);
+  const sorted=[...S.log].sort((a,b)=>a.date.localeCompare(b.date));if(sorted.length<2)return;
+  let net=S.startingDebt;const dm={};sorted.forEach(e=>{const d=S.need-eff(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);if(d>0)net+=d;else net-=recov(-d);net=Math.max(0,net);dm[e.date]=Math.round(net*10)/10;});
+  const r=sorted.slice(-30),labels=r.map(e=>new Date(e.date+'T12:00:00').toLocaleDateString('en-IN',{month:'short',day:'numeric'})),data=r.map(e=>dm[e.date]||0);
   if(tChart)tChart.destroy();
-  tChart=new Chart(c,{type:'line',data:{labels,datasets:[{label:'Debt',data,borderColor:'rgba(255,255,255,0.7)',backgroundColor:'rgba(255,255,255,0.04)',fill:true,tension:.3,pointRadius:2,borderWidth:2,pointBackgroundColor:'rgba(255,255,255,0.7)'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}h debt`}}},
-      scales:{x:{ticks:{color:'rgba(255,255,255,0.25)',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6},grid:{display:false},border:{display:false}},y:{min:0,ticks:{color:'rgba(255,255,255,0.25)',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'},border:{display:false}}}}});
+  tChart=new Chart(c,{type:'line',data:{labels,datasets:[{label:'Debt',data,borderColor:'rgba(255,255,255,.7)',backgroundColor:'rgba(255,255,255,.04)',fill:true,tension:.3,pointRadius:2,borderWidth:2,pointBackgroundColor:'rgba(255,255,255,.7)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}h debt`}}},scales:{x:{ticks:{color:'rgba(255,255,255,.25)',font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:6},grid:{display:false},border:{display:false}},y:{min:0,ticks:{color:'rgba(255,255,255,.25)',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'},border:{display:false}}}}});
 }
 function genInsights(){
   const ins=[];if(S.log.length<7)return ins;
   const ae=S.log.map(e=>({...e,ef:eff(e.hrs,e.quality||3,e.wakeups||0)}));
-  const b=Array(7).fill(null).map(()=>[]);
-  ae.forEach(e=>{const d=new Date(e.date+'T12:00:00').getDay();b[d].push(e.ef);});
-  const avgs=b.map(bk=>bk.length>=2?bk.reduce((s,v)=>s+v,0)/bk.length:null);
-  const valid=avgs.map((v,i)=>({v,i})).filter(x=>x.v!==null);
-  const dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const b=Array(7).fill(null).map(()=>[]);ae.forEach(e=>{const d=new Date(e.date+'T12:00:00').getDay();b[d].push(e.ef);});
+  const avgs=b.map(bk=>bk.length>=2?bk.reduce((s,v)=>s+v,0)/bk.length:null),valid=avgs.map((v,i)=>({v,i})).filter(x=>x.v!==null);
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   if(valid.length>=3){
     const worst=valid.reduce((a,b)=>a.v<b.v?a:b),best=valid.reduce((a,b)=>a.v>b.v?a:b);
-    if(worst.v<S.need-.5)ins.push({icon:'📉',title:`${dn[worst.i]}s are your worst nights`,body:`You average ${Math.round(worst.v*10)/10}h — ${Math.round((S.need-worst.v)*10)/10}h below your need.`});
-    if(best.v>=S.need-.3)ins.push({icon:'🏆',title:`${dn[best.i]}s are your best nights`,body:`You average ${Math.round(best.v*10)/10}h. Protect what you do that night.`});
+    if(worst.v<S.need-.5)ins.push({icon:'📉',title:`${days[worst.i]}s are your worst nights`,body:`You average ${Math.round(worst.v*10)/10}h — ${fmtH(S.need-worst.v)} below your need.`});
+    if(best.v>=S.need-.3)ins.push({icon:'🏆',title:`${days[best.i]}s are your best nights`,body:`You average ${Math.round(best.v*10)/10}h. Protect what you do that night.`});
   }
-  const md=S.checkins?.length>=5?S.checkins:[];
-  if(md.length>=5){
-    const pairs=[];md.forEach(ci=>{const prev=S.log.find(e=>e.date===ci.date);if(prev)pairs.push({mood:ci.score,ef:eff(prev.hrs,prev.quality||3,prev.wakeups||0)});});
-    if(pairs.length>=5){
-      const hi=pairs.filter(p=>p.ef>=S.need-.5),lo=pairs.filter(p=>p.ef<S.need-1);
-      if(hi.length>=2&&lo.length>=2){
-        const hm=Math.round(hi.reduce((s,p)=>s+p.mood,0)/hi.length*10)/10,lm=Math.round(lo.reduce((s,p)=>s+p.mood,0)/lo.length*10)/10;
-        const mE=['','😵','😩','😐','🙂','⚡'];
-        if(hm>lm+.5)ins.push({icon:'🔗',title:'Your mood tracks your sleep',body:`Well-slept days: ${mE[Math.round(hm)]} (${hm}/5). Short nights: ${mE[Math.round(lm)]} (${lm}/5).`});
-      }
-    }
-  }
-  const we=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d===0||d===6;});
-  const wd=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d>0&&d<6;});
-  if(we.length>=3&&wd.length>=5){
-    const weA=Math.round(we.reduce((s,e)=>s+e.ef,0)/we.length*10)/10,wdA=Math.round(wd.reduce((s,e)=>s+e.ef,0)/wd.length*10)/10;
-    if(weA>wdA+.5)ins.push({icon:'📅',title:`${Math.round((weA-wdA)*10)/10}h more sleep on weekends`,body:`Weekdays: ${wdA}h avg. Weekends: ${weA}h avg. Using weekends to recover debt.`});
-  }
+  const we=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d===0||d===6;}),wd=ae.filter(e=>{const d=new Date(e.date+'T12:00:00').getDay();return d>0&&d<6;});
+  if(we.length>=2&&wd.length>=3){const weA=we.reduce((s,e)=>s+e.ef,0)/we.length,wdA=wd.reduce((s,e)=>s+e.ef,0)/wd.length;if(weA>wdA+.8)ins.push({icon:'📅',title:`${fmtH(weA-wdA)} more sleep on weekends`,body:`Weekdays: ${Math.round(wdA*10)/10}h avg. Weekends: ${Math.round(weA*10)/10}h avg. Weekend recovery is real but doesn't fix weekday debt.`});}
   const cons=calcCons(S.log.slice(0,30));
-  if(cons<60)ins.push({icon:'⏰',title:'Inconsistent bedtimes are costing you',body:`Consistency score: ${cons}/100. Irregular timing disrupts circadian rhythm even when total hours look okay.`});
-  return ins.slice(0,5);
+  if(cons<60)ins.push({icon:'⏰',title:'Inconsistent bedtimes are costing you',body:`Consistency score: ${cons}/100. Irregular timing disrupts your circadian rhythm even when total hours look okay.`});
+  const tagCounts={};ae.forEach(e=>{(e.tags||[]).forEach(t=>{if(!tagCounts[t])tagCounts[t]={count:0,effs:[]};tagCounts[t].count++;tagCounts[t].effs.push(e.ef);});});
+  const allAvg=ae.reduce((s,e)=>s+e.ef,0)/ae.length;
+  Object.entries(tagCounts).forEach(([tag,data])=>{if(data.count>=3){const tAvg=data.effs.reduce((s,v)=>s+v,0)/data.effs.length;if(tAvg<allAvg-.5)ins.push({icon:'🏷️',title:`${tag} nights average ${Math.round(tAvg*10)/10}h`,body:`That's ${fmtH(allAvg-tAvg)} less than your overall average.`});}});
+  return ins.slice(0,6);
 }
 function doExport(){
   if(!S.log.length){alert('No data');return;}
-  const rows=['Date,Bedtime,Wake,Raw(h),Quality,Wakeups,Tags,Note,Effective(h),Deficit(h)'];
+  const rows=['Date,Bedtime,Wake,Hours,Quality,Broken,Tags,Note,Effective,Deficit'];
   S.log.forEach(e=>{const ef2=eff(e.hrs,e.quality||3,e.wakeups||0);rows.push(`${e.date},${e.bed},${e.wake},${e.hrs},${e.quality||3},${e.wakeups||0},"${(e.tags||[]).join(';')}","${e.note||''}",${ef2},${Math.round((S.need-ef2)*10)/10}`);});
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download='somnus.csv';a.click();
 }
-
-// ── PWA ───────────────────────────────────────────────────────
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
-}
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 </script>
 </body>
 </html>
