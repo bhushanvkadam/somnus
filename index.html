@@ -352,6 +352,7 @@ function go(p,el){
   document.querySelectorAll('.ni').forEach(x=>x.classList.remove('on'));
   if(el)el.classList.add('on');
   window.scrollTo(0,0);
+  renderQL(); // always refresh QL bar on tab switch
   ({home:rHome,log:rLog,insights:rInsights})[p]?.();
 }
 
@@ -429,9 +430,20 @@ function bedDef(bed){const tb=targetBed(),[th,tm]=tb.split(':').map(Number);let[
 function recov(x){return x<=0?0:Math.round(Math.log(1+x*2)*.8*10)/10;}
 function napCredit(date){return(S.naps||[]).filter(n=>n.date===date).reduce((s,n)=>s+n.mins/60*.55,0);}
 function getDebt(){
-  const r=S.log.slice(0,14);if(!r.length)return Math.round(S.startingDebt*10)/10;
-  let net=S.startingDebt;r.forEach(e=>{const d=S.need-eff(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);if(d>0)net+=d;else net-=recov(-d);});
-  return Math.round(Math.max(0,net)*10)/10;
+  const r=S.log.slice(0,14);
+  // Option C: decayed baseline + rolling 14-night actual data
+  // Baseline decays 3% per logged day — fades as real data takes over
+  const daysLogged=S.log.length;
+  const decayedBase=S.startingDebt*Math.pow(0.97,daysLogged);
+  if(!r.length)return Math.round(decayedBase*10)/10;
+  // Rolling 14-night deficit from real logged data
+  let rolling=0;
+  r.forEach(e=>{
+    const d=S.need-eff(e.hrs,e.quality||3,e.wakeups||0)-napCredit(e.date);
+    if(d>0)rolling+=d;
+    else rolling-=recov(-d);
+  });
+  return Math.round(Math.max(0,decayedBase+rolling)*10)/10;
 }
 function getStreak(){let s=0;const t=new Date();for(let i=0;i<S.log.length;i++){if(Math.round((t-new Date(S.log[i].date+'T12:00:00'))/86400000)===i)s++;else break;}return s;}
 function getGoodStreak(){let s=0;const t=new Date();for(let i=0;i<S.log.length;i++){const e=S.log[i];if(Math.round((t-new Date(e.date+'T12:00:00'))/86400000)!==i)break;if(eff(e.hrs,e.quality||3,e.wakeups||0)>=S.need*.85)s++;else break;}return s;}
@@ -475,14 +487,36 @@ function getCtx(){
 
 // QL
 function getQLState(){
-  const h=new Date().getHours(),td=today(),yd=yesterday(),bedDate=qlBedDate();
-  const alreadyLogged=S.log.find(e=>e.date===yd||e.date===bedDate);
-  const bDone=!!(S.ql?.bedDate&&(S.ql.bedDate===bedDate||S.ql.bedDate===yd));
-  const wDone=S.ql?.wakeDate===td;
+  const h=new Date().getHours(),td=today(),yd=yesterday();
+
+  // Determine what sleep date the QL bed entry would produce
+  const qlBed=S.ql?.bedTime;
+  const qlBedSleepDate=qlBed?sleepDate(qlBed):null;
+
+  // Check if that night is already logged
+  const alreadyLogged=qlBedSleepDate?S.log.find(e=>e.date===qlBedSleepDate):
+    S.log.find(e=>e.date===yd||e.date===td);
+
+  const bDone=!!(S.ql?.bedTime&&S.ql?.bedDate);
+  const wDone=!!(S.ql?.wakeTime&&S.ql?.wakeDate===td);
+
+  // Both recorded and not yet logged → show confirm card
   if(bDone&&wDone&&!alreadyLogged)return{confirm:true,bDone,wDone};
-  if(h>=5&&h<12)return{confirm:false,showBed:bDone,showWake:true,bDone,wDone};
-  if(h>=20||h<5)return{confirm:false,showBed:true,showWake:wDone,bDone,wDone};
-  if(wDone)return{confirm:false,showBed:false,showWake:true,bDone,wDone};
+
+  // Morning 5am–12pm: show wake button + bed pill if recorded
+  if(h>=5&&h<12){
+    if(alreadyLogged)return null; // already logged, hide everything
+    return{confirm:false,showBed:bDone,showWake:true,bDone,wDone};
+  }
+
+  // Evening/night 8pm–5am: show bed button + wake pill if recorded
+  if(h>=20||h<5){
+    return{confirm:false,showBed:true,showWake:wDone,bDone,wDone};
+  }
+
+  // Daytime: only show if something recorded
+  if(wDone&&!alreadyLogged)return{confirm:false,showBed:bDone,showWake:true,bDone,wDone};
+  if(bDone&&wDone&&!alreadyLogged)return{confirm:true,bDone,wDone};
   return null;
 }
 function renderQL(){
@@ -863,7 +897,12 @@ function rInsights(){
   const avg=effs.length?Math.round(effs.reduce((s,v)=>s+v,0)/effs.length*10)/10:0;
   const best=effs.length?Math.max(...effs):0,worst=effs.length?Math.min(...effs):0;
   const cons=calcCons(pl),ins=genInsights();
-  const debt=getDebt(),nightly=avg-S.need;let running=debt;
+  const debt=getDebt();
+  // Use full log average for projection, not period-filtered avg
+  const allEfts=S.log.map(e=>eff(e.hrs,e.quality||3,e.wakeups||0));
+  const allAvg=allEfts.length?allEfts.reduce((s,v)=>s+v,0)/allEfts.length:S.need;
+  const nightly=allAvg-S.need;
+  let running=debt;
   const keyIns=ins[0]||null;
   document.getElementById('pg-insights').innerHTML=`
     ${keyIns?`<div class="ins-hero"><div class="ins-hero-lbl">Key insight</div><div class="ins-hero-text">${keyIns.title}</div><div class="ins-hero-sub">${keyIns.body}</div></div>`:''}
@@ -899,7 +938,15 @@ function rInsights(){
     <div class="ins-sec"><div class="ins-sec-title">Debt projection</div>
       <div class="ins-box" style="padding:4px 16px">
         <div style="font-size:13px;color:var(--text2);padding:10px 0;border-bottom:1px solid var(--border)">${nightly>=0?`Recovering ${fmtH(nightly)}/night avg`:`Adding ${fmtH(Math.abs(nightly))}/night avg`}</div>
-        ${['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{running=Math.max(0,running+nightly*(i<3?7:28));const rv=Math.round(running*10)/10,c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';return `<div class="proj-row"><span style="color:var(--text2)">${w}</span><span style="font-weight:700;color:${c}">${rv}h debt</span></div>`;}).join('')}
+        ${['Week 2','Week 3','Week 4','Month 2','Month 3'].map((w,i)=>{
+          // Don't clamp to 0 — let trajectory show correctly
+          running=running+nightly*(i<3?7:28);
+          // But debt can't go below 0 in reality
+          const rv=Math.max(0,Math.round(running*10)/10);
+          // Update running for next iteration (keep real value)
+          const c=rv<5?'var(--green)':rv<10?'var(--amber)':'var(--red)';
+          return `<div class="proj-row"><span style="color:var(--text2)">${w}</span><span style="font-weight:700;color:${c}">${rv>0?rv+'h debt':'Cleared 🎉'}</span></div>`;
+        }).join('')}
       </div>
     </div>
     <div class="ins-sec"><button class="secondary-btn" onclick="doExport()">Export CSV</button></div>`;
